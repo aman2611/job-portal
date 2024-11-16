@@ -5,7 +5,6 @@ import {
   Grid,
   IconButton,
   InputAdornment,
-  makeStyles,
   Paper,
   TextField,
   Typography,
@@ -15,8 +14,9 @@ import {
   FormGroup,
   MenuItem,
   Checkbox,
-} from "@material-ui/core";
-import Rating from "@material-ui/lab/Rating";
+} from "@mui/material";
+import {makeStyles} from "@mui/styles";
+import Rating from "@mui/lab/Rating";
 import axios from "axios";
 
 import { SetPopupContext } from "../App";

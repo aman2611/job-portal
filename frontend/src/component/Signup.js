@@ -4,16 +4,16 @@ import {
   TextField,
   Button,
   Typography,
-  makeStyles,
   Paper,
   MenuItem,
   Input,
-} from "@material-ui/core";
+} from "@mui/material";
+import {makeStyles} from "@mui/styles";
 import axios from "axios";
-import { Redirect } from "react-router-dom";
-import ChipInput from "material-ui-chip-input";
-import DescriptionIcon from "@material-ui/icons/Description";
-import FaceIcon from "@material-ui/icons/Face";
+import { Navigate } from "react-router-dom";
+import Chip from '@mui/material/Chip';
+import DescriptionIcon from "@mui/icons-material/Description";
+import FaceIcon from "@mui/icons-material/Face";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 
@@ -321,7 +321,7 @@ const Login = (props) => {
   };
 
   return loggedin ? (
-    <Redirect to="/" />
+    <Navigate to="/" />
   ) : (
     <Paper elevation={3} className={classes.body}>
       <Grid container direction="column" spacing={4} alignItems="center">
@@ -398,7 +398,7 @@ const Login = (props) => {
               setEducation={setEducation}
             />
             <Grid item>
-              <ChipInput
+              <Chip
                 className={classes.inputBox}
                 label="Skills"
                 variant="outlined"

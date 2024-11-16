@@ -3,9 +3,9 @@ import {
   Toolbar,
   Typography,
   Button,
-  makeStyles,
-} from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+} from "@mui/material";
+import {makeStyles} from "@mui/styles";
+import { useNavigate } from "react-router-dom";
 
 import isAuth, { userType } from "../lib/isAuth";
 
@@ -23,11 +23,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = (props) => {
   const classes = useStyles();
-  let history = useHistory();
+  let navigate = useNavigate();
 
   const handleClick = (location) => {
     console.log(location);
-    history.push(location);
+    navigate(location);
   };
 
   return (

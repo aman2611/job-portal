@@ -3,11 +3,10 @@ import {
   Button,
   Grid,
   Typography,
-  Modal,
   Paper,
-  makeStyles,
   TextField,
-} from "@material-ui/core";
+} from "@mui/material";
+import {makeStyles} from "@mui/styles";
 import axios from "axios";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
@@ -161,7 +160,7 @@ const Profile = (props) => {
                   onChange={(event) => {
                     if (
                       event.target.value.split(" ").filter(function (n) {
-                        return n != "";
+                        return n !== "";
                       }).length <= 250
                     ) {
                       handleInput("bio", event.target.value);
