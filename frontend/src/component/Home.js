@@ -15,7 +15,7 @@ import {
   MenuItem,
   Checkbox,
 } from "@mui/material";
-import {makeStyles} from "@mui/styles";
+import { makeStyles } from "@mui/styles";
 import Rating from "@mui/lab/Rating";
 import Pagination from "@mui/lab/Pagination";
 import axios from "axios";
@@ -125,7 +125,7 @@ const JobTile = (props) => {
             ))}
           </Grid>
         </Grid>
-        <Grid item xs={3}>
+        {/* <Grid item xs={3}>
           <Button
             variant="contained"
             color="primary"
@@ -137,7 +137,7 @@ const JobTile = (props) => {
           >
             Apply
           </Button>
-        </Grid>
+        </Grid> */}
       </Grid>
       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
         <Paper
@@ -204,7 +204,7 @@ const FilterPopup = (props) => {
               item
               xs={9}
               justify="space-around"
-              // alignItems="center"
+            // alignItems="center"
             >
               <Grid item>
                 <FormControlLabel
@@ -642,38 +642,41 @@ const Home = (props) => {
           <Grid item xs>
             <Typography variant="h2">Jobs</Typography>
           </Grid>
-          <Grid item xs>
-            <TextField
-              label="Search Jobs"
-              value={searchOptions.query}
-              onChange={(event) =>
-                setSearchOptions({
-                  ...searchOptions,
-                  query: event.target.value,
-                })
-              }
-              onKeyPress={(ev) => {
-                if (ev.key === "Enter") {
-                  getData();
+          <Grid item xs display="flex" justifyContent="space-between" width="100%">
+            <Grid item xs>
+              <TextField
+                label="Search Jobs"
+                value={searchOptions.query}
+                onChange={(event) =>
+                  setSearchOptions({
+                    ...searchOptions,
+                    query: event.target.value,
+                  })
                 }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment>
-                    <IconButton onClick={() => getData()}>
-                      <SearchIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              style={{ width: "500px" }}
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item>
-            <IconButton onClick={() => setFilterOpen(true)}>
-              <FilterListIcon />
-            </IconButton>
+                onKeyPress={(ev) => {
+                  if (ev.key === "Enter") {
+                    getData();
+                  }
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment>
+                      <IconButton onClick={() => getData()}>
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                style={{ width: "500px" }}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item style={{display:"flex", gap:'5px', alignItems:'center'}}> 
+              <Typography variant="body1" pr={1}>Filter</Typography>
+              <IconButton onClick={() => setFilterOpen(true)}>
+                <FilterListIcon />
+              </IconButton>
+            </Grid>
           </Grid>
         </Grid>
 
@@ -699,6 +702,7 @@ const Home = (props) => {
           <Pagination count={10} color="primary" />
         </Grid> */}
       </Grid>
+
       <FilterPopup
         open={filterOpen}
         searchOptions={searchOptions}

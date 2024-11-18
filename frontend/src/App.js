@@ -20,6 +20,7 @@ import RecruiterProfile from "./component/recruiter/Profile";
 import MessagePopup from "./lib/MessagePopup";
 import isAuth, { userType } from "./lib/isAuth";
 import CandidateProfile from "./component/candidate/Profile";
+import CreateJobs2 from "./component/recruiter/CreateJobs2";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -74,7 +75,8 @@ function App() {
                   )
                 }
               />
-              <Route path="/addjob" element={<CreateJobs />} />
+              {/* <Route path="/addjob" element={<CreateJobs />} /> */}
+              <Route path="/addjob" element={<CreateJobs2 />} />
               <Route path="/myjobs" element={<MyJobs />} />
               <Route path="/job/applications/:jobId" element={<JobApplications />} />
               <Route path="/employees" element={<AcceptedApplicants />} />

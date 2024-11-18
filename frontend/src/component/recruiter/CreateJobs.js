@@ -249,7 +249,7 @@ const CreateJobs = (props) => {
               <Button
                 variant="contained"
                 color="primary"
-                style={{ padding: "10px 50px", marginTop: "30px" }}
+                style={{ padding: "10px 50px", marginTop: "30px", display:"flex", justifyContent:"end" }}
                 onClick={() => handleUpdate()}
               >
                 Create Job
@@ -263,3 +263,5 @@ const CreateJobs = (props) => {
 };
 
 export default CreateJobs;
+
+

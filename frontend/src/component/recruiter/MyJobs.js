@@ -15,7 +15,7 @@ import {
   MenuItem,
   Checkbox,
 } from "@mui/material";
-import {makeStyles} from "@mui/styles";
+import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import Rating from "@mui/lab/Rating";
 import Pagination from "@mui/lab/Pagination";
@@ -79,7 +79,7 @@ const JobTile = (props) => {
   };
 
   const handleClick = (location) => {
-    navigate.push(location);
+    navigate(location);
   };
 
   const handleClose = () => {
@@ -175,45 +175,39 @@ const JobTile = (props) => {
             ))}
           </Grid>
         </Grid>
-        <Grid item container direction="column" xs={3}>
-          <Grid item xs>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.statusBlock}
-              onClick={() => handleClick(`/job/applications/${job._id}`)}
-            >
-              View Applications
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              className={classes.statusBlock}
-              onClick={() => {
-                setOpenUpdate(true);
-              }}
-              style={{
-                background: "#FC7A1E",
-                color: "#fff",
-              }}
-            >
-              Update Details
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="secondary"
-              className={classes.statusBlock}
-              onClick={() => {
-                setOpen(true);
-              }}
-            >
-              Delete Job
-            </Button>
-          </Grid>
+        <Grid
+          item
+          container
+          direction="column"
+          xs={3}
+          spacing={2}
+          justifyContent="center"
+        >
+          {[
+            { text: "View Applications", onClick: () => handleClick(`/job/applications/${job._id}`) },
+            { text: "Update Details", onClick: () => setOpenUpdate(true) },
+            { text: "Delete Job", onClick: () => setOpen(true) },
+          ].map((button, index) => (
+            <Grid item key={index}>
+              <Button
+                variant="contained"
+                className={classes.statusBlock}
+                onClick={button.onClick}
+                style={{
+                  background: "#007BFF",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  padding: "10px 20px",
+                  textTransform: "none",
+                  width: "100%",
+                }}
+              >
+                {button.text}
+              </Button>
+            </Grid>
+          ))}
         </Grid>
+
       </Grid>
       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
         <Paper
@@ -359,6 +353,7 @@ const FilterPopup = (props) => {
           padding: "50px",
           outline: "none",
           minWidth: "50%",
+          alignItems: "flex-end"
         }}
       >
         <Grid container direction="column" alignItems="center" spacing={3}>
@@ -371,7 +366,7 @@ const FilterPopup = (props) => {
               item
               xs={9}
               justify="space-around"
-              // alignItems="center"
+            // alignItems="center"
             >
               <Grid item>
                 <FormControlLabel
@@ -794,48 +789,47 @@ const MyJobs = (props) => {
         alignItems="center"
         style={{ padding: "30px", minHeight: "93vh" }}
       >
-        <Grid
-          item
-          container
-          direction="column"
-          justify="center"
-          alignItems="center"
+        <Grid item container direction="column"
         >
-          <Grid item xs>
+          <Grid item xs display="flex" justifyContent="center" alignItems="center">
             <Typography variant="h2">My Jobs</Typography>
           </Grid>
-          <Grid item xs>
-            <TextField
-              label="Search Jobs"
-              value={searchOptions.query}
-              onChange={(event) =>
-                setSearchOptions({
-                  ...searchOptions,
-                  query: event.target.value,
-                })
-              }
-              onKeyPress={(ev) => {
-                if (ev.key === "Enter") {
-                  getData();
+          <Grid item xs display="flex" justifyContent="space-between">
+            <Grid item xs>
+              <TextField
+                label="Search Jobs"
+                value={searchOptions.query}
+                onChange={(event) =>
+                  setSearchOptions({
+                    ...searchOptions,
+                    query: event.target.value,
+                  })
                 }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment>
-                    <IconButton onClick={() => getData()}>
-                      <SearchIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              style={{ width: "500px" }}
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item>
-            <IconButton onClick={() => setFilterOpen(true)}>
+                onKeyPress={(ev) => {
+                  if (ev.key === "Enter") {
+                    getData();
+                  }
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment>
+                      <IconButton onClick={() => getData()}>
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                style={{ width: "500px" }}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item>
+              <IconButton onClick={() => setFilterOpen(true)}>
+              <Typography variant="body1" pr={1}>Filter</Typography>
               <FilterListIcon />
-            </IconButton>
+              </IconButton>
+            </Grid>
+
           </Grid>
         </Grid>
 

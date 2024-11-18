@@ -62,7 +62,7 @@ const PersonalDetailsForm = ({ formData, setFormData }) => {
 
     return (
         <Card className={classes.card}>
-            <Typography variant="h6" gutterBottom>1. Personal Details of the Candidate</Typography>
+            <Typography variant="h5" gutterBottom>1. Personal Details</Typography>
 
             {/* Name */}
             <Grid container spacing={2} className={classes.section}>

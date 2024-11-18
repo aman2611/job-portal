@@ -1,8 +1,8 @@
 import React from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import PersonalDetailsForm from './PersonalDetails/PersonalDetailsForm';
-import ContactDetailsForm from './PersonalDetails/ContactDetailsForm';
+import PersonalDetailsForm from './PersonalDetailsForm';
+import ContactDetailsForm from './ContactDetailsForm';
 
 const PersonalDetail = ({ formData, setFormData }) => {
     return (
