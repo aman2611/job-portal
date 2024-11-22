@@ -68,6 +68,7 @@ const JobTile = (props) => {
   const [open, setOpen] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [jobDetails, setJobDetails] = useState(job);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   console.log(jobDetails);
 
@@ -280,6 +281,18 @@ const JobTile = (props) => {
                 value={jobDetails.deadline.substr(0, 16)}
                 onChange={(event) => {
                   handleInput("deadline", event.target.value);
+                }}
+                open={isPickerOpen}
+                onOpen={() => setIsPickerOpen(true)}
+                onClose={() => setIsPickerOpen(false)}
+                slotProps={{
+                  actionBar: {
+                    actions: ['cancel', 'accept'],
+                  },
+                  textField: {
+                    variant: "outlined",
+                    fullWidth: true,
+                  },
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -825,8 +838,8 @@ const MyJobs = (props) => {
             </Grid>
             <Grid item>
               <IconButton onClick={() => setFilterOpen(true)}>
-              <Typography variant="body1" pr={1}>Filter</Typography>
-              <FilterListIcon />
+                <Typography variant="body1" pr={1}>Filter</Typography>
+                <FilterListIcon />
               </IconButton>
             </Grid>
 

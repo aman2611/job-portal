@@ -345,6 +345,9 @@ const ApplicationTile = (props) => {
 
   const appliedOn = new Date(application.dateOfApplication);
 
+
+  console.log(application.jobApplicant)
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -541,6 +544,8 @@ const ApplicationTile = (props) => {
     ),
   };
 
+  console.log(application)
+
   return (
     <Paper className={classes.jobTileOuter} elevation={3}>
       <Grid container>
@@ -664,11 +669,15 @@ const JobApplications = (props) => {
   });
 
   useEffect(() => {
+    console.log(props.application)
+
     getData();
   }, []);
 
   const getData = () => {
     let searchParams = [];
+
+    console.log(searchOptions)
 
     if (searchOptions.status.rejected) {
       searchParams = [...searchParams, `status=rejected`];
@@ -685,6 +694,7 @@ const JobApplications = (props) => {
 
     Object.keys(searchOptions.sort).forEach((obj) => {
       const item = searchOptions.sort[obj];
+      console.log(item)
       if (item.status) {
         if (item.desc) {
           desc = [...desc, `desc=${obj}`];

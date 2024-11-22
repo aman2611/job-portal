@@ -19,6 +19,10 @@ let schema = new mongoose.Schema(
       enum: ["recruiter", "applicant"],
       required: true,
     },
+    userDetails:{
+      type: {},
+      ref: "jobapplicantinfo",
+    },
   },
   { collation: { locale: "en" } }
 );

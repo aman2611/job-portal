@@ -1,13 +1,54 @@
-import React, { useState } from 'react';
-import { Stepper, Step, StepLabel, Button, Box, Typography } from '@mui/material';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import {
+  Stepper,
+  Step,
+  StepLabel,
+  Button,
+  Box,
+  Typography,
+  Snackbar,
+  Alert,
+  Card,
+  Avatar,
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import FileUploadInput from '../../lib/FileUploadInput'; // Ensure correct import
+import DescriptionIcon from '@mui/icons-material/Description';
+import FaceIcon from '@mui/icons-material/Face';
 import PersonalDetail from './PersonalDetails/PersonalDetail';
 import EducationDetail from './EducationDetails/EducationDetail';
 import ExperienceDetail from './ExperienceDetails/ExperienceDetail';
-import UploadDocuments from './UploadDocuments/UploadDocuments';
+import axios from 'axios'; // Make sure axios is installed
+import apiList from '../../lib/apiList'; // Adjust API endpoints
+import { SetPopupContext } from '../../App';
+import { Navigate, useNavigate } from 'react-router-dom';
+
+const FormDataContext = createContext();
+
+export const useFormData = () => {
+  return useContext(FormDataContext);
+};
+
+const useStyles = makeStyles((theme) => ({
+  card: {
+    padding: theme.spacing(4),
+    margin: theme.spacing(4),
+    marginTop: theme.spacing(8),
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    margin: '20px 0',
+  },
+  inputBox: {
+    marginBottom: theme.spacing(2),
+  },
+}));
 
 const Profile = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const steps = ['Personal Details', 'Educational Details', 'Experience Detais', 'Upload Documents'];
+  const steps = ['Personal Details', 'Educational Details', 'Experience Details', 'Upload Documents'];
+
   const [formData, setFormData] = useState({
     firstName: '',
     middleName: '',
@@ -24,7 +65,7 @@ const Profile = () => {
     belongsToPwBD: 'No',
     pwBD: '',
     belongsToExServiceman: 'No',
-    religion: '',
+    religion: 'Hinduism',
     email: '',
     alternateEmail: '',
     mobile: '',
@@ -56,87 +97,146 @@ const Profile = () => {
     majorPG: '',
     percentagePG: '',
     yopPG: '',
-    jobTitle: '', 
-    companyName: '', 
-    employmentType: '', 
-    startDate: null, 
-    endDate: null, 
-    location: '', 
-    skills: []
+    experience: {
+      companyName: '',
+      location: '',
+      startDate: null,
+      endDate: null,
+      employmentType: '',
+      skills: [],
+    },
+    resume: null,
+    profile: null,
   });
 
-  // Handle next step
+  const navigate = useNavigate();
+
+  const classes = useStyles();
+
   const handleNext = () => {
-    console.log('Form Data on Step', formData); 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-  // Handle previous step
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    if (activeStep === steps.length - 1) {
+      console.log(formData)
+      setTimeout(() => {
+        navigate('./'); // Navigate to your desired path
+      }, 2000);
+    } else {
+      setActiveStep((prev) => prev + 1);
+    }
   };
 
-  // Handle reset (optional)
-  const handleReset = () => {
-    setActiveStep(0);
-  };
+  const handleBack = () => setActiveStep((prev) => prev - 1);
+  const handleReset = () => setActiveStep(0);
 
   const getStepContent = (stepIndex) => {
     switch (stepIndex) {
       case 0:
-        return <PersonalDetail formData={formData} setFormData={setFormData} />;
+        return <PersonalDetail />;
       case 1:
-        return <EducationDetail formData={formData} setFormData={setFormData} />;
+        return <EducationDetail />;
       case 2:
-        return <ExperienceDetail formData={formData} setFormData={setFormData} />;
+        return <ExperienceDetail />;
       case 3:
-        return <UploadDocuments formData={formData} setFormData={setFormData} />;
+        return (
+          <Card className={classes.card}>
+            <Typography variant="h5" gutterBottom>
+              Upload Your Resume and Profile Picture
+            </Typography>
+            <FileUploadInput
+              label="Resume (.pdf)"
+              icon={<DescriptionIcon />}
+              uploadTo={apiList.uploadResume}
+              handleInput={(key, fileUrl) => setFormData(prev => ({ ...prev, [key]: fileUrl }))}
+              identifier="resume"
+            />
+            <FileUploadInput
+              label="Profile Picture (.jpg/.png)"
+              icon={<FaceIcon />}
+              uploadTo={apiList.uploadProfileImage}
+              handleInput={(key, fileUrl) => setFormData(prev => ({ ...prev, [key]: fileUrl }))}
+              identifier="profile"
+            />
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              style={{ marginTop: '20px' }}
+              onClick={handleSubmit}
+            >
+              Submit Resume and Profile Picture
+            </Button>
+          </Card>
+        );
       default:
-        return 'Unknown step';
+        return 'Unknown Step';
     }
   };
 
-  return (
-    <Box sx={{ width: '100%', padding: 3, marginBottom: '20px' }}>
-      <Stepper activeStep={activeStep} alternativeLabel>
-        {steps.map((label, index) => (
-          <Step key={index}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+  const handleSubmit = () => {
+    console.log(formData)
+    axios
+      .put(apiList.user, formData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+      })
+      .then((response) => {
+        console.log(response)
+        SetPopupContext({
+          open: true,
+          severity: "success",
+          message: response.data.message,
+        });
+        // setSuccess('Profile data submitted successfully');
+        // setOpenSnackbar(true);
+        handleReset();
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log('Response Error:', error.response.data);
+        } else {
+          console.log('Error:', error.message);
+        // setError('Failed to submit profile data');
+        // setOpenSnackbar(true);
+      }})
+  };
 
-      <div>
-        {activeStep === steps.length ? (
-          <div>
-            <Typography variant="h6">All steps completed</Typography>
-            <Button onClick={handleReset} variant="contained" color="primary">
-              Reset
-            </Button>
-          </div>
-        ) : (
-          <div>
-            {getStepContent(activeStep)}
-            <Box sx={{ margintop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px' }}>
-              <Button
-                color="secondary"
-                variant="outlined"
-                onClick={handleBack}
-                disabled={activeStep === 0}
-              >
-                Back
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleNext}
-                sx={{ display: 'flex', alignItems: 'center' }}
-              >
-                {activeStep === steps.length - 1 ? 'Finish' : 'Save & Next'}
-              </Button>
-            </Box>
-          </div>
-        )}
-      </div>
-    </Box>
+  return (
+    <FormDataContext.Provider value={{ formData, setFormData }}>
+      <Box sx={{ width: '100%', padding: 3, marginBottom: '20px' }}>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map((label, index) => (
+            <Step key={index}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <div>
+          {activeStep === steps.length ? null : (
+            <div>
+              {getStepContent(activeStep)}
+              <Box sx={{ marginTop: '20px' }}>
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  variant="outlined"
+                  sx={{ marginRight: '10px' }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+                  sx={{ marginRight: '10px' }}
+                >
+                  {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                </Button>
+              </Box>
+            </div>
+          )}
+        </div>
+      </Box>
+    </FormDataContext.Provider>
   );
 };
 

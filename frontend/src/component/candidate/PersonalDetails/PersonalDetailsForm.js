@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, FormControl, InputLabel, MenuItem, Select, TextField, Typography, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { DatePicker } from '@mui/x-date-pickers';
+import { useFormData } from '../Profile';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -24,8 +25,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const PersonalDetailsForm = ({ formData, setFormData }) => {
+const PersonalDetailsForm = () => {
     const classes = useStyles();
+    const { formData, setFormData } = useFormData();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -77,6 +79,7 @@ const PersonalDetailsForm = ({ formData, setFormData }) => {
                             label="First Name"
                             fullWidth
                             name="firstName"
+                            required
                             value={formData.firstName}
                             onChange={handleInputChange}
                         />
@@ -91,6 +94,7 @@ const PersonalDetailsForm = ({ formData, setFormData }) => {
                             label="Last Name"
                             fullWidth
                             name="lastName"
+                            required
                             value={formData.lastName}
                             onChange={handleInputChange}
                         />
@@ -113,6 +117,7 @@ const PersonalDetailsForm = ({ formData, setFormData }) => {
                             id="relationship"
                             label="Relationship"
                             name="relationship"
+                            required
                             value={formData.relationship}
                             onChange={handleInputChange}
                         >
@@ -128,6 +133,7 @@ const PersonalDetailsForm = ({ formData, setFormData }) => {
                             label="First Name"
                             fullWidth
                             name="relationshipFirstName"
+                            required
                             value={formData.relationshipFirstName}
                             onChange={handleInputChange}
                         />
@@ -142,6 +148,7 @@ const PersonalDetailsForm = ({ formData, setFormData }) => {
                             label="Last Name"
                             fullWidth
                             name="relationshipLastName"
+                            required
                             value={formData.relationshipLastName}
                             onChange={handleInputChange}
                         />
@@ -162,6 +169,8 @@ const PersonalDetailsForm = ({ formData, setFormData }) => {
                         label=""
                         openTo="year"
                         views={['year', 'month', 'day']}
+                        format="DD-MM-YYYY"
+                        required
                         value={formData.dob}
                         onChange={handleDateChange}
                         renderInput={(params) => <TextField {...params} fullWidth />}
@@ -283,53 +292,27 @@ const PersonalDetailsForm = ({ formData, setFormData }) => {
                     </FormControl>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                    <TextField
-                        label="Specify PwBD"
-                        fullWidth
-                        name="pwBD"
-                        value={formData.pwBD}
-                        onChange={handleInputChange}
-                        disabled={formData.belongsToPwBD !== 'Yes'}
-                        sx={{
-                            backgroundColor: formData.belongsToPwBD === 'Yes' ? 'white' : 'lightgray',
-                        }}
-                    />
-                </Grid>
-            </Grid>
-
-            {/* Religion */}
-            <Grid container spacing={4} className={classes.section}>
-                <Grid item xs={12} md={3}>
-                    <div className={classes.labelContainer}>
-                        <Typography>Religion:</Typography>
-                    </div>
-                </Grid>
-                <Grid item xs={12} md={2}>
                     <FormControl fullWidth>
-                        <InputLabel id="religion">--Select--</InputLabel>
                         <Select
-                            labelId="religion"
-                            id="religion"
-                            label="--Select--"
-                            name="religion"
-                            value={formData.religion}
+                            value={formData.pwBD}
+                            label="Disability Type"
                             onChange={handleInputChange}
+                            name="pwBD"
+                            disabled={formData.belongsToPwBD !== "Yes"}
+                            sx={{
+                                backgroundColor: formData.belongsToPwBD === "Yes" ? "white" : "lightgray",
+                            }}
                         >
-                            <MenuItem value="Hindu">Hindu</MenuItem>
-                            <MenuItem value="Muslim">Muslim</MenuItem>
-                            <MenuItem value="Christian">Christian</MenuItem>
-                            <MenuItem value="Sikh">Sikh</MenuItem>
-                            <MenuItem value="Jain">Jain</MenuItem>
-                            <MenuItem value="Budhism">Budhism</MenuItem>
-                            <MenuItem value="Parsi">Parsi</MenuItem>
-                            <MenuItem value="Jews">Jews</MenuItem>
+                            <MenuItem value="">Select</MenuItem>
+                            <MenuItem value="Blind">Blind</MenuItem>
+                            <MenuItem value="Deaf">Deaf</MenuItem>
+                            <MenuItem value="Orthopedic">Orthopedic</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
             </Grid>
-
         </Card>
-    )
-}
+    );
+};
 
-export default PersonalDetailsForm
+export default PersonalDetailsForm;

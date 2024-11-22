@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, TextField, Typography, Grid, MenuItem } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { useFormData } from '../Profile'; // Import the custom hook to access context
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -22,8 +23,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EducationDetail = ({ formData, setFormData }) => {
+const EducationDetail = () => {
   const classes = useStyles();
+  const { formData, setFormData } = useFormData();
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({
@@ -129,7 +131,7 @@ const EducationDetail = ({ formData, setFormData }) => {
                 fullWidth
                 select
                 required
-                value={formData.yop12th|| ''}
+                value={formData.yop12th || ''}
                 onChange={(e) => handleChange('yop12th', e.target.value)}
               >
                 <MenuItem value="" disabled>
@@ -195,7 +197,7 @@ const EducationDetail = ({ formData, setFormData }) => {
                 fullWidth
                 select
                 required
-                value={formData.yopGrad}
+                value={formData.yopGrad || ''}
                 onChange={(e) => handleChange('yopGrad', e.target.value)}
               >
                 <MenuItem value="" disabled>
@@ -230,25 +232,23 @@ const EducationDetail = ({ formData, setFormData }) => {
           </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="body1">University </Typography>
+              <Typography variant="body1">University <span style={{ color: 'red' }}>*</span></Typography>
               <TextField
                 fullWidth
-                required
                 value={formData.universityPG}
                 onChange={(e) => handleChange('universityPG', e.target.value)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="body1">Degree </Typography>
+              <Typography variant="body1">Degree <span style={{ color: 'red' }}>*</span></Typography>
               <TextField
                 fullWidth
-                required
                 value={formData.degreePG}
                 onChange={(e) => handleChange('degreePG', e.target.value)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="body1">Major </Typography>
+              <Typography variant="body1">Major <span style={{ color: 'red' }}>*</span></Typography>
               <TextField
                 fullWidth
                 value={formData.majorPG}
@@ -256,12 +256,12 @@ const EducationDetail = ({ formData, setFormData }) => {
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="body1">Year of Passing </Typography>
+              <Typography variant="body1">Year of Passing <span style={{ color: 'red' }}>*</span></Typography>
               <TextField
                 fullWidth
                 select
                 required
-                value={formData.yopPG|| ''}
+                value={formData.yopPG || ''}
                 onChange={(e) => handleChange('yopPG', e.target.value)}
               >
                 <MenuItem value="" disabled>
@@ -275,7 +275,7 @@ const EducationDetail = ({ formData, setFormData }) => {
               </TextField>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="body1">Percentage/CGPA </Typography>
+              <Typography variant="body1">Percentage/CGPA <span style={{ color: 'red' }}>*</span></Typography>
               <TextField
                 fullWidth
                 value={formData.percentagePG}

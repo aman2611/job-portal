@@ -7,6 +7,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Welcome from "./component/Welcome";
 // import ErrorPage from "./component/ErrorPage";
 import Navbar from "./component/Navbar";
+import Profile from "./component/Profile";
 import Login from "./component/Login";
 import Logout from "./component/Logout";
 import Signup from "./component/Signup";
@@ -20,7 +21,8 @@ import RecruiterProfile from "./component/recruiter/Profile";
 import MessagePopup from "./lib/MessagePopup";
 import isAuth, { userType } from "./lib/isAuth";
 import CandidateProfile from "./component/candidate/Profile";
-import CreateJobs2 from "./component/recruiter/CreateJobs2";
+import CreateJobs2 from "./component/recruiter/CreateJobs/CreateJobs2";
+import ScreeningQuestions from "./component/recruiter/CreateJobs/ScreeningQuestions";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -71,12 +73,14 @@ function App() {
                   userType() === "recruiter" ? (
                     <RecruiterProfile />
                   ) : (
+                    // <Profile/>
                     <CandidateProfile />
                   )
                 }
               />
               {/* <Route path="/addjob" element={<CreateJobs />} /> */}
               <Route path="/addjob" element={<CreateJobs2 />} />
+              <Route path="/screening" element={<ScreeningQuestions />} />
               <Route path="/myjobs" element={<MyJobs />} />
               <Route path="/job/applications/:jobId" element={<JobApplications />} />
               <Route path="/employees" element={<AcceptedApplicants />} />

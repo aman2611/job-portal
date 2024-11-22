@@ -3,15 +3,17 @@ import {
   Button,
   Grid,
   Typography,
+  Modal,
   Paper,
   TextField,
+  Chip
 } from "@mui/material";
-import {makeStyles} from "@mui/styles";
 import axios from "axios";
-import ChipInput from "material-ui-chip-input";
+// import ChipInput from "material-ui-chip-input";
 import FileUploadInput from "../lib/FileUploadInput";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FaceIcon from "@mui/icons-material/Face";
+import { makeStyles } from '@mui/styles';
 
 import { SetPopupContext } from "../App";
 
@@ -252,7 +254,7 @@ const Profile = (props) => {
                 setEducation={setEducation}
               />
               <Grid item>
-                <ChipInput
+                <Chip
                   className={classes.inputBox}
                   label="Skills"
                   variant="outlined"

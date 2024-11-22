@@ -27,15 +27,18 @@ router.post("/jobs", jwtAuth, (req, res) => {
   let job = new Job({
     userId: user._id,
     title: data.title,
+    workplaceType: data.workplaceType,
+    description: data.description,
+    salary: data.salary,
+    deadline: data.deadline,
     maxApplicants: data.maxApplicants,
     maxPositions: data.maxPositions,
     dateOfPosting: data.dateOfPosting,
-    deadline: data.deadline,
-    skillsets: data.skillsets,
     jobType: data.jobType,
     duration: data.duration,
-    salary: data.salary,
+    skillsets: data.skillsets,
     rating: data.rating,
+    questions: data.questions
   });
 
   job
@@ -83,7 +86,7 @@ router.get("/jobs", jwtAuth, (req, res) => {
     } else {
       jobTypes = [req.query.jobType];
     }
-    console.log(jobTypes);
+    // console.log(jobTypes);
     findParams = {
       ...findParams,
       jobType: {
@@ -165,8 +168,8 @@ router.get("/jobs", jwtAuth, (req, res) => {
     }
   }
 
-  console.log(findParams);
-  console.log(sortParams);
+  // console.log(findParams);
+  // console.log(sortParams);
 
   // Job.find(findParams).collation({ locale: "en" }).sort(sortParams);
   // .skip(skip)
@@ -203,7 +206,7 @@ router.get("/jobs", jwtAuth, (req, res) => {
     ];
   }
 
-  console.log(arr);
+  // console.log(arr);
 
   Job.aggregate(arr)
     .then((posts) => {
@@ -315,6 +318,7 @@ router.delete("/jobs/:id", jwtAuth, (req, res) => {
 // get user's personal details
 router.get("/user", jwtAuth, (req, res) => {
   const user = req.user;
+  console.log('this is the user:', user)
   if (user.type === "recruiter") {
     Recruiter.findOne({ userId: user._id })
       .then((recruiter) => {
@@ -330,8 +334,9 @@ router.get("/user", jwtAuth, (req, res) => {
         res.status(400).json(err);
       });
   } else {
-    JobApplicant.findOne({ userId: user._id })
+    User.findOne({ _id: user._id }).populate("userDetails")
       .then((jobApplicant) => {
+        console.log(jobApplicant)
         if (jobApplicant == null) {
           res.status(404).json({
             message: "User does not exist",
@@ -393,80 +398,121 @@ router.get("/user/:id", jwtAuth, (req, res) => {
 });
 
 // update user details
-router.put("/user", jwtAuth, (req, res) => {
+router.put("/user", jwtAuth, async (req, res) => {
   const user = req.user;
   const data = req.body;
-  if (user.type == "recruiter") {
-    Recruiter.findOne({ userId: user._id })
-      .then((recruiter) => {
-        if (recruiter == null) {
-          res.status(404).json({
-            message: "User does not exist",
-          });
-          return;
+
+  console.log("Incoming data:", data); // Log the incoming data for debugging
+
+  try {
+    if (user.type === "recruiter") {
+      // Handle recruiter updates
+      let recruiter = await Recruiter.findOne({ userId: user._id });
+
+      // if (!recruiter) {
+      //   // Create new recruiter if not found
+      //   recruiter = new Recruiter({
+      //     userId: user._id,
+      //     name: data.name || "",
+      //     contactNumber: data.contactNumber || "",
+      //     bio: data.bio || "",
+      //   });
+
+      //   await recruiter.save();
+      //   return res.json({ message: "Recruiter created successfully" });
+      // }
+
+      // Update existing recruiter
+      recruiter.name = data.name || recruiter.name;
+      recruiter.contactNumber = data.contactNumber || recruiter.contactNumber;
+      recruiter.bio = data.bio || recruiter.bio;
+
+      await recruiter.save();
+      return res.json({ message: "Recruiter information updated successfully" });
+    } else {
+      // Handle job applicant updates
+      let jobApplicant = await JobApplicant.findOne({ userId: user._id });
+
+      if (!jobApplicant) {
+        // Create new job applicant if not found
+        jobApplicant = new JobApplicant({
+          userId: user._id,
+          firstName: data.firstName || "",
+          middleName: data.middleName || "",
+          lastName: data.lastName || "",
+          relationship: data.relationship || "",
+          relationshipFirstName: data.relationshipFirstName || "",
+          relationshipMiddleName: data.relationshipMiddleName || "",
+          relationshipLastName: data.relationshipLastName || "",
+          dob: data.dob || null,
+          gender: data.gender || "",
+          belongsToCategory: data.belongsToCategory || "No",
+          category: data.category || "",
+          aadhar: data.aadhar || "",
+          belongsToPwBD: data.belongsToPwBD || "No",
+          pwBD: data.pwBD || "",
+          belongsToExServiceman: data.belongsToExServiceman || "No",
+          religion: data.religion || "Hinduism",
+          email: data.email || "",
+          alternateEmail: data.alternateEmail || "",
+          mobile: data.mobile || "",
+          officeTelephone: data.officeTelephone || "",
+          permanentAddress: data.permanentAddress || "",
+          permanentCity: data.permanentCity || "",
+          permanentState: data.permanentState || "",
+          permanentPincode: data.permanentPincode || "",
+          sameAddress: data.sameAddress || false,
+          correspondenceAddress: data.correspondenceAddress || "",
+          correspondenceCity: data.correspondenceCity || "",
+          correspondenceState: data.correspondenceState || "",
+          correspondencePincode: data.correspondencePincode || "",
+          schoolName10th: data.schoolName10th || "",
+          boardName10th: data.boardName10th || "",
+          yop10th: data.yop10th || "",
+          percenatage10th: data.percenatage10th || "",
+          schoolName12th: data.schoolName12th || "",
+          boardName12th: data.boardName12th || "",
+          yop12th: data.yop12th || "",
+          percentage12th: data.percentage12th || "",
+          universityGrad: data.universityGrad || "",
+          degreeGrad: data.degreeGrad || "",
+          majorGrad: data.majorGrad || "",
+          percentageGrad: data.percentageGrad || "",
+          yopGrad: data.yopGrad || "",
+          universityPG: data.universityPG || "",
+          degreePG: data.degreePG || "",
+          majorPG: data.majorPG || "",
+          percentagePG: data.percentagePG || "",
+          yopPG: data.yopPG || "",
+          experience: data.experience || {
+            companyName: "",
+            location: "",
+            startDate: null,
+            endDate: null,
+            employmentType: "",
+            skills: [],
+          },
+          resume: data.resume || null,
+          profile: data.profile || null,
+        });
+
+        await jobApplicant.save();
+        return res.json({ message: "Job Applicant created successfully" });
+      }
+
+      // Update existing job applicant
+      Object.keys(data).forEach((key) => {
+        if (data[key] !== undefined) {
+          jobApplicant[key] = data[key];
         }
-        if (data.name) {
-          recruiter.name = data.name;
-        }
-        if (data.contactNumber) {
-          recruiter.contactNumber = data.contactNumber;
-        }
-        if (data.bio) {
-          recruiter.bio = data.bio;
-        }
-        recruiter
-          .save()
-          .then(() => {
-            res.json({
-              message: "User information updated successfully",
-            });
-          })
-          .catch((err) => {
-            res.status(400).json(err);
-          });
-      })
-      .catch((err) => {
-        res.status(400).json(err);
       });
-  } else {
-    JobApplicant.findOne({ userId: user._id })
-      .then((jobApplicant) => {
-        if (jobApplicant == null) {
-          res.status(404).json({
-            message: "User does not exist",
-          });
-          return;
-        }
-        if (data.name) {
-          jobApplicant.name = data.name;
-        }
-        if (data.education) {
-          jobApplicant.education = data.education;
-        }
-        if (data.skills) {
-          jobApplicant.skills = data.skills;
-        }
-        if (data.resume) {
-          jobApplicant.resume = data.resume;
-        }
-        if (data.profile) {
-          jobApplicant.profile = data.profile;
-        }
-        console.log(jobApplicant);
-        jobApplicant
-          .save()
-          .then(() => {
-            res.json({
-              message: "User information updated successfully",
-            });
-          })
-          .catch((err) => {
-            res.status(400).json(err);
-          });
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
+
+      await jobApplicant.save();
+      return res.json({ message: "Job Applicant information updated successfully" });
+    }
+  } catch (err) {
+    console.error("Error handling user data:", err); // Log error for debugging
+    res.status(400).json({ error: "Error handling user data", details: err.message });
   }
 });
 
@@ -496,7 +542,7 @@ router.post("/jobs/:id/applications", jwtAuth, (req, res) => {
     },
   })
     .then((appliedApplication) => {
-      console.log(appliedApplication);
+      // console.log(appliedApplication );
       if (appliedApplication !== null) {
         res.status(400).json({
           message: "You have already applied for this job",
@@ -845,8 +891,8 @@ router.put("/applications/:id", jwtAuth, (req, res) => {
     }
   } else {
     if (status === "cancelled") {
-      console.log(id);
-      console.log(user._id);
+      // console.log(id);
+      // console.log(user._id);
       Application.findOneAndUpdate(
         {
           _id: id,
@@ -859,7 +905,7 @@ router.put("/applications/:id", jwtAuth, (req, res) => {
         }
       )
         .then((tmp) => {
-          console.log(tmp);
+          // console.log(tmp);
           res.json({
             message: `Application ${status} successfully`,
           });
@@ -994,7 +1040,7 @@ router.put("/rating", jwtAuth, (req, res) => {
     })
       .then((rating) => {
         if (rating === null) {
-          console.log("new rating");
+          // console.log("new rating");
           Application.countDocuments({
             userId: data.applicantId,
             recruiterId: user._id,
@@ -1160,11 +1206,11 @@ router.put("/rating", jwtAuth, (req, res) => {
       category: "job",
     })
       .then((rating) => {
-        console.log(user._id);
-        console.log(data.jobId);
-        console.log(rating);
+        // console.log(user._id);
+        // console.log(data.jobId);
+        // console.log(rating);
         if (rating === null) {
-          console.log(rating);
+          // console.log(rating);
           Application.countDocuments({
             userId: user._id,
             jobId: data.jobId,
@@ -1282,7 +1328,7 @@ router.put("/rating", jwtAuth, (req, res) => {
                     return;
                   }
                   const avg = result[0].average;
-                  console.log(avg);
+                  // console.log(avg);
 
                   Job.findOneAndUpdate(
                     {

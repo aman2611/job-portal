@@ -39,7 +39,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
         const checked = event.target.checked;
         setFormData(prev => ({
             ...prev,
-            sameAddress: checked,
+            sameCorrespondenceAddress: checked,
             correspondenceAddress: checked ? prev.permanentAddress : '',
             correspondenceCity: checked ? prev.permanentCity : '',
             correspondenceState: checked ? prev.permanentState : '',
@@ -105,6 +105,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         fullWidth
                         multiline
                         rows={2}
+                        required
                         value={formData.permanentAddress}
                         onChange={(e) => handleChange('permanentAddress', e.target.value)}
                     />
@@ -124,14 +125,15 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                     </Typography>
                     <FormControl fullWidth>
                         {/* Conditionally render InputLabel */}
-                        {formData.correspondenceState === '' && (
+                        {formData.permanentState === '' && (
                             <InputLabel>State</InputLabel>
                         )}
                         <Select
-                            value={formData.correspondenceState}
-                            onChange={(e) => handleChange('correspondenceState', e.target.value)}
-                            disabled={formData.sameAddress}
-                            label="State"  // This is necessary to keep the label functionality
+                        required
+                            value={formData.permanentState}
+                            onChange={(e) => handleChange('permanentState', e.target.value)}
+                            disabled={formData.sameCorrespondenceAddress}
+                            label="State"  
                         >
                             {states.map((state) => (
                                 <MenuItem key={state} value={state}>
@@ -159,9 +161,10 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={formData.sameAddress}
+                                required
+                                    checked={formData.sameCorrespondenceAddress}
                                     onChange={handleSameAddressChange}
-                                    name="sameAddress"
+                                    name="sameCorrespondenceAddress"
                                 />
                             }
                             label="Same Address"
@@ -176,7 +179,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         rows={2}
                         value={formData.correspondenceAddress}
                         onChange={(e) => handleChange('correspondenceAddress', e.target.value)}
-                        disabled={formData.sameAddress}
+                        disabled={formData.sameCorrespondenceAddress}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -186,7 +189,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         required
                         value={formData.correspondenceCity}
                         onChange={(e) => handleChange('correspondenceCity', e.target.value)}
-                        disabled={formData.sameAddress}
+                        disabled={formData.sameCorrespondenceAddress}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -201,7 +204,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         <Select
                             value={formData.correspondenceState}
                             onChange={(e) => handleChange('correspondenceState', e.target.value)}
-                            disabled={formData.sameAddress}
+                            disabled={formData.sameCorrespondenceAddress}
                             label="State"  // This is necessary to keep the label functionality
                         >
                             {states.map((state) => (
@@ -220,7 +223,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         required
                         value={formData.correspondencePincode}
                         onChange={(e) => handleChange('correspondencePincode', e.target.value)}
-                        disabled={formData.sameAddress}
+                        disabled={formData.sameCorrespondenceAddress}
                     />
                 </Grid>
             </Grid>

@@ -14,6 +14,7 @@ import {
   FormGroup,
   MenuItem,
   Checkbox,
+  Card,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import Rating from "@mui/lab/Rating";
@@ -125,7 +126,7 @@ const JobTile = (props) => {
             ))}
           </Grid>
         </Grid>
-        {/* <Grid item xs={3}>
+        <Grid item xs={3}>
           <Button
             variant="contained"
             color="primary"
@@ -137,7 +138,7 @@ const JobTile = (props) => {
           >
             Apply
           </Button>
-        </Grid> */}
+        </Grid>
       </Grid>
       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
         <Paper
@@ -624,8 +625,9 @@ const Home = (props) => {
   };
 
   return (
-    <>
-      <Grid
+    <Card container sx={{ width: "100%" }}>
+      {/* <Typography variant="h4" p={2} sx={{}}>Recruiter Dashboard</Typography> */}
+      <Card
         container
         item
         direction="column"
@@ -639,8 +641,8 @@ const Home = (props) => {
           justify="center"
           alignItems="center"
         >
-          <Grid item xs>
-            <Typography variant="h2">Jobs</Typography>
+          <Grid item xs padding='0 0 20px' width='100%'>
+            <Typography variant="h4">Jobs Created</Typography>
           </Grid>
           <Grid item xs display="flex" justifyContent="space-between" width="100%">
             <Grid item xs>
@@ -701,7 +703,7 @@ const Home = (props) => {
         {/* <Grid item>
           <Pagination count={10} color="primary" />
         </Grid> */}
-      </Grid>
+      </Card>
 
       <FilterPopup
         open={filterOpen}
@@ -713,7 +715,7 @@ const Home = (props) => {
           setFilterOpen(false);
         }}
       />
-    </>
+    </Card>
   );
 };
 

@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
-import { Card, TextField, Typography, Button, Grid, Snackbar, Alert } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Card, Typography, Grid, Button, Snackbar, Alert, Avatar } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-
+import axios from 'axios';
+import apiList from '../../../lib/apiList';
+import FileUploadInput from '../../../lib/FileUploadInput';
+import DescriptionIcon from "@mui/icons-material/Description";
+import FaceIcon from "@mui/icons-material/Face";
+import { useFormData } from '../Profile';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -9,67 +14,119 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(4),
         marginTop: theme.spacing(8),
     },
-})
-)
+    avatar: {
+        width: 100,
+        height: 100,
+        margin: '20px 0',
+    }
+}));
 
 const UploadDocuments = () => {
-    const [resume, setResume] = useState(null);
-    const [fileName, setFileName] = useState('');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState(''); // Separate success state
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false); // Track the submission state
+
+    const { formData, setFormData } = useFormData(); // Use context to access formData and updateFormData
 
     const classes = useStyles();
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // Validate file type
+    const handleFileChange = (key, file) => {
+        if (key === "resume") {
             const fileTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (fileTypes.includes(file.type)) {
-                setResume(file);
-                setFileName(file.name);
+            if (file && fileTypes.includes(file.type)) {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    resume: file, 
+                }));
                 setError('');
-                setOpenSnackbar(true);
             } else {
                 setError('Please upload a valid resume (PDF or Word document)');
-                setFileName('');
-                setResume(null);
-                setOpenSnackbar(true);
+            }
+        } else if (key === "profile") {
+            const imageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (file && imageTypes.includes(file.type)) {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    profile: file, 
+                }));
+                setError('');
+            } else {
+                setError('Please upload a valid image (JPEG, PNG, or GIF)');
             }
         }
+        setOpenSnackbar(true);
     };
 
-    const handleSubmit = () => {
-        if (!resume) {
-            setError('Please upload a resume');
+    const handleSubmit = async () => {
+        // Check if both resume and profile picture are uploaded
+        if (!formData.resume || !formData.profile) {
+            console.log(formData)
+            setError('Please upload both resume and profile picture');
+            setSuccess('');
             setOpenSnackbar(true);
             return;
         }
-        console.log('Uploading resume: ', resume);
+
+        // Disable the submit button while submitting
+        setIsSubmitting(true);
+        setError(''); // Clear previous error
+        setSuccess(''); // Clear previous success message
+
+        const formDataToSubmit = new FormData();
+        formDataToSubmit.append('resume', formData.resume);
+        formDataToSubmit.append('profile', formData.profile);
+
+        try {
+            const response = await axios.post(apiList.user, formDataToSubmit, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            // Handle the response based on success
+            if (response.status === 200) {
+                setSuccess('Resume and profile picture uploaded successfully!');
+                setError('');
+            }
+        } catch (err) {
+            console.error(err);
+            setError('Failed to upload documents');
+            setSuccess('');
+        } finally {
+            // Re-enable the submit button after the request finishes
+            setIsSubmitting(false);
+            setOpenSnackbar(true);
+        }
     };
 
     return (
         <Grid container style={{ padding: '20px' }}>
             <Card className={classes.card}>
-            <Typography variant="h5" gutterBottom>4. Upload Your Resume</Typography>
+                <Typography variant="h5" gutterBottom>4. Upload Your Resume and Profile Picture</Typography>
 
-                <TextField
-                    fullWidth
-                    label="Resume"
-                    variant="outlined"
-                    type="file"
-                    inputProps={{
-                        accept: '.pdf,.doc,.docx',
-                    }}
-                    onChange={handleFileChange}
-                    required
+                {/* Resume Upload */}
+                <FileUploadInput
+                    label="Resume (.pdf)"
+                    icon={<DescriptionIcon />}
+                    uploadTo={apiList.uploadResume}
+                    handleInput={handleFileChange}
+                    identifier={"resume"}
                 />
-                <Grid container justifyContent="space-between" alignItems="center" style={{ marginTop: '10px' }}>
-                    <Typography variant="body1">{fileName || 'No file chosen'}</Typography>
-                    <Button variant="text" color="secondary" onClick={() => setResume(null) && setFileName('')}>
-                        Remove
-                    </Button>
-                </Grid>
+
+                {/* Profile Picture Upload */}
+                <FileUploadInput
+                    label="Profile Picture (.jpg/.png)"
+                    icon={<FaceIcon />}
+                    uploadTo={apiList.uploadProfileImage}
+                    handleInput={handleFileChange}
+                    identifier={"profile"}
+                />
+
+                {/* Display Profile Picture */}
+                {formData.profile && (
+                    <Avatar src={URL.createObjectURL(formData.profile)} className={classes.avatar} />
+                )}
 
                 <Button
                     fullWidth
@@ -77,14 +134,14 @@ const UploadDocuments = () => {
                     color="primary"
                     style={{ marginTop: '20px' }}
                     onClick={handleSubmit}
+                    disabled={isSubmitting} // Disable the button while submitting
                 >
-                    Submit Resume
+                    {isSubmitting ? 'Submitting...' : 'Submit Resume and Profile Picture'}
                 </Button>
 
-                {/* Snackbar for error or success messages */}
                 <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
                     <Alert onClose={() => setOpenSnackbar(false)} severity={error ? 'error' : 'success'}>
-                        {error || 'Resume uploaded successfully!'}
+                        {error || success}
                     </Alert>
                 </Snackbar>
             </Card>
