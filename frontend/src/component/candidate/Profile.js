@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from "react";
 import {
   Stepper,
   Step,
@@ -9,19 +9,18 @@ import {
   Snackbar,
   Alert,
   Card,
-  Avatar,
-} from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import FileUploadInput from '../../lib/FileUploadInput'; // Ensure correct import
-import DescriptionIcon from '@mui/icons-material/Description';
-import FaceIcon from '@mui/icons-material/Face';
-import PersonalDetail from './PersonalDetails/PersonalDetail';
-import EducationDetail from './EducationDetails/EducationDetail';
-import ExperienceDetail from './ExperienceDetails/ExperienceDetail';
-import axios from 'axios'; // Make sure axios is installed
-import apiList from '../../lib/apiList'; // Adjust API endpoints
-import { SetPopupContext } from '../../App';
-import { Navigate, useNavigate } from 'react-router-dom';
+  Grid,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import PersonalDetail from "./PersonalDetails/PersonalDetail";
+import EducationDetail from "./EducationDetails/EducationDetail";
+import ExperienceDetail from "./ExperienceDetails/ExperienceDetail";
+import axios from "axios";
+import apiList from "../../lib/apiList";
+import { SetPopupContext } from "../../App";
+import { useNavigate } from "react-router-dom";
+import FileUploadInput from "../../lib/FileUploadInput";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 const FormDataContext = createContext();
 
@@ -35,74 +34,77 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(4),
     marginTop: theme.spacing(8),
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    margin: '20px 0',
-  },
-  inputBox: {
-    marginBottom: theme.spacing(2),
-  },
 }));
 
 const Profile = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const steps = ['Personal Details', 'Educational Details', 'Experience Details', 'Upload Documents'];
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [resumeUploaded, setResumeUploaded] = useState(false);
+  const [profileUploaded, setProfileUploaded] = useState(false);
+
+  const steps = [
+    "Personal Details",
+    "Educational Details",
+    "Experience Details",
+    "Upload Documents",
+  ];
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    relationship: '',
-    relationshipFirstName: '',
-    relationshipMiddleName: '',
-    relationshipLastName: '',
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    relationship: "",
+    relationshipFirstName: "",
+    relationshipMiddleName: "",
+    relationshipLastName: "",
     dob: null,
-    gender: '',
-    belongsToCategory: 'No',
-    category: '',
-    aadhar: '',
-    belongsToPwBD: 'No',
-    pwBD: '',
-    belongsToExServiceman: 'No',
-    religion: 'Hinduism',
-    email: '',
-    alternateEmail: '',
-    mobile: '',
-    officeTelephone: '',
-    permanentAddress: '',
-    permanentCity: '',
-    permanentState: '',
-    permanentPincode: '',
+    gender: "",
+    belongsToCategory: "No",
+    category: "",
+    aadhar: "",
+    belongsToPwBD: "No",
+    pwBD: "",
+    belongsToExServiceman: "No",
+    religion: "Hinduism",
+    email: "", // Initially empty but will be filled from the backend data
+    alternateEmail: "",
+    mobile: "",
+    officeTelephone: "",
+    permanentAddress: "",
+    permanentCity: "",
+    permanentState: "",
+    permanentPincode: "",
     sameAddress: false,
-    correspondenceAddress: '',
-    correspondenceCity: '',
-    correspondenceState: '',
-    correspondencePincode: '',
-    schoolName10th: '',
-    boardName10th: '',
-    yop10th: '',
-    percenatage10th: '',
-    schoolName12th: '',
-    boardName12th: '',
-    yop12th: '',
-    percentage12th: '',
-    universityGrad: '',
-    degreeGrad: '',
-    majorGrad: '',
-    percentageGrad: '',
-    yopGrad: '',
-    universityPG: '',
-    degreePG: '',
-    majorPG: '',
-    percentagePG: '',
-    yopPG: '',
+    correspondenceAddress: "",
+    correspondenceCity: "",
+    correspondenceState: "",
+    correspondencePincode: "",
+    schoolName10th: "",
+    boardName10th: "",
+    yop10th: "",
+    percenatage10th: "",
+    schoolName12th: "",
+    boardName12th: "",
+    yop12th: "",
+    percentage12th: "",
+    universityGrad: "",
+    degreeGrad: "",
+    majorGrad: "",
+    percentageGrad: "",
+    yopGrad: "",
+    universityPG: "",
+    degreePG: "",
+    majorPG: "",
+    percentagePG: "",
+    yopPG: "",
     experience: {
-      companyName: '',
-      location: '',
+      companyName: "",
+      location: "",
       startDate: null,
       endDate: null,
-      employmentType: '',
+      employmentType: "",
       skills: [],
     },
     resume: null,
@@ -110,15 +112,39 @@ const Profile = () => {
   });
 
   const navigate = useNavigate();
-
   const classes = useStyles();
+  const setPopup = useContext(SetPopupContext);
+
+  useEffect(() => {
+    // Fetch user data from backend
+    axios
+      .get(apiList.user, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        const userData = response.data;
+        setFormData((prevData) => ({
+          ...prevData,
+          email: userData.userDetails.email, // Pre-fill email
+          ...userData, // Set other data as well
+        }));
+        console.log("User data fetched:", userData);
+        console.log("User data fetched:", formData);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, []);
 
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
-      console.log(formData)
+      console.log("Final Submitted Data:", formData);
+      handleSubmit();
       setTimeout(() => {
-        navigate('./'); // Navigate to your desired path
-      }, 2000);
+        navigate("./home");
+      }, 1500);
     } else {
       setActiveStep((prev) => prev + 1);
     }
@@ -127,10 +153,25 @@ const Profile = () => {
   const handleBack = () => setActiveStep((prev) => prev - 1);
   const handleReset = () => setActiveStep(0);
 
+  const handleInput = (key, value) => {
+    setFormData({
+      ...formData,
+      [key]: value,
+    });
+    if (key === "resume") setResumeUploaded(true);
+    if (key === "profile") setProfileUploaded(true);
+  };
+
   const getStepContent = (stepIndex) => {
     switch (stepIndex) {
       case 0:
-        return <PersonalDetail />;
+        return (
+          <PersonalDetail
+            formData={formData}
+            handleInput={handleInput}
+            readOnlyFields={{ email: true }} // Email is read-only
+          />
+        );
       case 1:
         return <EducationDetail />;
       case 2:
@@ -141,68 +182,81 @@ const Profile = () => {
             <Typography variant="h5" gutterBottom>
               Upload Your Resume and Profile Picture
             </Typography>
-            <FileUploadInput
-              label="Resume (.pdf)"
-              icon={<DescriptionIcon />}
-              uploadTo={apiList.uploadResume}
-              handleInput={(key, fileUrl) => setFormData(prev => ({ ...prev, [key]: fileUrl }))}
-              identifier="resume"
-            />
-            <FileUploadInput
-              label="Profile Picture (.jpg/.png)"
-              icon={<FaceIcon />}
-              uploadTo={apiList.uploadProfileImage}
-              handleInput={(key, fileUrl) => setFormData(prev => ({ ...prev, [key]: fileUrl }))}
-              identifier="profile"
-            />
+            <Grid container spacing={4}>
+              {/* Resume Upload */}
+              <Grid item xs={12} md={6}>
+                <FileUploadInput
+                  uploadTo={apiList.uploadResume}
+                  identifier="resume"
+                  handleInput={handleInput}
+                  className={classes.uploadBox}
+                  label="Resume"
+                  icon={<UploadFileIcon />}
+                />
+              </Grid>
+
+              {/* Profile Picture Upload */}
+              <Grid item xs={12} md={6}>
+                <FileUploadInput
+                  uploadTo={apiList.uploadProfileImage}
+                  identifier="profile"
+                  handleInput={handleInput}
+                  className={classes.uploadBox}
+                  label="Profile Picture"
+                  icon={<UploadFileIcon />}
+                />
+              </Grid>
+            </Grid>
+
+            {/* Submit Button */}
             <Button
               fullWidth
               variant="contained"
               color="primary"
-              style={{ marginTop: '20px' }}
-              onClick={handleSubmit}
+              style={{ marginTop: "20px" }}
+              onClick={handleNext}
+              disabled={!resumeUploaded || !profileUploaded}
             >
               Submit Resume and Profile Picture
             </Button>
           </Card>
         );
       default:
-        return 'Unknown Step';
+        return "Unknown Step";
     }
   };
 
   const handleSubmit = () => {
-    console.log(formData)
     axios
       .put(apiList.user, formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
-        console.log(response)
-        SetPopupContext({
+        setPopup({
           open: true,
           severity: "success",
           message: response.data.message,
         });
-        // setSuccess('Profile data submitted successfully');
-        // setOpenSnackbar(true);
         handleReset();
+        setSnackbarMessage(response.data.message);
+        setSnackbarSeverity("success");
+        setOpenSnackbar(true);
       })
       .catch((error) => {
-        if (error.response) {
-          console.log('Response Error:', error.response.data);
-        } else {
-          console.log('Error:', error.message);
-        // setError('Failed to submit profile data');
-        // setOpenSnackbar(true);
-      }})
+        const errorMessage = error.response
+          ? error.response.data.message
+          : "Error submitting profile data";
+        setSnackbarMessage(errorMessage);
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
+      });
   };
 
   return (
     <FormDataContext.Provider value={{ formData, setFormData }}>
-      <Box sx={{ width: '100%', padding: 3, marginBottom: '20px' }}>
+      <Box sx={{ width: "100%", padding: 3, marginBottom: "20px" }}>
         <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((label, index) => (
             <Step key={index}>
@@ -214,28 +268,43 @@ const Profile = () => {
           {activeStep === steps.length ? null : (
             <div>
               {getStepContent(activeStep)}
-              <Box sx={{ marginTop: '20px' }}>
+              <Box sx={{ marginTop: "20px" }}>
                 <Button
                   disabled={activeStep === 0}
                   onClick={handleBack}
                   variant="outlined"
-                  sx={{ marginRight: '10px' }}
+                  sx={{ marginRight: "10px" }}
                 >
                   Back
                 </Button>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-                  sx={{ marginRight: '10px' }}
+                  onClick={handleNext}
+                  sx={{ marginRight: "10px" }}
                 >
-                  {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                  {activeStep === steps.length - 1 ? "Finish" : "Next"}
                 </Button>
               </Box>
             </div>
           )}
         </div>
       </Box>
+
+      {/* Snackbar for displaying messages */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </FormDataContext.Provider>
   );
 };

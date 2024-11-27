@@ -23,68 +23,79 @@ router.post("/signup", (req, res) => {
       const userDetails =
         user.type == "recruiter"
           ? new Recruiter({
-              userId: user._id,
-              name: data.name,
-              contactNumber: data.contactNumber,
-              bio: data.bio,
-            })
+            userId: user._id,
+            name: data.name,
+            contactNumber: data.contactNumber,
+            bio: data.bio,
+          })
           : new JobApplicant({
-              userId: user._id,
-              name: data.name,
-              education: data.education,
-              skills: data.skills,
-              rating: data.rating,
-              resume: data.resume,
-              profile: data.profile,
-            });
+            userId: user._id,
+            name: data.name,
+            education: data.education,
+            skills: data.skills,
+            rating: data.rating,
+            resume: data.resume,
+            profile: data.profile,
+          });
 
       userDetails
         .save()
-        .then(() => {
-          // Token
-          const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
-          res.json({
-            token: token,
-            type: user.type,
-          });
-        })
-        .catch((err) => {
+        .then((savedUserDetails) => {
+          // After saving userDetails, update the user document with the reference to userDetails
+          user.userDetails = savedUserDetails._id;
+
+          // Save updated user with the userDetails reference
           user
-            .delete()
+            .save()
             .then(() => {
-              res.status(400).json(err);
+              // Token
+              const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
+              res.json({
+                token: token,
+                type: user.type,
+              });
             })
             .catch((err) => {
-              res.json({ error: err });
+              res.status(400).json(err);
             });
-          err;
+        })
+            .catch((err) => {
+              user
+                .delete()
+                .then(() => {
+                  res.status(400).json(err);
+                })
+                .catch((err) => {
+                  res.json({ error: err });
+                });
+              err;
+            });
+        })
+        .catch((err) => {
+          res.status(400).json(err);
         });
-    })
-    .catch((err) => {
-      res.status(400).json(err);
     });
-});
 
-router.post("/login", (req, res, next) => {
-  passport.authenticate(
-    "local",
-    { session: false },
-    function (err, user, info) {
-      if (err) {
-        return next(err);
+  router.post("/login", (req, res, next) => {
+    passport.authenticate(
+      "local",
+      { session: false },
+      function (err, user, info) {
+        if (err) {
+          return next(err);
+        }
+        if (!user) {
+          res.status(401).json(info);
+          return;
+        }
+        // Token
+        const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
+        res.json({
+          token: token,
+          type: user.type,
+        });
       }
-      if (!user) {
-        res.status(401).json(info);
-        return;
-      }
-      // Token
-      const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
-      res.json({
-        token: token,
-        type: user.type,
-      });
-    }
-  )(req, res, next);
-});
+    )(req, res, next);
+  });
 
-module.exports = router;
+  module.exports = router;

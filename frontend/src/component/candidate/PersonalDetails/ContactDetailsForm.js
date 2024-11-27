@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, FormControl, InputLabel, MenuItem, Select, TextField, Typography, Grid, FormControlLabel, Checkbox } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-
 const useStyles = makeStyles((theme) => ({
     card: {
         padding: theme.spacing(3),
@@ -26,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
 
 const ContactDetailsForm = ({ formData, setFormData }) => {
     const classes = useStyles();
-
 
     const handleChange = (name, value) => {
         setFormData(prev => ({
@@ -52,11 +50,9 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
     ];
 
     return (
-
         <Card className={classes.card}>
             <Typography variant="h6" gutterBottom>Contact Details</Typography>
             <Grid container spacing={2}>
-
                 {/* Contact Information */}
                 <Grid item xs={12} md={6}>
                     <Typography variant="body1">Email <span style={{ color: 'red' }}>*</span></Typography>
@@ -64,7 +60,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         fullWidth
                         required
                         value={formData.email}
-                        onChange={(e) => handleChange('email', e.target.value)}
+                        disabled // Make email field read-only
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -80,8 +76,8 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                     <Typography variant="body1">Alternate Email</Typography>
                     <TextField
                         fullWidth
-                        value={formData.alternateEmail}
-                        onChange={(e) => handleChange('alternateEmail', e.target.value)}
+                        value={formData.alternateCandidateEmail}
+                        onChange={(e) => handleChange('alternateCandidateEmail', e.target.value)}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -124,16 +120,15 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         State <span style={{ color: 'red' }}>*</span>
                     </Typography>
                     <FormControl fullWidth>
-                        {/* Conditionally render InputLabel */}
                         {formData.permanentState === '' && (
                             <InputLabel>State</InputLabel>
                         )}
                         <Select
-                        required
+                            required
                             value={formData.permanentState}
                             onChange={(e) => handleChange('permanentState', e.target.value)}
                             disabled={formData.sameCorrespondenceAddress}
-                            label="State"  
+                            label="State"
                         >
                             {states.map((state) => (
                                 <MenuItem key={state} value={state}>
@@ -161,7 +156,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                required
+                                    required
                                     checked={formData.sameCorrespondenceAddress}
                                     onChange={handleSameAddressChange}
                                     name="sameCorrespondenceAddress"
@@ -197,7 +192,6 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                         State <span style={{ color: 'red' }}>*</span>
                     </Typography>
                     <FormControl fullWidth>
-                        {/* Conditionally render InputLabel */}
                         {formData.correspondenceState === '' && (
                             <InputLabel>State</InputLabel>
                         )}

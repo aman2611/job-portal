@@ -4,29 +4,24 @@ const schema = new mongoose.Schema({
   // Candidate's personal details
   firstName: {
     type: String,
-    required: true
   },
   middleName: {
     type: String
   },
   lastName: {
     type: String,
-    required: true
   },
   relationship: {
     type: String,
-    required: true
   },
   relationshipFirstName: {
     type: String,
-    required: true
   },
   relationshipMiddleName: {
     type: String
   },
   relationshipLastName: {
     type: String,
-    required: true
   },
   dob: {
     type: Date, 
@@ -64,19 +59,16 @@ const schema = new mongoose.Schema({
     type: String,
     default: 'Hinduism'
   },
-  email: {
+  candidateEmail: {
     type: String,
-    required: true,
-    // unique: true,
-    // match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address']
+    
   },
-  alternateEmail: {
+  alternateCandidateEmail: {
     type: String,
     required: false
   },
   mobile: {
     type: Number,
-    required: true,
     match: [/^\d{10}$/, 'Phone number must be a 10-digit number']
   },
   officeTelephone: {
@@ -85,11 +77,9 @@ const schema = new mongoose.Schema({
   },
   permanentAddress: {
     type: String,
-    required: true
   },
   permanentCity: {
     type: String,
-    required: true
   },
   permanentState: {
     type: String,
@@ -97,7 +87,6 @@ const schema = new mongoose.Schema({
   },
   permanentPincode: {
     type: String,
-    required: true
   },
   sameAddress: {
     type: Boolean,
@@ -218,68 +207,3 @@ const schema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("JobApplicantInfo", schema);
-
-
-// const mongoose = require("mongoose");
-
-// let schema = new mongoose.Schema(
-//   {
-//     userId: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       required: true,
-//     },
-//     name: {
-//       type: String,
-//       required: true,
-//     },
-//     education: [
-//       {
-//         institutionName: {
-//           type: String,
-//           required: true,
-//         },
-//         startYear: {
-//           type: Number,
-//           min: 1930,
-//           max: new Date().getFullYear(),
-//           required: true,
-//           validate: Number.isInteger,
-//         },
-//         endYear: {
-//           type: Number,
-//           max: new Date().getFullYear(),
-//           validate: [
-//             { validator: Number.isInteger, msg: "Year should be an integer" },
-//             {
-//               validator: function (value) {
-//                 return this.startYear <= value;
-//               },
-//               msg: "End year should be greater than or equal to Start year",
-//             },
-//           ],
-//         },
-//       },
-//     ],
-//     skills: [String],
-//     rating: {
-//       type: Number,
-//       max: 5.0,
-//       default: -1.0,
-//       validate: {
-//         validator: function (v) {
-//           return v >= -1.0 && v <= 5.0;
-//         },
-//         msg: "Invalid rating",
-//       },
-//     },
-//     resume: {
-//       type: String,
-//     },
-//     profile: {
-//       type: String,
-//     },
-//   },
-//   { collation: { locale: "en" } }
-// );
-
-// module.exports = mongoose.model("JobApplicantInfo", schema);

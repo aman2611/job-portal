@@ -86,10 +86,12 @@ const JobTile = (props) => {
           severity: "success",
           message: response.data.message,
         });
+        console.log(response)
         handleClose();
       })
       .catch((err) => {
         console.log(err.response);
+        
         setPopup({
           open: true,
           severity: "error",
@@ -104,7 +106,7 @@ const JobTile = (props) => {
   return (
     <Paper className={classes.jobTileOuter} elevation={3}>
       <Grid container>
-        <Grid container item xs={9} spacing={1} direction="column">
+        <Grid container item xs={userType() === "recruiter" ? 12 : 9} spacing={1} direction="column">
           <Grid item>
             <Typography variant="h5">{job.title}</Typography>
           </Grid>
@@ -122,23 +124,24 @@ const JobTile = (props) => {
 
           <Grid item>
             {job.skillsets.map((skill) => (
-              <Chip label={skill} style={{ marginRight: "2px" }} />
+              <Chip key={skill} label={skill} style={{ marginRight: "2px" }} />
             ))}
           </Grid>
         </Grid>
-        <Grid item xs={3}>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            onClick={() => {
-              setOpen(true);
-            }}
-            disabled={userType() === "recruiter"}
-          >
-            Apply
-          </Button>
-        </Grid>
+        {userType() !== "recruiter" && (
+          <Grid item xs={3}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              onClick={() => {
+                setOpen(true);
+              }}
+            >
+              Apply
+            </Button>
+          </Grid>
+        )}
       </Grid>
       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
         <Paper
@@ -200,13 +203,7 @@ const FilterPopup = (props) => {
             <Grid item xs={3}>
               Job Type
             </Grid>
-            <Grid
-              container
-              item
-              xs={9}
-              justify="space-around"
-            // alignItems="center"
-            >
+            <Grid container item xs={9} justifyContent="space-around">
               <Grid item>
                 <FormControlLabel
                   control={
@@ -331,7 +328,7 @@ const FilterPopup = (props) => {
                 item
                 container
                 xs={4}
-                justify="space-around"
+                justifyContent="space-around"
                 alignItems="center"
                 style={{ border: "1px solid #D1D1D1", borderRadius: "5px" }}
               >
@@ -355,7 +352,7 @@ const FilterPopup = (props) => {
                   />
                 </Grid>
                 <Grid item>
-                  <label for="salary">
+                  <label htmlFor="salary">
                     <Typography>Salary</Typography>
                   </label>
                 </Grid>
@@ -387,7 +384,7 @@ const FilterPopup = (props) => {
                 item
                 container
                 xs={4}
-                justify="space-around"
+                justifyContent="space-around"
                 alignItems="center"
                 style={{ border: "1px solid #D1D1D1", borderRadius: "5px" }}
               >
@@ -411,7 +408,7 @@ const FilterPopup = (props) => {
                   />
                 </Grid>
                 <Grid item>
-                  <label for="duration">
+                  <label htmlFor="duration">
                     <Typography>Duration</Typography>
                   </label>
                 </Grid>
@@ -443,7 +440,7 @@ const FilterPopup = (props) => {
                 item
                 container
                 xs={4}
-                justify="space-around"
+                justifyContent="space-around"
                 alignItems="center"
                 style={{ border: "1px solid #D1D1D1", borderRadius: "5px" }}
               >
@@ -467,7 +464,7 @@ const FilterPopup = (props) => {
                   />
                 </Grid>
                 <Grid item>
-                  <label for="rating">
+                  <label htmlFor="rating">
                     <Typography>Rating</Typography>
                   </label>
                 </Grid>
@@ -516,6 +513,7 @@ const FilterPopup = (props) => {
 
 const Home = (props) => {
   const [jobs, setJobs] = useState([]);
+  const [appliedJobs, setAppliedJobs] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchOptions, setSearchOptions] = useState({
     query: "",
@@ -543,6 +541,7 @@ const Home = (props) => {
   });
 
   const setPopup = useContext(SetPopupContext);
+  
   useEffect(() => {
     getData();
   }, []);
@@ -625,23 +624,17 @@ const Home = (props) => {
   };
 
   return (
-    <Card container sx={{ width: "100%" }}>
-      {/* <Typography variant="h4" p={2} sx={{}}>Recruiter Dashboard</Typography> */}
+    <Card sx={{ width: "100%" }}>
       <Card
-        container
-        item
-        direction="column"
-        alignItems="center"
         style={{ padding: "30px", minHeight: "93vh" }}
       >
         <Grid
-          item
           container
           direction="column"
           justify="center"
           alignItems="center"
         >
-          <Grid item xs padding='0 0 20px' width='100%'>
+          <Grid item xs padding="0 0 20px" width="100%">
             <Typography variant="h4">Jobs Created</Typography>
           </Grid>
           <Grid item xs display="flex" justifyContent="space-between" width="100%">
@@ -662,7 +655,7 @@ const Home = (props) => {
                 }}
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment>
+                    <InputAdornment position="end">
                       <IconButton onClick={() => getData()}>
                         <SearchIcon />
                       </IconButton>
@@ -673,7 +666,7 @@ const Home = (props) => {
                 variant="outlined"
               />
             </Grid>
-            <Grid item style={{display:"flex", gap:'5px', alignItems:'center'}}> 
+            <Grid item style={{ display: "flex", gap: "5px", alignItems: "center" }}>
               <Typography variant="body1" pr={1}>Filter</Typography>
               <IconButton onClick={() => setFilterOpen(true)}>
                 <FilterListIcon />
@@ -684,15 +677,13 @@ const Home = (props) => {
 
         <Grid
           container
-          item
-          xs
           direction="column"
           alignItems="stretch"
           justify="center"
         >
           {jobs.length > 0 ? (
             jobs.map((job) => {
-              return <JobTile job={job} />;
+              return <JobTile key={job._id} job={job} />;
             })
           ) : (
             <Typography variant="h5" style={{ textAlign: "center" }}>
@@ -700,9 +691,6 @@ const Home = (props) => {
             </Typography>
           )}
         </Grid>
-        {/* <Grid item>
-          <Pagination count={10} color="primary" />
-        </Grid> */}
       </Card>
 
       <FilterPopup

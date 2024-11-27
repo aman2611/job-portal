@@ -3,27 +3,18 @@ import {
   Button,
   Chip,
   Grid,
-  IconButton,
-  InputAdornment,
   Paper,
-  TextField,
   Typography,
   Modal,
-  Slider,
-  FormControlLabel,
-  FormGroup,
-  MenuItem,
-  Checkbox,
+  Rating,
 } from "@mui/material";
-import {makeStyles} from "@mui/styles";
-import Rating from "@mui/lab/Rating";
+import { makeStyles } from "@mui/styles";
 import axios from "axios";
 
 import { SetPopupContext } from "../App";
-
 import apiList from "../lib/apiList";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   body: {
     height: "inherit",
   },
@@ -53,13 +44,18 @@ const ApplicationTile = (props) => {
   const classes = useStyles();
   const { application } = props;
   const setPopup = useContext(SetPopupContext);
+
   const [open, setOpen] = useState(false);
-  const [rating, setRating] = useState(application.job.rating);
+  const [rating, setRating] = useState(application?.job?.rating || 0);
 
   const appliedOn = new Date(application.dateOfApplication);
-  const joinedOn = new Date(application.dateOfJoining);
+  const joinedOn = application.dateOfJoining
+    ? new Date(application.dateOfJoining)
+    : null;
 
   const fetchRating = () => {
+    if (!application?.job?._id) return;
+
     axios
       .get(`${apiList.rating}?id=${application.job._id}`, {
         headers: {
@@ -67,33 +63,32 @@ const ApplicationTile = (props) => {
         },
       })
       .then((response) => {
-        setRating(response.data.rating);
-        console.log(response.data);
+        setRating(response.data.rating || 0);
       })
       .catch((err) => {
-        // console.log(err.response);
-        console.log(err.response.data);
+        console.error("Error fetching rating:", err.response?.data || err);
         setPopup({
           open: true,
           severity: "error",
-          message: "Error",
+          message: "Failed to fetch rating",
         });
       });
   };
 
   const changeRating = () => {
+    if (!application?.job?._id) return;
+
     axios
       .put(
         apiList.rating,
-        { rating: rating, jobId: application.job._id },
+        { rating, jobId: application.job._id },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       )
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
         setPopup({
           open: true,
           severity: "success",
@@ -103,21 +98,18 @@ const ApplicationTile = (props) => {
         setOpen(false);
       })
       .catch((err) => {
-        // console.log(err.response);
-        console.log(err);
+        console.error("Error updating rating:", err.response?.data || err);
         setPopup({
           open: true,
           severity: "error",
-          message: err.response.data.message,
+          message: "Failed to update rating",
         });
         fetchRating();
         setOpen(false);
       });
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClose = () => setOpen(false);
 
   const colorSet = {
     applied: "#3454D1",
@@ -134,42 +126,47 @@ const ApplicationTile = (props) => {
       <Grid container>
         <Grid container item xs={9} spacing={1} direction="column">
           <Grid item>
-            <Typography variant="h5">{application.job.title}</Typography>
+            <Typography variant="h5">
+              {application?.job?.title || "Unknown Job"}
+            </Typography>
           </Grid>
-          <Grid item>Posted By: {application.recruiter.name}</Grid>
-          <Grid item>Role : {application.job.jobType}</Grid>
-          <Grid item>Salary : &#8377; {application.job.salary} per month</Grid>
+          <Grid item>Posted By: {application?.recruiter?.name || "Unknown"}</Grid>
+          <Grid item>Role: {application?.job?.jobType || "Not Specified"}</Grid>
           <Grid item>
-            Duration :{" "}
-            {application.job.duration !== 0
-              ? `${application.job.duration} month`
-              : `Flexible`}
+            Salary: &#8377; {application?.job?.salary || 0} per month
           </Grid>
           <Grid item>
-            {application.job.skillsets.map((skill) => (
-              <Chip label={skill} style={{ marginRight: "2px" }} />
-            ))}
+            Duration:{" "}
+            {application?.job?.duration
+              ? `${application.job.duration} month(s)`
+              : "Flexible"}
+          </Grid>
+          <Grid item>
+            Skills:{" "}
+            {application?.job?.skillsets?.length
+              ? application.job.skillsets.map((skill, index) => (
+                  <Chip key={index} label={skill} style={{ marginRight: "5px" }} />
+                ))
+              : "Not Specified"}
           </Grid>
           <Grid item>Applied On: {appliedOn.toLocaleDateString()}</Grid>
-          {application.status === "accepted" ||
-            application.status === "finished" ? (
+          {joinedOn && (
             <Grid item>Joined On: {joinedOn.toLocaleDateString()}</Grid>
-          ) : null}
+          )}
         </Grid>
         <Grid item container direction="column" xs={3}>
           <Grid item xs>
             <Paper
               className={classes.statusBlock}
               style={{
-                background: colorSet[application.status],
+                background: colorSet[application.status] || "#cccccc",
                 color: "#ffffff",
               }}
             >
               {application.status}
             </Paper>
           </Grid>
-          {application.status === "accepted" ||
-            application.status === "finished" ? (
+          {["accepted", "finished"].includes(application.status) && (
             <Grid item>
               <Button
                 variant="contained"
@@ -183,7 +180,7 @@ const ApplicationTile = (props) => {
                 Rate Job
               </Button>
             </Grid>
-          ) : null}
+          )}
         </Grid>
       </Grid>
       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
@@ -199,18 +196,16 @@ const ApplicationTile = (props) => {
           }}
         >
           <Rating
-            name="simple-controlled"
+            name="job-rating"
             style={{ marginBottom: "30px" }}
-            value={rating === -1 ? null : rating}
-            onChange={(event, newValue) => {
-              setRating(newValue);
-            }}
+            value={rating || 0}
+            onChange={(event, newValue) => setRating(newValue)}
           />
           <Button
             variant="contained"
             color="primary"
             style={{ padding: "10px 50px" }}
-            onClick={() => changeRating()}
+            onClick={changeRating}
           >
             Submit
           </Button>
@@ -220,7 +215,7 @@ const ApplicationTile = (props) => {
   );
 };
 
-const Applications = (props) => {
+const Applications = () => {
   const setPopup = useContext(SetPopupContext);
   const [applications, setApplications] = useState([]);
 
@@ -236,16 +231,14 @@ const Applications = (props) => {
         },
       })
       .then((response) => {
-        console.log(response.data);
-        setApplications(response.data);
+        setApplications(response.data || []);
       })
       .catch((err) => {
-        // console.log(err.response);
-        console.log(err.response.data);
+        console.error("Error fetching applications:", err.response?.data || err);
         setPopup({
           open: true,
           severity: "error",
-          message: "Error",
+          message: "Failed to load applications",
         });
       });
   };
@@ -253,7 +246,6 @@ const Applications = (props) => {
   return (
     <Grid
       container
-      item
       direction="column"
       alignItems="center"
       style={{ padding: "30px", minHeight: "93vh" }}
@@ -261,19 +253,11 @@ const Applications = (props) => {
       <Grid item>
         <Typography variant="h2">Applications</Typography>
       </Grid>
-      <Grid
-        container
-        item
-        xs
-        direction="column"
-        style={{ width: "100%" }}
-        alignItems="stretch"
-        justify="center"
-      >
-        {applications.length > 0 ? (
-          applications.map((obj) => (
-            <Grid item>
-              <ApplicationTile application={obj} />
+      <Grid container direction="column" style={{ width: "100%" }}>
+        {applications.length ? (
+          applications.map((application) => (
+            <Grid item key={application._id}>
+              <ApplicationTile application={application} />
             </Grid>
           ))
         ) : (

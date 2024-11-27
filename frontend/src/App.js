@@ -83,7 +83,7 @@ function App() {
               <Route path="/screening" element={<ScreeningQuestions />} />
               <Route path="/myjobs" element={<MyJobs />} />
               <Route path="/job/applications/:jobId" element={<JobApplications />} />
-              <Route path="/employees" element={<AcceptedApplicants />} />
+              {/* <Route path="/employees" element={<AcceptedApplicants />} /> */}
               {/* <Route path="*" element={<ErrorPage />} /> */}
             </Routes>
           </Grid>

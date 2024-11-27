@@ -20,8 +20,8 @@ let schema = new mongoose.Schema(
       required: true,
     },
     userDetails:{
-      type: {},
-      ref: "jobapplicantinfo",
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "JobApplicantInfo",
     },
   },
   { collation: { locale: "en" } }

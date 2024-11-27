@@ -336,7 +336,7 @@ router.get("/user", jwtAuth, (req, res) => {
   } else {
     User.findOne({ _id: user._id }).populate("userDetails")
       .then((jobApplicant) => {
-        console.log(jobApplicant)
+        console.log('jobapplicants:', jobApplicant)
         if (jobApplicant == null) {
           res.status(404).json({
             message: "User does not exist",
@@ -352,169 +352,339 @@ router.get("/user", jwtAuth, (req, res) => {
 });
 
 // get user details from id
-router.get("/user/:id", jwtAuth, (req, res) => {
-  User.findOne({ _id: req.params.id })
-    .then((userData) => {
-      if (userData === null) {
-        res.status(404).json({
-          message: "User does not exist",
+// router.get("/user/:id", jwtAuth, (req, res) => {
+//   User.findOne({ _id: req.params.id })
+//     .then((userData) => {
+//       if (userData === null) {
+//         res.status(404).json({
+//           message: "User does not exist",
+//         });
+//         return;
+//       }
+
+//       if (userData.type === "recruiter") {
+//         Recruiter.findOne({ userId: userData._id })
+//           .then((recruiter) => {
+//             if (recruiter === null) {
+//               res.status(404).json({
+//                 message: "User does not exist",
+//               });
+//               return;
+//             }
+//             res.json(recruiter);
+//           })
+//           .catch((err) => {
+//             res.status(400).json(err);
+//           });
+//       } else {
+//         JobApplicant.findOne({ userId: userData._id })
+//           .then((jobApplicant) => {
+//             if (jobApplicant === null) {
+//               res.status(404).json({
+//                 message: "User does not exist",
+//               });
+//               return;
+//             }
+//             res.json(jobApplicant);
+//           })
+//           .catch((err) => {
+//             res.status(400).json(err);
+//           });
+//       }
+//     })
+//     .catch((err) => {
+//       res.status(400).json(err);
+//     });
+// });
+
+router.get("/user/:id", jwtAuth, async (req, res) => {
+  try {
+    // Find the user by ID
+    const userData = await User.findOne({ _id: req.params.id });
+
+    if (!userData) {
+      return res.status(404).json({
+        message: "User does not exist",
+      });
+    }
+
+    if (userData.type === "recruiter") {
+      // Find recruiter details
+      const recruiter = await Recruiter.findOne({ userId: userData._id });
+
+      if (!recruiter) {
+        return res.status(404).json({
+          message: "Recruiter details not found",
         });
-        return;
       }
 
-      if (userData.type === "recruiter") {
-        Recruiter.findOne({ userId: userData._id })
-          .then((recruiter) => {
-            if (recruiter === null) {
-              res.status(404).json({
-                message: "User does not exist",
-              });
-              return;
-            }
-            res.json(recruiter);
-          })
-          .catch((err) => {
-            res.status(400).json(err);
-          });
-      } else {
-        JobApplicant.findOne({ userId: userData._id })
-          .then((jobApplicant) => {
-            if (jobApplicant === null) {
-              res.status(404).json({
-                message: "User does not exist",
-              });
-              return;
-            }
-            res.json(jobApplicant);
-          })
-          .catch((err) => {
-            res.status(400).json(err);
-          });
+      return res.json(recruiter);
+    } else if (userData.type === "applicant") {
+      // Find job applicant details
+      const jobApplicant = await JobApplicant.findOne({ userId: userData._id });
+
+      if (!jobApplicant) {
+        return res.status(404).json({
+          message: "Job applicant details not found",
+        });
       }
-    })
-    .catch((err) => {
-      res.status(400).json(err);
+
+      return res.json(jobApplicant);
+    } else {
+      return res.status(400).json({
+        message: "Invalid user type",
+      });
+    }
+  } catch (err) {
+    console.error("Error fetching user details:", err);
+    return res.status(500).json({
+      message: "An error occurred while fetching user details",
+      error: err.message,
     });
+  }
 });
 
+
+
 // update user details
+// router.put("/user", jwtAuth, async (req, res) => {
+//   const user = req.user;
+//   const data = req.body;
+
+//   console.log("Incoming data:", data); // Log the incoming data for debugging
+
+//   try {
+//     if (user.type === "recruiter") {
+//       // Handle recruiter updates
+//       let recruiter = await Recruiter.findOne({ userId: user._id });
+
+//       // If recruiter profile doesn't exist, create a new one
+//       if (!recruiter) {
+//         recruiter = new Recruiter({
+//           userId: user._id,
+//           name: data.name || "",
+//           contactNumber: data.contactNumber || "",
+//           bio: data.bio || "",
+//         });
+
+//         await recruiter.save();
+//         return res.json({ message: "Recruiter profile created successfully" });
+//       }
+
+//       // Update existing recruiter profile
+//       recruiter.name = data.name || recruiter.name;
+//       recruiter.contactNumber = data.contactNumber || recruiter.contactNumber;
+//       recruiter.bio = data.bio || recruiter.bio;
+
+//       await recruiter.save();
+//       return res.json({ message: "Recruiter profile updated successfully" });
+//     } else {
+//       // Handle job applicant updates
+//       let jobApplicant = await JobApplicant.findOne({ userId: user._id });
+
+//       // If job applicant profile doesn't exist, create a new one
+//       if (!jobApplicant) {
+//         jobApplicant = new JobApplicant({
+//           userId: user._id,
+//           firstName: data.firstName || "",
+//           middleName: data.middleName || "",
+//           lastName: data.lastName || "",
+//           relationship: data.relationship || "",
+//           relationshipFirstName: data.relationshipFirstName || "",
+//           relationshipMiddleName: data.relationshipMiddleName || "",
+//           relationshipLastName: data.relationshipLastName || "",
+//           dob: data.dob || null,
+//           gender: data.gender || "",
+//           belongsToCategory: data.belongsToCategory || "No",
+//           category: data.category || "",
+//           aadhar: data.aadhar || "",
+//           belongsToPwBD: data.belongsToPwBD || "No",
+//           pwBD: data.pwBD || "",
+//           belongsToExServiceman: data.belongsToExServiceman || "No",
+//           religion: data.religion || "Hinduism",
+//           email: data.email || "",
+//           alternateEmail: data.alternateEmail || "",
+//           mobile: data.mobile || "",
+//           officeTelephone: data.officeTelephone || "",
+//           permanentAddress: data.permanentAddress || "",
+//           permanentCity: data.permanentCity || "",
+//           permanentState: data.permanentState || "",
+//           permanentPincode: data.permanentPincode || "",
+//           sameAddress: data.sameAddress || false,
+//           correspondenceAddress: data.correspondenceAddress || "",
+//           correspondenceCity: data.correspondenceCity || "",
+//           correspondenceState: data.correspondenceState || "",
+//           correspondencePincode: data.correspondencePincode || "",
+//           schoolName10th: data.schoolName10th || "",
+//           boardName10th: data.boardName10th || "",
+//           yop10th: data.yop10th || "",
+//           percentage10th: data.percentage10th || "",
+//           schoolName12th: data.schoolName12th || "",
+//           boardName12th: data.boardName12th || "",
+//           yop12th: data.yop12th || "",
+//           percentage12th: data.percentage12th || "",
+//           universityGrad: data.universityGrad || "",
+//           degreeGrad: data.degreeGrad || "",
+//           majorGrad: data.majorGrad || "",
+//           percentageGrad: data.percentageGrad || "",
+//           yopGrad: data.yopGrad || "",
+//           universityPG: data.universityPG || "",
+//           degreePG: data.degreePG || "",
+//           majorPG: data.majorPG || "",
+//           percentagePG: data.percentagePG || "",
+//           yopPG: data.yopPG || "",
+//           experience: data.experience || {
+//             companyName: "",
+//             location: "",
+//             startDate: null,
+//             endDate: null,
+//             employmentType: "",
+//             skills: [],
+//           },
+//           resume: data.resume || null,
+//           profile: data.profile || null,
+//         });
+
+//         await jobApplicant.save();
+//         return res.json({ message: "Job Applicant profile created successfully" });
+//       }
+
+//       // Update existing job applicant profile with provided data
+//       Object.keys(data).forEach((key) => {
+//         if (data[key] !== undefined) {
+//           jobApplicant[key] = data[key];  // Update fields only if provided
+//         }
+//       });
+
+//       await jobApplicant.save();
+//       return res.json({ message: "Job Applicant profile updated successfully" });
+//     }
+//   } catch (err) {
+//     console.error("Error handling user data:", err); // Log error for debugging
+//     res.status(400).json({ error: "Error handling user data", details: err.message });
+//   }
+// });
+
 router.put("/user", jwtAuth, async (req, res) => {
-  const user = req.user;
-  const data = req.body;
+  const user = req.user; // Get the authenticated user
+  const data = req.body; // Get the data from the request body
 
   console.log("Incoming data:", data); // Log the incoming data for debugging
 
   try {
+    // Check if the user is a recruiter
     if (user.type === "recruiter") {
-      // Handle recruiter updates
-      let recruiter = await Recruiter.findOne({ userId: user._id });
-
-      // if (!recruiter) {
-      //   // Create new recruiter if not found
-      //   recruiter = new Recruiter({
-      //     userId: user._id,
-      //     name: data.name || "",
-      //     contactNumber: data.contactNumber || "",
-      //     bio: data.bio || "",
-      //   });
-
-      //   await recruiter.save();
-      //   return res.json({ message: "Recruiter created successfully" });
-      // }
-
-      // Update existing recruiter
-      recruiter.name = data.name || recruiter.name;
-      recruiter.contactNumber = data.contactNumber || recruiter.contactNumber;
-      recruiter.bio = data.bio || recruiter.bio;
-
-      await recruiter.save();
-      return res.json({ message: "Recruiter information updated successfully" });
-    } else {
-      // Handle job applicant updates
-      let jobApplicant = await JobApplicant.findOne({ userId: user._id });
-
-      if (!jobApplicant) {
-        // Create new job applicant if not found
-        jobApplicant = new JobApplicant({
-          userId: user._id,
-          firstName: data.firstName || "",
-          middleName: data.middleName || "",
-          lastName: data.lastName || "",
-          relationship: data.relationship || "",
-          relationshipFirstName: data.relationshipFirstName || "",
-          relationshipMiddleName: data.relationshipMiddleName || "",
-          relationshipLastName: data.relationshipLastName || "",
-          dob: data.dob || null,
-          gender: data.gender || "",
-          belongsToCategory: data.belongsToCategory || "No",
-          category: data.category || "",
-          aadhar: data.aadhar || "",
-          belongsToPwBD: data.belongsToPwBD || "No",
-          pwBD: data.pwBD || "",
-          belongsToExServiceman: data.belongsToExServiceman || "No",
-          religion: data.religion || "Hinduism",
-          email: data.email || "",
-          alternateEmail: data.alternateEmail || "",
-          mobile: data.mobile || "",
-          officeTelephone: data.officeTelephone || "",
-          permanentAddress: data.permanentAddress || "",
-          permanentCity: data.permanentCity || "",
-          permanentState: data.permanentState || "",
-          permanentPincode: data.permanentPincode || "",
-          sameAddress: data.sameAddress || false,
-          correspondenceAddress: data.correspondenceAddress || "",
-          correspondenceCity: data.correspondenceCity || "",
-          correspondenceState: data.correspondenceState || "",
-          correspondencePincode: data.correspondencePincode || "",
-          schoolName10th: data.schoolName10th || "",
-          boardName10th: data.boardName10th || "",
-          yop10th: data.yop10th || "",
-          percenatage10th: data.percenatage10th || "",
-          schoolName12th: data.schoolName12th || "",
-          boardName12th: data.boardName12th || "",
-          yop12th: data.yop12th || "",
-          percentage12th: data.percentage12th || "",
-          universityGrad: data.universityGrad || "",
-          degreeGrad: data.degreeGrad || "",
-          majorGrad: data.majorGrad || "",
-          percentageGrad: data.percentageGrad || "",
-          yopGrad: data.yopGrad || "",
-          universityPG: data.universityPG || "",
-          degreePG: data.degreePG || "",
-          majorPG: data.majorPG || "",
-          percentagePG: data.percentagePG || "",
-          yopPG: data.yopPG || "",
-          experience: data.experience || {
-            companyName: "",
-            location: "",
-            startDate: null,
-            endDate: null,
-            employmentType: "",
-            skills: [],
+      // Update or create recruiter profile using the _id of the user
+      let recruiter = await RecruiterInfo.findOneAndUpdate(
+        { _id: user._id }, // Find by _id
+        {
+          $set: {
+            name: data.name || "",
+            contactNumber: data.contactNumber || "",
+            bio: data.bio || "",
           },
-          resume: data.resume || null,
-          profile: data.profile || null,
-        });
+        },
+        { new: true, upsert: true } // If not found, create a new one
+      );
 
-        await jobApplicant.save();
-        return res.json({ message: "Job Applicant created successfully" });
-      }
-
-      // Update existing job applicant
-      Object.keys(data).forEach((key) => {
-        if (data[key] !== undefined) {
-          jobApplicant[key] = data[key];
-        }
+      // Update the UserAuth model with the recruiter profile reference
+      await User.findByIdAndUpdate(user._id, {
+        $set: { userDetails: recruiter._id }, // Set the recruiter profile ID in User
       });
 
-      await jobApplicant.save();
-      return res.json({ message: "Job Applicant information updated successfully" });
+      return res.json({ message: "Recruiter profile updated/created successfully" });
+    } else {
+      // Handle job applicant profile updates
+      let jobApplicant = await JobApplicant.findOneAndUpdate(
+        { _id: user._id }, // Find job applicant profile using _id
+        {
+          $set: {
+            firstName: data.firstName || "",
+            middleName: data.middleName || "",
+            lastName: data.lastName || "",
+            email: data.email || user.email, // Ensure email is updated correctly
+            candidateEmail: data.email || user.email, // Set candidateEmail in the profile
+            userId: user._id,
+            relationship: data.relationship || "",
+            relationshipFirstName: data.relationshipFirstName || "",
+            relationshipMiddleName: data.relationshipMiddleName || "",
+            relationshipLastName: data.relationshipLastName || "",
+            dob: data.dob || null,
+            gender: data.gender || "",
+            belongsToCategory: data.belongsToCategory || "No",
+            category: data.category || "",
+            aadhar: data.aadhar || "",
+            belongsToPwBD: data.belongsToPwBD || "No",
+            pwBD: data.pwBD || "",
+            belongsToExServiceman: data.belongsToExServiceman || "No",
+            religion: data.religion || "Hinduism",
+            email: data.email || "",
+            alternateEmail: data.alternateEmail || "",
+            mobile: data.mobile || "",
+            officeTelephone: data.officeTelephone || "",
+            permanentAddress: data.permanentAddress || "",
+            permanentCity: data.permanentCity || "",
+            permanentState: data.permanentState || "",
+            permanentPincode: data.permanentPincode || "",
+            sameAddress: data.sameAddress || false,
+            correspondenceAddress: data.correspondenceAddress || "",
+            correspondenceCity: data.correspondenceCity || "",
+            correspondenceState: data.correspondenceState || "",
+            correspondencePincode: data.correspondencePincode || "",
+            schoolName10th: data.schoolName10th || "",
+            boardName10th: data.boardName10th || "",
+            yop10th: data.yop10th || "",
+            percentage10th: data.percentage10th || "",
+            schoolName12th: data.schoolName12th || "",
+            boardName12th: data.boardName12th || "",
+            yop12th: data.yop12th || "",
+            percentage12th: data.percentage12th || "",
+            universityGrad: data.universityGrad || "",
+            degreeGrad: data.degreeGrad || "",
+            majorGrad: data.majorGrad || "",
+            percentageGrad: data.percentageGrad || "",
+            yopGrad: data.yopGrad || "",
+            universityPG: data.universityPG || "",
+            degreePG: data.degreePG || "",
+            majorPG: data.majorPG || "",
+            percentagePG: data.percentagePG || "",
+            yopPG: data.yopPG || "",
+            experience: data.experience || {
+              companyName: "",
+              location: "",
+              startDate: null,
+              endDate: null,
+              employmentType: "",
+              skills: [],
+            },
+            resume: data.resume || null,
+            profile: data.profile || null,
+          }
+        },
+        { new: true, upsert: true } // If not found, create a new one
+      );
+
+      // Ensure that the email is updated in both JobApplicant and UserAuth
+      if (data.email && data.email !== user.email) {
+        await UserAuth.findByIdAndUpdate(user._id, {
+          $set: { email: data.email },  // Update email in UserAuth
+        });
+        jobApplicant.candidateEmail = data.email;  // Update candidateEmail in JobApplicant
+      }
+
+      await jobApplicant.save(); // Save job applicant profile
+      return res.json({ message: "Job Applicant profile updated/created successfully" });
     }
   } catch (err) {
     console.error("Error handling user data:", err); // Log error for debugging
     res.status(400).json({ error: "Error handling user data", details: err.message });
   }
 });
+
+
+
+
+
 
 // apply for a job [todo: test: done]
 router.post("/jobs/:id/applications", jwtAuth, (req, res) => {
@@ -633,56 +803,176 @@ router.post("/jobs/:id/applications", jwtAuth, (req, res) => {
 });
 
 // recruiter gets applications for a particular job [pagination] [todo: test: done]
+// router.get("/jobs/:id/applications", jwtAuth, (req, res) => {
+//   const user = req.user;
+//   if (user.type != "recruiter") {
+//     res.status(401).json({
+//       message: "You don't have permissions to view job applications",
+//     });
+//     return;
+//   }
+//   const jobId = req.params.id;
+
+//   // const page = parseInt(req.query.page) ? parseInt(req.query.page) : 1;
+//   // const limit = parseInt(req.query.limit) ? parseInt(req.query.limit) : 10;
+//   // const skip = page - 1 >= 0 ? (page - 1) * limit : 0;
+
+//   let findParams = {
+//     jobId: jobId,
+//     recruiterId: user._id,
+//   };
+
+//   let sortParams = {};
+
+//   if (req.query.status) {
+//     findParams = {
+//       ...findParams,
+//       status: req.query.status,
+//     };
+//   }
+
+//   Application.find(findParams)
+//     .collation({ locale: "en" })
+//     .sort(sortParams)
+//     // .skip(skip)
+//     // .limit(limit)
+//     .then((applications) => {
+//       res.json(applications);
+//     })
+//     .catch((err) => {
+//       res.status(400).json(err);
+//     });
+// });
+
 router.get("/jobs/:id/applications", jwtAuth, (req, res) => {
   const user = req.user;
-  if (user.type != "recruiter") {
-    res.status(401).json({
-      message: "You don't have permissions to view job applications",
-    });
-    return;
-  }
   const jobId = req.params.id;
 
-  // const page = parseInt(req.query.page) ? parseInt(req.query.page) : 1;
-  // const limit = parseInt(req.query.limit) ? parseInt(req.query.limit) : 10;
-  // const skip = page - 1 >= 0 ? (page - 1) * limit : 0;
+  console.log('User:', user);  // Debugging line
+  console.log('Job ID:', jobId);  // Debugging line
 
-  let findParams = {
-    jobId: jobId,
-    recruiterId: user._id,
-  };
-
-  let sortParams = {};
-
-  if (req.query.status) {
-    findParams = {
-      ...findParams,
-      status: req.query.status,
+  // If the user is a recruiter, show all applicants for the job
+  if (user.type === "recruiter") {
+    let findParams = {
+      jobId: jobId,
+      recruiterId: user._id,
     };
-  }
 
-  Application.find(findParams)
-    .collation({ locale: "en" })
-    .sort(sortParams)
-    // .skip(skip)
-    // .limit(limit)
-    .then((applications) => {
-      res.json(applications);
+    if (req.query.status) {
+      findParams = {
+        ...findParams,
+        status: req.query.status,
+      };
+    }
+
+    Application.find(findParams)
+      .collation({ locale: "en" })
+      .sort({})
+      .then((applications) => {
+        res.json(applications);
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+
+  } else if (user.type === "applicant") {
+    // If the user is a candidate, show only their application status for the job
+    Application.findOne({
+      jobId: jobId,
+      userId: user._id,  // Check if the candidate applied to this job
     })
-    .catch((err) => {
-      res.status(400).json(err);
+      .then((application) => {
+        if (!application) {
+          return res.status(404).json({ message: "You have not applied for this job." });
+        }
+        res.json({
+          status: application.status, // This will be 'applied'
+          jobId: application.jobId,
+          userId: application.userId,
+          applicationId: application._id,
+          dateOfApplication: application.dateOfApplication,
+          sop: application.sop, // You can also return the SOP
+        });
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({
+      message: "Invalid user type.",
     });
+  }
 });
 
+
 // recruiter/applicant gets all his applications [pagination]
+// router.get("/applications", jwtAuth, (req, res) => {
+//   const user = req.user;
+
+//   // const page = parseInt(req.query.page) ? parseInt(req.query.page) : 1;
+//   // const limit = parseInt(req.query.limit) ? parseInt(req.query.limit) : 10;
+//   // const skip = page - 1 >= 0 ? (page - 1) * limit : 0;
+
+//   Application.aggregate([
+//     {
+//       $lookup: {
+//         from: "jobapplicantinfos",
+//         localField: "userId",
+//         foreignField: "userId",
+//         as: "jobApplicant",
+//       },
+//     },
+//     { $unwind: "$jobApplicant" },
+//     {
+//       $lookup: {
+//         from: "jobs",
+//         localField: "jobId",
+//         foreignField: "_id",
+//         as: "job",
+//       },
+//     },
+//     { $unwind: "$job" },
+//     {
+//       $lookup: {
+//         from: "recruiterinfos",
+//         localField: "recruiterId",
+//         foreignField: "userId",
+//         as: "recruiter",
+//       },
+//     },
+//     { $unwind: "$recruiter" },
+//     {
+//       $match: {
+//         [user.type === "recruiter" ? "recruiterId" : "userId"]: user._id,
+//       },
+//     },
+//     {
+//       $sort: {
+//         dateOfApplication: -1,
+//       },
+//     },
+//   ])
+//     .then((applications) => {
+//       res.json(applications);
+//       console.log("applications:", applications)
+//     })
+//     .catch((err) => {
+//       res.status(400).json(err);
+//     });
+// });
+
 router.get("/applications", jwtAuth, (req, res) => {
   const user = req.user;
 
-  // const page = parseInt(req.query.page) ? parseInt(req.query.page) : 1;
-  // const limit = parseInt(req.query.limit) ? parseInt(req.query.limit) : 10;
-  // const skip = page - 1 >= 0 ? (page - 1) * limit : 0;
-
   Application.aggregate([
+    {
+      $match: {
+        $or: [
+          { recruiterId: user._id }, // For recruiters
+          { userId: user._id },     // For candidates
+        ],
+      },
+    },
     {
       $lookup: {
         from: "jobapplicantinfos",
@@ -691,7 +981,7 @@ router.get("/applications", jwtAuth, (req, res) => {
         as: "jobApplicant",
       },
     },
-    { $unwind: "$jobApplicant" },
+    { $unwind: { path: "$jobApplicant", preserveNullAndEmptyArrays: true } },
     {
       $lookup: {
         from: "jobs",
@@ -700,7 +990,7 @@ router.get("/applications", jwtAuth, (req, res) => {
         as: "job",
       },
     },
-    { $unwind: "$job" },
+    { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
     {
       $lookup: {
         from: "recruiterinfos",
@@ -709,12 +999,7 @@ router.get("/applications", jwtAuth, (req, res) => {
         as: "recruiter",
       },
     },
-    { $unwind: "$recruiter" },
-    {
-      $match: {
-        [user.type === "recruiter" ? "recruiterId" : "userId"]: user._id,
-      },
-    },
+    { $unwind: { path: "$recruiter", preserveNullAndEmptyArrays: true } },
     {
       $sort: {
         dateOfApplication: -1,
@@ -722,12 +1007,15 @@ router.get("/applications", jwtAuth, (req, res) => {
     },
   ])
     .then((applications) => {
+      console.log("Aggregated Applications:", applications);
       res.json(applications);
     })
     .catch((err) => {
+      console.error("Aggregation Error:", err);
       res.status(400).json(err);
     });
 });
+
 
 // update status of application: [Applicant: Can cancel, Recruiter: Can do everything] [todo: test: done]
 router.put("/applications/:id", jwtAuth, (req, res) => {
@@ -923,109 +1211,226 @@ router.put("/applications/:id", jwtAuth, (req, res) => {
 
 // get a list of final applicants for current job : recruiter
 // get a list of final applicants for all his jobs : recuiter
-router.get("/applicants", jwtAuth, (req, res) => {
+// router.get("/applicants", jwtAuth, (req, res) => {
+//   const user = req.user;
+//   if (user.type === "recruiter") {
+//     let findParams = {
+//       recruiterId: user._id,
+//     };
+//     if (req.query.jobId) {
+//       findParams = {
+//         ...findParams,
+//         jobId: new mongoose.Types.ObjectId(req.query.jobId),
+//       };
+//     }
+//     if (req.query.status) {
+//       if (Array.isArray(req.query.status)) {
+//         findParams = {
+//           ...findParams,
+//           status: { $in: req.query.status },
+//         };
+//       } else {
+//         findParams = {
+//           ...findParams,
+//           status: req.query.status,
+//         };
+//       }
+//     }
+//     let sortParams = {};
+
+//     if (!req.query.asc && !req.query.desc) {
+//       sortParams = { _id: 1 };
+//     }
+
+//     if (req.query.asc) {
+//       if (Array.isArray(req.query.asc)) {
+//         req.query.asc.map((key) => {
+//           sortParams = {
+//             ...sortParams,
+//             [key]: 1,
+//           };
+//         });
+//       } else {
+//         sortParams = {
+//           ...sortParams,
+//           [req.query.asc]: 1,
+//         };
+//       }
+//     }
+
+//     if (req.query.desc) {
+//       if (Array.isArray(req.query.desc)) {
+//         req.query.desc.map((key) => {
+//           sortParams = {
+//             ...sortParams,
+//             [key]: -1,
+//           };
+//         });
+//       } else {
+//         sortParams = {
+//           ...sortParams,
+//           [req.query.desc]: -1,
+//         };
+//       }
+//     }
+
+//     Application.aggregate([
+//       {
+//         $lookup: {
+//           from: "jobapplicantinfos",
+//           localField: "userId",
+//           foreignField: "userId",
+//           as: "jobApplicant",
+//         },
+//       },
+//       { $unwind: "$jobApplicant" },
+//       {
+//         $lookup: {
+//           from: "jobs",
+//           localField: "jobId",
+//           foreignField: "_id",
+//           as: "job",
+//         },
+//       },
+//       { $unwind: "$job" },
+//       { $match: findParams },
+//       { $sort: sortParams },
+//     ])
+//       .then((applications) => {
+//         if (applications.length === 0) {
+//           res.status(404).json({
+//             message: "No applicants found",
+//           });
+//           return;
+//         }
+//         res.json(applications);
+//       })
+//       .catch((err) => {
+//         res.status(400).json(err);
+//       });
+//   } else {
+//     res.status(400).json({
+//       message: "You are not allowed to access applicants list",
+//     });
+//   }
+// });
+
+router.get("/applicants", jwtAuth, async (req, res) => {
   const user = req.user;
-  if (user.type === "recruiter") {
-    let findParams = {
-      recruiterId: user._id,
-    };
-    if (req.query.jobId) {
-      findParams = {
-        ...findParams,
-        jobId: new mongoose.Types.ObjectId(req.query.jobId),
-      };
-    }
-    if (req.query.status) {
-      if (Array.isArray(req.query.status)) {
-        findParams = {
-          ...findParams,
-          status: { $in: req.query.status },
-        };
-      } else {
-        findParams = {
-          ...findParams,
-          status: req.query.status,
-        };
-      }
-    }
-    let sortParams = {};
 
-    if (!req.query.asc && !req.query.desc) {
-      sortParams = { _id: 1 };
-    }
-
-    if (req.query.asc) {
-      if (Array.isArray(req.query.asc)) {
-        req.query.asc.map((key) => {
-          sortParams = {
-            ...sortParams,
-            [key]: 1,
-          };
-        });
-      } else {
-        sortParams = {
-          ...sortParams,
-          [req.query.asc]: 1,
-        };
-      }
-    }
-
-    if (req.query.desc) {
-      if (Array.isArray(req.query.desc)) {
-        req.query.desc.map((key) => {
-          sortParams = {
-            ...sortParams,
-            [key]: -1,
-          };
-        });
-      } else {
-        sortParams = {
-          ...sortParams,
-          [req.query.desc]: -1,
-        };
-      }
-    }
-
-    Application.aggregate([
-      {
-        $lookup: {
-          from: "jobapplicantinfos",
-          localField: "userId",
-          foreignField: "userId",
-          as: "jobApplicant",
-        },
-      },
-      { $unwind: "$jobApplicant" },
-      {
-        $lookup: {
-          from: "jobs",
-          localField: "jobId",
-          foreignField: "_id",
-          as: "job",
-        },
-      },
-      { $unwind: "$job" },
-      { $match: findParams },
-      { $sort: sortParams },
-    ])
-      .then((applications) => {
-        if (applications.length === 0) {
-          res.status(404).json({
-            message: "No applicants found",
-          });
-          return;
-        }
-        res.json(applications);
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
-  } else {
-    res.status(400).json({
+  // Check if the user is a recruiter
+  if (user.type !== "recruiter") {
+    return res.status(400).json({
       message: "You are not allowed to access applicants list",
     });
   }
+
+  try {
+    // Initialize filter parameters
+    let findParams = { recruiterId: user._id };
+
+    // Filter by jobId if provided
+    if (req.query.jobId) {
+      try {
+        findParams.jobId = new mongoose.Types.ObjectId(req.query.jobId);
+      } catch (err) {
+        return res.status(400).json({ message: "Invalid jobId format" });
+      }
+    }
+
+    // Apply status filter if provided
+    if (req.query.status) {
+      if (Array.isArray(req.query.status)) {
+        findParams.status = { $in: req.query.status };
+      } else {
+        findParams.status = req.query.status;
+      }
+    }
+
+    // Sorting parameters
+    let sortParams = {};
+    if (req.query.asc) {
+      sortParams[req.query.asc] = 1;
+    }
+    if (req.query.desc) {
+      sortParams[req.query.desc] = -1;
+    }
+    if (!req.query.asc && !req.query.desc) {
+      sortParams._id = 1; // Default sorting by ID
+    }
+
+    // Aggregation pipeline
+    const applications = await Application.aggregate([
+      // Lookup job applicant details from jobapplicantinfos collection
+      {
+        $lookup: {
+          from: "jobapplicantinfos",  // Collection name for applicants
+          localField: "userId",        // Field in Application to match
+          foreignField: "_id",      // Field in jobapplicantinfos to match
+          as: "jobApplicant",          // Result alias for matched data
+        },
+      },
+      { $unwind: { path: "$jobApplicant", preserveNullAndEmptyArrays: true } },
+
+      // Lookup job details from jobs collection
+      {
+        $lookup: {
+          from: "jobs",               // Collection name for jobs
+          localField: "jobId",        // Field in Application to match
+          foreignField: "_id",        // Field in jobs to match
+          as: "job",                  // Result alias for matched data
+        },
+      },
+      { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
+
+      // Apply filters (jobId, status)
+      { $match: findParams },
+
+      // Sorting the results based on query params
+      { $sort: sortParams },
+
+      // Project only necessary fields
+      {
+        $project: {
+          _id: 1,
+          jobId: 1,
+          userId: 1,
+          recruiterId: 1,
+          status: 1,
+          dateOfApplication: 1,
+          sop: 1,
+          "jobApplicant.firstName": 1,
+          "jobApplicant.candidateEmail": 1,    // Include email of the applicant
+          "jobApplicant.mobile": 1,    // Include phone of the applicant
+          // "jobApplicant.skills": 1,   // Include skills of the applicant
+          "jobApplicant.education": 1, // Include education of the applicant
+          "jobApplicant.profile": 1,  // Include profile picture URL
+          "jobApplicant.resume": 1,   // Include resume URL
+          // "jobApplicant.rating": 1,   // Include applicant's rating
+          // "job.title": 1,             // Include job title
+          // "job.description": 1,       // Include job description
+        },
+      },
+    ]);
+
+    console.log("Applications Result:", applications); // Log the result for debugging
+
+    // If no applicants found, return an error
+    if (!applications || applications.length === 0) {
+      return res.status(404).json({ message: "No applicants found" });
+    }
+
+    // Respond with the aggregated applications data
+    res.json(applications);
+  } catch (err) {
+    console.error("Error in Aggregation:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 });
+
+
+
+
 
 // to add or update a rating [todo: test]
 router.put("/rating", jwtAuth, (req, res) => {
