@@ -3,8 +3,6 @@ import { Box, Card, CardContent, CardHeader, Divider, Typography } from '@mui/ma
 import JobDetails from './JobDetailsForm';
 import ScreeningQuestions from './ScreeningQuestions';
 
-// JobDataContext setup
-// export const JobDataContext = createContext();
 
 export const JobDataContext = createContext({
   jobData: {

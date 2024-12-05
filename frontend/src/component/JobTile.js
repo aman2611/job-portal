@@ -46,20 +46,17 @@ const JobTile = ({ job, appliedJobs }) => {
   const [sop, setSop] = useState("");
   const [isApplied, setIsApplied] = useState(false);
 
-  // Check if job is already applied
   useEffect(() => {
     if (appliedJobs?.some((appliedJob) => appliedJob.job._id === job._id)) {
       setIsApplied(true);
     }
   }, [appliedJobs, job._id]);
 
-  // Close the SOP modal
   const handleClose = () => {
     setOpen(false);
     setSop("");
   };
 
-  // Handle the job application
   const handleApply = () => {
     axios
       .post(
@@ -90,10 +87,8 @@ const JobTile = ({ job, appliedJobs }) => {
       });
   };
 
-  // Format job deadline
   const deadline = new Date(job.deadline).toLocaleDateString();
 
-  // Job description rendering
   const renderSkills = () => {
     if (!job.skillsets || job.skillsets.length === 0) return null;
     return job.skillsets.map((skill) => (

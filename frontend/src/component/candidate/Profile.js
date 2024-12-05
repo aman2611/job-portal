@@ -68,7 +68,7 @@ const Profile = () => {
     pwBD: "",
     belongsToExServiceman: "No",
     religion: "Hinduism",
-    email: "", // Initially empty but will be filled from the backend data
+    email: "", 
     alternateEmail: "",
     mobile: "",
     officeTelephone: "",
@@ -184,7 +184,6 @@ const Profile = () => {
               Upload Your Resume and Profile Picture
             </Typography>
             <Grid container spacing={4}>
-              {/* Resume Upload */}
               <Grid item xs={12} md={6}>
                 <FileUploadInput
                   uploadTo={apiList.uploadResume}
@@ -196,7 +195,6 @@ const Profile = () => {
                 />
               </Grid>
 
-              {/* Profile Picture Upload */}
               <Grid item xs={12} md={6}>
                 <FileUploadInput
                   uploadTo={apiList.uploadprofilePictureImage}
@@ -208,18 +206,6 @@ const Profile = () => {
                 />
               </Grid>
             </Grid>
-
-            {/* Submit Button */}
-            {/* <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              style={{ marginTop: "20px" }}
-              onClick={handleNext}
-              disabled={!resumeUploaded || !profilePictureUploaded}
-            >
-              Submit Resume and profilePicture profilePicture
-            </Button> */}
           </Card>
         );
       default:
@@ -292,8 +278,7 @@ const Profile = () => {
         </div>
       </Box>
 
-      {/* Snackbar for displaying messages */}
-      <Snackbar
+        <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}

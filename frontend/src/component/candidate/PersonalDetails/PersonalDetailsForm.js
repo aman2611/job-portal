@@ -45,9 +45,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
   },
   disabledField: {
-    backgroundColor: "#f0f0f0", // Light gray for disabled fields
+    backgroundColor: "#f0f0f0", 
     "& .MuiInputBase-root": {
-      color: "gray", // Gray text for disabled fields
+      color: "gray",
     },
   },
   fieldInline: {
@@ -61,7 +61,6 @@ const PersonalDetailsForm = () => {
   const classes = useStyles();
   const { formData, setFormData } = useFormData();
 
-  // States to manage conditional rendering of category and disability inputs
   const [categorySelected, setCategorySelected] = useState(formData.categorySelected || false);
   const [pwdSelected, setPwdSelected] = useState(formData.pwdSelected || false);
 
@@ -83,14 +82,14 @@ const PersonalDetailsForm = () => {
   const handleCategoryChange = (event) => {
     setCategorySelected(event.target.value === "Yes");
     if (event.target.value !== "Yes") {
-      setFormData((prevData) => ({ ...prevData, category: "" })); // Reset category if not selected
+      setFormData((prevData) => ({ ...prevData, category: "" })); 
     }
   };
 
   const handlePwdChange = (event) => {
     setPwdSelected(event.target.value === "Yes");
     if (event.target.value !== "Yes") {
-      setFormData((prevData) => ({ ...prevData, disabilityType: "" })); // Reset disability type if not selected
+      setFormData((prevData) => ({ ...prevData, disabilityType: "" }));
     }
   };
 
@@ -100,7 +99,6 @@ const PersonalDetailsForm = () => {
         1. Personal Details
       </Typography>
 
-      {/* Name Section */}
       <Grid container spacing={2} className={classes.section}>
         <Grid item xs={12} md={3}>
           <div className={classes.labelContainer}>
@@ -139,7 +137,6 @@ const PersonalDetailsForm = () => {
         </Grid>
       </Grid>
 
-      {/* Relationship Section */}
       <Grid container spacing={2} className={classes.section}>
         <Grid item xs={12} md={3}>
           <div className={classes.labelContainer}>
@@ -196,7 +193,6 @@ const PersonalDetailsForm = () => {
         </Grid>
       </Grid>
 
-      {/* Date of Birth Section */}
       <Grid container spacing={2} className={classes.section}>
         <Grid item xs={12} md={3}>
           <div className={classes.labelContainer}>
@@ -245,7 +241,6 @@ const PersonalDetailsForm = () => {
         </Grid>
       </Grid>
 
-      {/* Category Section */}
       <Grid container spacing={2} className={classes.section}>
         <Grid item xs={12} md={3}>
           <div className={classes.labelContainer}>
@@ -291,7 +286,6 @@ const PersonalDetailsForm = () => {
         </Grid>
       </Grid>
 
-      {/* Person with Disability Section */}
       <Grid container spacing={2} className={classes.section}>
         <Grid item xs={12} md={3}>
           <div className={classes.labelContainer}>
@@ -336,7 +330,6 @@ const PersonalDetailsForm = () => {
         </Grid>
       </Grid>
 
-      {/* Religion Section */}
       <Grid container spacing={2} className={classes.section}>
         <Grid item xs={12} md={3}>
           <div className={classes.labelContainer}>

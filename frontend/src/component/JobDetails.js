@@ -24,7 +24,6 @@ import { SetPopupContext } from "../App";
 import apiList from "../lib/apiList";
 import { userType } from "../lib/isAuth";
 import { makeStyles } from "@mui/styles";
-import { textTransform } from "@mui/system";
 
 const useStyles = makeStyles((theme) => ({
     skillChip: {
@@ -44,29 +43,27 @@ const JobDetails = () => {
     const setPopup = useContext(SetPopupContext);
     const classes = useStyles();
 
-    // Default job description if not provided
     const getDefaultDescription = (jobTitle) => {
         return `
-We are seeking a motivated and skilled ${jobTitle} to join our dynamic team. 
+            We are seeking a motivated and skilled ${jobTitle} to join our dynamic team. 
 
-Key Responsibilities:
-- Contribute to the development and implementation of project goals
-- Collaborate with cross-functional teams to deliver high-quality results
-- Apply your expertise to solve complex challenges and drive innovation
+            Key Responsibilities:
+            - Contribute to the development and implementation of project goals
+            - Collaborate with cross-functional teams to deliver high-quality results
+            - Apply your expertise to solve complex challenges and drive innovation
 
-Ideal Candidate:
-- Strong problem-solving skills
-- Excellent communication and teamwork abilities
-- Passion for continuous learning and professional growth
+            Ideal Candidate:
+            - Strong problem-solving skills
+            - Excellent communication and teamwork abilities
+            - Passion for continuous learning and professional growth
 
-This role offers an exciting opportunity to make a significant impact in a collaborative and innovative work environment. We value creativity, initiative, and a proactive approach to professional challenges.
+            This role offers an exciting opportunity to make a significant impact in a collaborative and innovative work environment. We value creativity, initiative, and a proactive approach to professional challenges.
     `.trim();
     };
 
     useEffect(() => {
         const fetchJobDetails = async () => {
             try {
-                // Fetch job details
                 const jobResponse = await axios.get(`${apiList.jobs}/${id}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -75,14 +72,12 @@ This role offers an exciting opportunity to make a significant impact in a colla
 
                 const jobData = jobResponse.data;
 
-                // Add default description if not provided
                 if (!jobData.description || jobData.description.trim() === '') {
                     jobData.description = getDefaultDescription(jobData.title);
                 }
 
                 setJob(jobData);
 
-                // Check if user has already applied
                 const applicationsResponse = await axios.get(apiList.applications, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -92,7 +87,6 @@ This role offers an exciting opportunity to make a significant impact in a colla
                     }
                 });
 
-                // Check if any application exists with status 'applied'
                 const appliedApplication = applicationsResponse.data.find(
                     app => app.job._id === id && app.status === 'applied'
                 );
@@ -159,7 +153,6 @@ This role offers an exciting opportunity to make a significant impact in a colla
                 }}
             >
                 <Grid container spacing={3}>
-                    {/* Job Title and Basic Info */}
                     <Grid item xs={12}>
                         <Typography variant="h4" fontWeight="bold" color="primary" textTransform="capitalize">
                             {job.title}
@@ -202,7 +195,6 @@ This role offers an exciting opportunity to make a significant impact in a colla
                         </Grid>
                     </Grid>
 
-                    {/* Job Description */}
                     <Grid item xs={12}>
                         <Divider sx={{ my: 2 }} />
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -221,7 +213,6 @@ This role offers an exciting opportunity to make a significant impact in a colla
                         </Typography>
                     </Grid>
 
-                    {/* Skills */}
                     <Grid item xs={12}>
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="h6" sx={{ mb: 2 }}>Required Skills</Typography>
@@ -238,7 +229,6 @@ This role offers an exciting opportunity to make a significant impact in a colla
                         </Box>
                     </Grid>
 
-                    {/* Apply Button */}
                     {userType() !== "recruiter" && (
 
                         <Grid item xs={12}>
@@ -259,7 +249,6 @@ This role offers an exciting opportunity to make a significant impact in a colla
 
             </Box>
 
-            {/* Application Modal */}
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
                 <DialogTitle>Submit Statement of Purpose</DialogTitle>
                 <DialogContent>

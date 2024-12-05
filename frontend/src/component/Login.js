@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Grid, TextField, Button, Typography, Paper } from "@mui/material";
+import { Grid, TextField, Button, Typography, Paper, Card } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -10,10 +10,24 @@ import { SetPopupContext } from "../App";
 
 import apiList from "../lib/apiList";
 import isAuth from "../lib/isAuth";
+import goilogo from "../asset/goi-logo.png"
+import { Box } from "@mui/system";
 
 const useStyles = makeStyles((theme) => ({
+    mainCard: {
+        width: "1200px",
+        padding: theme.spacing(2),
+        borderRadius: "8px"
+    },
+    logoBox: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginBottom: theme.spacing(2)
+    },
     body: {
-        padding: "60px 60px",
+        padding: "20px 60px 40px",
+        margin: "auto"
     },
     inputBox: {
         width: "300px",
@@ -23,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Login = (props) => {
+const Login = () => {
     const classes = useStyles();
     const navigate = useNavigate();
     const setPopup = useContext(SetPopupContext);
@@ -107,43 +121,49 @@ const Login = (props) => {
     return loggedin ? (
         <Navigate to="/" />
     ) : (
-        <Paper elevation={3} className={classes.body}>
-            <Grid container direction="column" spacing={4} alignItems="center">
-                <Grid item>
-                    <Typography variant="h3" component="h2">
-                        Login
-                    </Typography>
+        <Card className={classes.mainCard}>
+            <Box className={classes.logoBox}>
+                <img src={goilogo} alt="Govt of India Logo" style={{ width: "50px" }} />
+                <Typography variant="h4" >NRIDA Job Portal</Typography>
+            </Box>
+            <Paper elevation={3} className={classes.body}>
+                <Grid container direction="column" spacing={4} alignItems="center">
+                    <Grid item>
+                        <Typography variant="h3" component="h2">
+                            Login
+                        </Typography>
+                    </Grid>
+                    <Grid item>
+                        <EmailInput
+                            label="Email"
+                            value={loginDetails.email}
+                            onChange={(event) => handleInput("email", event.target.value)}
+                            inputErrorHandler={inputErrorHandler}
+                            handleInputError={handleInputError}
+                            className={classes.inputBox}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <PasswordInput
+                            label="Password"
+                            value={loginDetails.password}
+                            onChange={(event) => handleInput("password", event.target.value)}
+                            className={classes.inputBox}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleLogin()}
+                            className={classes.submitButton}
+                        >
+                            Login
+                        </Button>
+                    </Grid>
                 </Grid>
-                <Grid item>
-                    <EmailInput
-                        label="Email"
-                        value={loginDetails.email}
-                        onChange={(event) => handleInput("email", event.target.value)}
-                        inputErrorHandler={inputErrorHandler}
-                        handleInputError={handleInputError}
-                        className={classes.inputBox}
-                    />
-                </Grid>
-                <Grid item>
-                    <PasswordInput
-                        label="Password"
-                        value={loginDetails.password}
-                        onChange={(event) => handleInput("password", event.target.value)}
-                        className={classes.inputBox}
-                    />
-                </Grid>
-                <Grid item>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleLogin()}
-                        className={classes.submitButton}
-                    >
-                        Login
-                    </Button>
-                </Grid>
-            </Grid>
-        </Paper>
+            </Paper>
+        </Card>
     );
 };
 

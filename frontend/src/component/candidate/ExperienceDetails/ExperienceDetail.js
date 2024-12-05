@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     gap: theme.spacing(1),
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(2), // Ensure space between skills and input box
+    marginBottom: theme.spacing(2),
   },
   skillChip: {
     marginBottom: theme.spacing(1),
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   skillText: {
-    marginBottom: theme.spacing(2), // Space between the title and input box
+    marginBottom: theme.spacing(2), 
   },
   skillCard:{
     padding: theme.spacing(3),
@@ -206,7 +206,6 @@ const ExperienceDetail = () => {
               Experience {index + 1}
             </Typography>
 
-            {/* Experience Fields */}
             <Grid container spacing={2} className={classes.section}>
               <Grid item xs={12} md={3}>
                 <Typography>
@@ -303,7 +302,6 @@ const ExperienceDetail = () => {
               </Grid>
             </Grid>
 
-            {/* Skills Section */}
             <Grid container spacing={2} className={classes.section}>
               <Grid item xs={12} md={3}>
                 <Typography>Skills:</Typography>
@@ -332,7 +330,6 @@ const ExperienceDetail = () => {
               </Grid>
             </Grid>
 
-            {/* Remove Experience Button */}
             <div className={classes.removeContainer}>
               <div
                 className={classes.removeText}
@@ -345,7 +342,6 @@ const ExperienceDetail = () => {
           </Card>
         ))}
 
-        {/* Add Experience Button */}
         <Button
           variant="contained"
           color="primary"
@@ -356,13 +352,11 @@ const ExperienceDetail = () => {
           Add Experience
         </Button>
 
-        {/* Personal Skills */}
         <Card className={classes.skillCard}> 
           <Typography variant="h5" gutterBottom className={classes.skillText}>
             Personal Skills
           </Typography>
 
-          {/* Skills Displayed Above the Input Box */}
           <div className={classes.skillContainer}>
             {personalSkills.map((skill) => (
               <Chip
@@ -375,7 +369,6 @@ const ExperienceDetail = () => {
             ))}
           </div>
 
-          {/* Input Box for Adding Skills */}
           <Grid container spacing={2} className={classes.section}>
             <Grid item xs={12}>
               <TextField

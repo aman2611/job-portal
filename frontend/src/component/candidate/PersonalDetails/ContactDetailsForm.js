@@ -53,14 +53,13 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
         <Card className={classes.card}>
             <Typography variant="h6" gutterBottom>Contact Details</Typography>
             <Grid container spacing={2}>
-                {/* Contact Information */}
                 <Grid item xs={12} md={6}>
                     <Typography variant="body1">Email <span style={{ color: 'red' }}>*</span></Typography>
                     <TextField
                         fullWidth
                         required
                         value={formData.email}
-                        disabled // Make email field read-only
+                        disabled 
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -89,7 +88,6 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                     />
                 </Grid>
 
-                {/* Permanent Address */}
                 <Grid item xs={12} className="col-span-full">
                     <Typography variant="h6" sx={{ backgroundColor: '#f3f2ee', padding: 1 }}>
                         Permanent Address
@@ -149,7 +147,6 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                     />
                 </Grid>
 
-                {/* Correspondence Address */}
                 <Grid item xs={12} className="col-span-full">
                     <Grid container justifyContent="space-between" alignItems="center" sx={{ backgroundColor: '#f3f2ee', padding: 1 }}>
                         <Typography variant="h6">Correspondence Address</Typography>
@@ -199,7 +196,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                             value={formData.correspondenceState}
                             onChange={(e) => handleChange('correspondenceState', e.target.value)}
                             disabled={formData.sameCorrespondenceAddress}
-                            label="State"  // This is necessary to keep the label functionality
+                            label="State"  
                         >
                             {states.map((state) => (
                                 <MenuItem key={state} value={state}>

@@ -9,7 +9,6 @@ import {
   Chip
 } from "@mui/material";
 import axios from "axios";
-// import ChipInput from "material-ui-chip-input";
 import FileUploadInput from "../lib/FileUploadInput";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FaceIcon from "@mui/icons-material/Face";
@@ -309,9 +308,6 @@ const Profile = (props) => {
           </Paper>
         </Grid>
       </Grid>
-      {/* <Modal open={open} onClose={handleClose} className={classes.popupDialog}> */}
-
-      {/* </Modal> */}
     </>
   );
 };

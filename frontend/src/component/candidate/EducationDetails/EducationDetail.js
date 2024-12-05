@@ -10,7 +10,7 @@ import {
   Box,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useFormData } from "../Profile"; // Import the custom hook to access context
+import { useFormData } from "../Profile"; 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 

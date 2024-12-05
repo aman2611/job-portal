@@ -24,14 +24,13 @@ const RecruiterDashboard = () => {
     const [timeToHire, setTimeToHire] = useState(0);
     const [statusDistribution, setStatusDistribution] = useState([]);
 
-    // Pastel color palette
     const pastelColors = [
-        '#FFD1DC', // Pastel Pink
-        '#FFEBCD', // Pastel Peach
-        '#E6E6FA', // Pastel Lavender
-        '#98FB98', // Pastel Green
-        '#87CEFA', // Pastel Blue
-        '#DDA0DD'  // Pastel Plum
+        '#E63946', 
+        '#FFEBCD', 
+        '#219EBC', 
+        '#99D98C', 
+        '#87CEFA', 
+        '#DDA0DD'  
     ];
 
     const fetchDashboardData = () => {
@@ -53,19 +52,29 @@ const RecruiterDashboard = () => {
             .then((response) => {
                 const applicationsData = response.data;
                 
-                // Calculate status distribution
                 const statusCounts = applicationsData.reduce((acc, app) => {
                     acc[app.status] = (acc[app.status] || 0) + 1;
                     return acc;
                 }, {});
 
+                const statusColors = {
+                    applied: "#A3D8F4",      
+                    accepted: "#28A745",    
+                    shortlisted: "#FFB84D",   
+                    rejected: "#FF6666",      
+                    cancelled: "#9B59B6",     
+                    finished: "#8B4513",      
+                    selected: "#F1C40F",    
+                };
+                
+    
                 const statusDistributionData = Object.entries(statusCounts).map(([status, value], index) => ({
                     id: status,
                     value,
                     label: status.charAt(0).toUpperCase() + status.slice(1),
-                    color: pastelColors[index % pastelColors.length]
+                    color: statusColors[status.toLowerCase()] || '#808080'  
                 }));
-
+    
                 setStatusDistribution(statusDistributionData);
 
                 setRecentApplications(
@@ -177,9 +186,7 @@ const RecruiterDashboard = () => {
                 <Search />
             </Box>
 
-            {/* Overview Section */}
             <Box padding={3} flex={1}>
-                {/* Top Metrics */}
                 <Grid container spacing={3} justifyContent="space-between">
                     <Grid item xs={12} sm={6} md={3}>
                         <Card sx={{ height: "100%" }}>
@@ -219,7 +226,6 @@ const RecruiterDashboard = () => {
                     </Grid>
                 </Grid>
 
-                {/* Bar Chart and Recent Applications Side by Side */}
                 <Grid container spacing={3} marginTop={3}>
                     <Grid item xs={12} md={6}>
                         <Card>

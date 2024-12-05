@@ -22,7 +22,6 @@ const UploadDocument = () => {
   const [profilePicture, setprofilePicture] = useState(null);
   const [successMessage, setSuccessMessage] = useState(false);
 
-  // Handle file selection and update state
   const handleFileUpload = (e, fileType) => {
     const file = e.target.files[0];
     if (file) {
@@ -31,11 +30,10 @@ const UploadDocument = () => {
       } else if (fileType === "profilePicture") {
         setprofilePicture(file);
       }
-      setSuccessMessage(true); // Indicate that files have been uploaded
+      setSuccessMessage(true); 
     }
   };
 
-  // Delete the existing file (resume or profilePicture profilePicture)
   const handleDeleteFile = (fileType) => {
     if (fileType === "resume") {
       setResume(null);
@@ -49,7 +47,6 @@ const UploadDocument = () => {
       <Card>
         <CardHeader title={<Typography variant="h6">Upload Your Documents</Typography>} />
         <CardContent>
-          {/* Resume Upload Section */}
           <Box mb={4}>
             <Typography variant="subtitle1" gutterBottom>
               Resume Upload
@@ -98,7 +95,6 @@ const UploadDocument = () => {
             )}
           </Box>
 
-          {/* profilePicture profilePicture Upload Section */}
           <Box mb={4}>
             <Typography variant="subtitle1" gutterBottom>
               profilePicture profilePicture
@@ -158,18 +154,16 @@ const UploadDocument = () => {
             )}
           </Box>
 
-          {/* Submit Button */}
           <Button
             variant="contained"
             size="large"
             fullWidth
             startIcon={<CloudUploadIcon />}
-            onClick={() => setSuccessMessage(true)} // Simulate file upload completion
+            onClick={() => setSuccessMessage(true)} 
           >
             Upload Documents
           </Button>
 
-          {/* Success Alert */}
           {successMessage && (
             <Alert severity="success" sx={{ mt: 2 }}>
               Documents uploaded successfully!

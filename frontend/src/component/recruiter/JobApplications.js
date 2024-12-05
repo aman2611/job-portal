@@ -31,7 +31,6 @@ import { useParams } from "react-router-dom";
 import { SetPopupContext } from "../../App";
 import apiList, { server } from "../../lib/apiList";
 
-// Helper function to rank applicants based on skills match
 const rankBySkillsMatch = (jobSkills, applicantSkills) => {
   const jobSkillsMap = new Map();
   jobSkills.forEach(skill => jobSkillsMap.set(skill.toLowerCase(), true));
@@ -46,7 +45,6 @@ const rankBySkillsMatch = (jobSkills, applicantSkills) => {
   return matchCount;
 };
 
-// Styled Components (keep existing styling from previous implementation)
 const PageContainer = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   padding: theme.spacing(4),
@@ -188,11 +186,9 @@ const JobApplications = () => {
   };
 
   const updateStatus = (application, newStatus) => {
-    // Placeholder for the new updateStatus implementation
-    // You'll need to replace this with the full implementation you want
+ 
     const payload = {
       status: newStatus,
-      // Add any additional fields required by your backend
     };
 
     axios
@@ -207,10 +203,8 @@ const JobApplications = () => {
         }
       )
       .then((response) => {
-        // Refresh the applications list after successful status update
         fetchApplications();
         
-        // Show success popup
         setPopup({
           open: true,
           severity: "success",
@@ -218,7 +212,6 @@ const JobApplications = () => {
         });
       })
       .catch((err) => {
-        // Show error popup
         setPopup({
           open: true,
           severity: "error",
@@ -251,7 +244,6 @@ const JobApplications = () => {
     const applicantSkills = application.jobApplicant?.personalSkills || [];
     const skillMatchCount = rankBySkillsMatch(jobSkills, applicantSkills);
 
-    // Define possible actions based on current status
     const statusActions = {
       applied: [
         {
