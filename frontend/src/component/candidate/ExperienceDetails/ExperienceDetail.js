@@ -1,254 +1,395 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-    Card,
-    TextField,
-    Typography,
-    Grid,
-    MenuItem,
-    InputAdornment,
-    Chip,
-    IconButton,
-    CardContent,
-    Button
-} from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { makeStyles } from '@mui/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useFormData } from '../Profile';
+  Card,
+  TextField,
+  Typography,
+  Grid,
+  Chip,
+  IconButton,
+  Button,
+  MenuItem,
+  InputAdornment,
+} from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { makeStyles } from "@mui/styles";
+import { useFormData } from "../Profile";
 
 const useStyles = makeStyles((theme) => ({
-    headerContainer: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBlock: theme.spacing(3),
-    },
-    card: {
-        padding: theme.spacing(3),
-        margin: theme.spacing(4),
-    },
-    experienceHeader: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: theme.spacing(3),
-    },
-    section: {
-        marginBottom: theme.spacing(4),
-    },
-    chip: {
-        margin: theme.spacing(0.5),
-    },
-    buttonGroup: {
-        display: 'flex',
-        gap: theme.spacing(1),
-    },
-    deleteButton: {
-        color: theme.palette.error.main,
-    }
+  card: {
+    padding: theme.spacing(3),
+    margin: theme.spacing(4),
+    marginTop: theme.spacing(8),
+    position: "relative",
+  },
+  section: {
+    marginBottom: theme.spacing(3),
+  },
+  labelContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
+  inputGroup: {
+    display: "flex",
+    gap: theme.spacing(2),
+    width: "100%",
+  },
+  requiredStar: {
+    color: "red",
+    marginLeft: "4px",
+  },
+  removeContainer: {
+    position: "absolute",
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+    display: "flex",
+    alignItems: "center",
+  },
+  removeText: {
+    color: theme.palette.error.main,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1),
+  },
+  skillInput: {
+    display: "flex",
+    alignItems: "center",
+  },
+  skillContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2), // Ensure space between skills and input box
+  },
+  skillChip: {
+    marginBottom: theme.spacing(1),
+  },
+  personalSkillsContainer: {
+    marginTop: theme.spacing(3),
+  },
+  inputSpacing: {
+    marginTop: theme.spacing(1),
+  },
+  skillText: {
+    marginBottom: theme.spacing(2), // Space between the title and input box
+  },
+  skillCard:{
+    padding: theme.spacing(3),
+    marginDown: theme.spacing(4),
+    marginTop: theme.spacing(8),
+    marginInline: theme.spacing(0),
+    position: "relative",
+  }
 }));
 
+const createEmptyExperience = () => ({
+  companyName: "",
+  location: "",
+  startDate: null,
+  endDate: null,
+  employmentType: "",
+  skills: [],
+});
+
 const employmentTypes = [
-    { value: 'Full-time', label: 'Full-time' },
-    { value: 'Part-time', label: 'Part-time' },
-    { value: 'Internship', label: 'Internship' },
-    { value: 'Freelance', label: 'Freelance' },
-    { value: 'Contract', label: 'Contract' },
+  { value: "Full-time", label: "Full-time" },
+  { value: "Part-time", label: "Part-time" },
+  { value: "Internship", label: "Internship" },
+  { value: "Freelance", label: "Freelance" },
+  { value: "Contract", label: "Contract" },
 ];
 
-const emptyExperience = {
-    companyName: '',
-    employmentType: '',
-    startDate: null,
-    endDate: null,
-    location: '',
-    skills: [],
-};
-
 const ExperienceDetail = () => {
-    const classes = useStyles();
-    const { formData, setFormData } = useFormData();
-    const [experiences, setExperiences] = useState([]);
+  const classes = useStyles();
+  const { formData, setFormData } = useFormData();
 
-    // Update experiences based on formData when it is loaded
-    useEffect(() => {
-        if (formData.experiences) {
-            setExperiences(formData.experiences);
-        } else {
-            setExperiences([emptyExperience]); // Fallback to empty experience if no data
-        }
-    }, [formData]);
+  const [experiences, setExperiences] = useState([createEmptyExperience()]);
+  const [personalSkills, setPersonalSkills] = useState([]);
 
-    const handleChange = (index, name, value) => {
-        const updatedExperiences = [...experiences];
-        updatedExperiences[index] = {
-            ...updatedExperiences[index],
-            [name]: value,
-        };
-        setFormData({ ...formData, experiences: updatedExperiences });
-    };
+  useEffect(() => {
+    setExperiences(formData.experience || [createEmptyExperience()]);
+    setPersonalSkills(formData.personalSkills || []);
+  }, [formData]);
 
-    const handleAddSkill = (index, e) => {
-        if (e.key === 'Enter' && e.target.value.trim() !== '') {
-            const updatedExperiences = [...experiences];
-            const newSkill = e.target.value.trim();
-            updatedExperiences[index] = {
-                ...updatedExperiences[index],
-                skills: [...new Set([...updatedExperiences[index].skills, newSkill])],
-            };
-            setFormData({ ...formData, experiences: updatedExperiences });
-            e.target.value = '';
-        }
-    };
-
-    const handleRemoveSkill = (index, skillToRemove) => {
-        const updatedExperiences = [...experiences];
-        updatedExperiences[index] = {
-            ...updatedExperiences[index],
-            skills: updatedExperiences[index].skills.filter((skill) => skill !== skillToRemove),
-        };
-        setFormData({ ...formData, experiences: updatedExperiences });
-    };
-
-    const addNewExperience = () => {
-        setExperiences([...experiences, { ...emptyExperience }]);
-    };
-
-    const removeExperience = (indexToRemove) => {
-        if (experiences.length > 1) {
-            const updatedExperiences = experiences.filter((_, index) => index !== indexToRemove);
-            setExperiences(updatedExperiences);
-            setFormData({ ...formData, experiences: updatedExperiences });
-        }
-    };
-
-    return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Card>
-                <CardContent className={classes.headerContainer}>
-                    <Typography variant="h5">3. Experience Details</Typography>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={addNewExperience}
-                    >
-                        <AddCircleOutlineIcon />
-                    </Button>
-                </CardContent>
-
-                {experiences.map((experience, index) => (
-                    <Card key={index} className={classes.card}>
-                        <div className={classes.experienceHeader}>
-                            <Typography variant="h6">Experience {index + 1}</Typography>
-                            {experiences.length > 1 && (
-                                <IconButton
-                                    className={classes.deleteButton}
-                                    onClick={() => removeExperience(index)}
-                                    size="small"
-                                >
-                                    <DeleteOutlineIcon />
-                                </IconButton>
-                            )}
-                        </div>
-
-                        <Grid container spacing={3}>
-                            {/* Company Name */}
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    label="Company Name"
-                                    required
-                                    fullWidth
-                                    value={experience.companyName}
-                                    onChange={(e) => handleChange(index, 'companyName', e.target.value)}
-                                />
-                            </Grid>
-
-                            {/* Employment Type */}
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    select
-                                    label="Employment Type"
-                                    required
-                                    fullWidth
-                                    value={experience.employmentType}
-                                    onChange={(e) => handleChange(index, 'employmentType', e.target.value)}
-                                >
-                                    <MenuItem value="" disabled>Select Employment Type</MenuItem>
-                                    {employmentTypes.map((type) => (
-                                        <MenuItem key={type.value} value={type.value}>
-                                            {type.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-
-                            {/* Start Date */}
-                            <Grid item xs={12} md={6}>
-                                <DatePicker
-                                    label="Start Date"
-                                    value={experience.startDate}
-                                    onChange={(date) => handleChange(index, 'startDate', date)}
-                                    renderInput={(params) => (
-                                        <TextField {...params} required fullWidth />
-                                    )}
-                                />
-                            </Grid>
-
-                            {/* End Date */}
-                            <Grid item xs={12} md={6}>
-                                <DatePicker
-                                    label="End Date"
-                                    value={experience.endDate}
-                                    onChange={(date) => handleChange(index, 'endDate', date)}
-                                    renderInput={(params) => (
-                                        <TextField {...params} required fullWidth />
-                                    )}
-                                />
-                            </Grid>
-
-                            {/* Location */}
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    label="Location"
-                                    required
-                                    fullWidth
-                                    value={experience.location}
-                                    onChange={(e) => handleChange(index, 'location', e.target.value)}
-                                />
-                            </Grid>
-
-                            {/* Skills */}
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    label="Skills (Press Enter to add)"
-                                    fullWidth
-                                    onKeyDown={(e) => handleAddSkill(index, e)}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                {experience.skills.map((skill, skillIndex) => (
-                                                    <Chip
-                                                        key={skillIndex}
-                                                        label={skill}
-                                                        onDelete={() => handleRemoveSkill(index, skill)}
-                                                        size="small"
-                                                        className={classes.chip}
-                                                    />
-                                                ))}
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Card>
-                ))}
-            </Card>
-        </LocalizationProvider>
+  const handleExperienceChange = (index, field, value) => {
+    const updated = experiences.map((exp, idx) =>
+      idx === index ? { ...exp, [field]: value } : exp
     );
+    setExperiences(updated);
+    setFormData({ ...formData, experience: updated });
+  };
+
+  const handleAddExperience = () => {
+    const updated = [...experiences, createEmptyExperience()];
+    setExperiences(updated);
+    setFormData({ ...formData, experience: updated });
+  };
+
+  const handleRemoveExperience = (index) => {
+    if (experiences.length > 1) {
+      const updated = experiences.filter((_, idx) => idx !== index);
+      setExperiences(updated);
+      setFormData({ ...formData, experience: updated });
+    }
+  };
+
+  const handleAddSkill = (index, e) => {
+    if (e.key === "Enter" && e.target.value.trim()) {
+      const skill = e.target.value.trim();
+      const updated = experiences.map((exp, idx) =>
+        idx === index
+          ? { ...exp, skills: [...new Set([...exp.skills, skill])] }
+          : exp
+      );
+      setExperiences(updated);
+      setFormData({ ...formData, experience: updated });
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveSkill = (index, skill) => {
+    const updated = experiences.map((exp, idx) =>
+      idx === index
+        ? { ...exp, skills: exp.skills.filter((s) => s !== skill) }
+        : exp
+    );
+    setExperiences(updated);
+    setFormData({ ...formData, experience: updated });
+  };
+
+  const handleAddPersonalSkill = (e) => {
+    if (e.key === "Enter" && e.target.value.trim()) {
+      const skill = e.target.value.trim();
+      const updated = [...new Set([...personalSkills, skill])];
+      setPersonalSkills(updated);
+      setFormData({ ...formData, personalSkills: updated });
+      e.target.value = "";
+    }
+  };
+
+  const handleRemovePersonalSkill = (skill) => {
+    const updated = personalSkills.filter((s) => s !== skill);
+    setPersonalSkills(updated);
+    setFormData({ ...formData, personalSkills: updated });
+  };
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Card className={classes.card}>
+        <Typography variant="h5" gutterBottom>
+          Experience Details
+        </Typography>
+
+        {experiences.map((experience, index) => (
+          <Card
+            key={index}
+            style={{
+              margin: "20px 0",
+              padding: "20px",
+              border: "1px solid #ccc",
+              position: "relative",
+            }}
+          >
+            <Typography
+              variant="h6"
+              style={{
+                marginBottom: "20px",
+                fontWeight: "bold",
+                color: "#555",
+              }}
+            >
+              Experience {index + 1}
+            </Typography>
+
+            {/* Experience Fields */}
+            <Grid container spacing={2} className={classes.section}>
+              <Grid item xs={12} md={3}>
+                <Typography>
+                  Company Name:
+                  <span className={classes.requiredStar}>*</span>
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={9}>
+                <TextField
+                  label="Company Name"
+                  fullWidth
+                  value={experience.companyName}
+                  onChange={(e) =>
+                    handleExperienceChange(index, "companyName", e.target.value)
+                  }
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={2} className={classes.section}>
+              <Grid item xs={12} md={3}>
+                <Typography>
+                  Location:
+                  <span className={classes.requiredStar}>*</span>
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={9}>
+                <TextField
+                  label="Location"
+                  fullWidth
+                  value={experience.location}
+                  onChange={(e) =>
+                    handleExperienceChange(index, "location", e.target.value)
+                  }
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={2} className={classes.section}>
+              <Grid item xs={12} md={3}>
+                <Typography>Start Date:</Typography>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <DatePicker
+                  label="Start Date"
+                  value={experience.startDate}
+                  onChange={(newValue) =>
+                    handleExperienceChange(index, "startDate", newValue)
+                  }
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={2} className={classes.section}>
+              <Grid item xs={12} md={3}>
+                <Typography>End Date:</Typography>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <DatePicker
+                  label="End Date"
+                  value={experience.endDate}
+                  onChange={(newValue) =>
+                    handleExperienceChange(index, "endDate", newValue)
+                  }
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={2} className={classes.section}>
+              <Grid item xs={12} md={3}>
+                <Typography>
+                  Employment Type:
+                  <span className={classes.requiredStar}>*</span>
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={9}>
+                <TextField
+                  select
+                  label="Employment Type"
+                  fullWidth
+                  value={experience.employmentType}
+                  onChange={(e) =>
+                    handleExperienceChange(index, "employmentType", e.target.value)
+                  }
+                >
+                  {employmentTypes.map((type) => (
+                    <MenuItem key={type.value} value={type.value}>
+                      {type.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            </Grid>
+
+            {/* Skills Section */}
+            <Grid container spacing={2} className={classes.section}>
+              <Grid item xs={12} md={3}>
+                <Typography>Skills:</Typography>
+              </Grid>
+              <Grid item xs={12} md={9}>
+                <TextField
+                  label="Add Skill (Press Enter)"
+                  fullWidth
+                  onKeyDown={(e) => handleAddSkill(index, e)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {experience.skills.map((skill) => (
+                          <Chip
+                            key={skill}
+                            label={skill}
+                            onDelete={() => handleRemoveSkill(index, skill)}
+                            size="small"
+                            style={{ margin: "5px" }}
+                          />
+                        ))}
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+            </Grid>
+
+            {/* Remove Experience Button */}
+            <div className={classes.removeContainer}>
+              <div
+                className={classes.removeText}
+                onClick={() => handleRemoveExperience(index)}
+              >
+                <DeleteOutlineIcon />
+                Remove Experience
+              </div>
+            </div>
+          </Card>
+        ))}
+
+        {/* Add Experience Button */}
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddCircleOutlineIcon />}
+          onClick={handleAddExperience}
+          style={{ marginTop: "20px" }}
+        >
+          Add Experience
+        </Button>
+
+        {/* Personal Skills */}
+        <Card className={classes.skillCard}> 
+          <Typography variant="h5" gutterBottom className={classes.skillText}>
+            Personal Skills
+          </Typography>
+
+          {/* Skills Displayed Above the Input Box */}
+          <div className={classes.skillContainer}>
+            {personalSkills.map((skill) => (
+              <Chip
+                key={skill}
+                label={skill}
+                onDelete={() => handleRemovePersonalSkill(skill)}
+                size="small"
+                className={classes.skillChip}
+              />
+            ))}
+          </div>
+
+          {/* Input Box for Adding Skills */}
+          <Grid container spacing={2} className={classes.section}>
+            <Grid item xs={12}>
+              <TextField
+                label="Add Personal Skill (Press Enter)"
+                fullWidth
+                onKeyDown={handleAddPersonalSkill}
+                className={classes.inputSpacing}
+              />
+            </Grid>
+          </Grid>
+        </Card>
+      </Card>
+    </LocalizationProvider>
+  );
 };
 
 export default ExperienceDetail;

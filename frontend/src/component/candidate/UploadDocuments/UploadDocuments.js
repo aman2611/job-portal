@@ -19,7 +19,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 const UploadDocument = () => {
   const [resume, setResume] = useState(null);
-  const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePicture, setprofilePicture] = useState(null);
   const [successMessage, setSuccessMessage] = useState(false);
 
   // Handle file selection and update state
@@ -29,18 +29,18 @@ const UploadDocument = () => {
       if (fileType === "resume") {
         setResume(file);
       } else if (fileType === "profilePicture") {
-        setProfilePicture(file);
+        setprofilePicture(file);
       }
       setSuccessMessage(true); // Indicate that files have been uploaded
     }
   };
 
-  // Delete the existing file (resume or profile picture)
+  // Delete the existing file (resume or profilePicture profilePicture)
   const handleDeleteFile = (fileType) => {
     if (fileType === "resume") {
       setResume(null);
     } else if (fileType === "profilePicture") {
-      setProfilePicture(null);
+      setprofilePicture(null);
     }
   };
 
@@ -98,10 +98,10 @@ const UploadDocument = () => {
             )}
           </Box>
 
-          {/* Profile Picture Upload Section */}
+          {/* profilePicture profilePicture Upload Section */}
           <Box mb={4}>
             <Typography variant="subtitle1" gutterBottom>
-              Profile Picture
+              profilePicture profilePicture
             </Typography>
             <Box
               display="flex"
@@ -120,7 +120,7 @@ const UploadDocument = () => {
               <Box textAlign="center">
                 <AccountCircleIcon fontSize="large" color="action" />
                 <Typography variant="body2" color="textSecondary">
-                  Upload your profile picture
+                  Upload your profilePicture profilePicture
                 </Typography>
                 <input
                   type="file"
@@ -134,7 +134,7 @@ const UploadDocument = () => {
               <Box display="flex" justifyContent="center" mt={2}>
                 <Avatar
                   src={URL.createObjectURL(profilePicture)}
-                  alt="Profile preview"
+                  alt="profilePicture preview"
                   sx={{
                     width: 96,
                     height: 96,

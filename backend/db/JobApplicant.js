@@ -1,35 +1,41 @@
 const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
-  // Candidate's personal details
   firstName: {
     type: String,
+    required: true,
   },
   middleName: {
     type: String
   },
   lastName: {
     type: String,
+    required: true,
   },
   relationship: {
     type: String,
+    required: true,
   },
   relationshipFirstName: {
     type: String,
+    required: true,
+
   },
   relationshipMiddleName: {
     type: String
   },
   relationshipLastName: {
     type: String,
+    required: true,
+
   },
   dob: {
-    type: Date, 
-    required: false 
+    type: Date,
+    required: true
   },
   gender: {
     type: String,
-    required: false
+    required: true,
   },
   belongsToCategory: {
     type: String,
@@ -37,19 +43,19 @@ const schema = new mongoose.Schema({
   },
   category: {
     type: String,
-    required: false
+    required: true,
   },
   aadhar: {
     type: Number,
-    required: false
+    required: true,
   },
   belongsToPwBD: {
     type: String,
-    default: 'No'
+    default: 'No',
   },
   pwBD: {
     type: String,
-    required: false
+    required: true,
   },
   belongsToExServiceman: {
     type: String,
@@ -57,15 +63,14 @@ const schema = new mongoose.Schema({
   },
   religion: {
     type: String,
-    default: 'Hinduism'
+    default: 'Hindu',
+    required: true,
   },
   candidateEmail: {
     type: String,
-    
   },
   alternateCandidateEmail: {
     type: String,
-    required: false
   },
   mobile: {
     type: Number,
@@ -73,136 +78,152 @@ const schema = new mongoose.Schema({
   },
   officeTelephone: {
     type: Number,
-    required: false
   },
   permanentAddress: {
     type: String,
+    required: true,
   },
   permanentCity: {
     type: String,
+    required: true,
   },
   permanentState: {
     type: String,
-    // required: true
+    required: true,
   },
   permanentPincode: {
     type: String,
+    required: true,
   },
   sameAddress: {
     type: Boolean,
-    default: true
+    default: false
   },
   correspondenceAddress: {
     type: String,
-    required: false
+    required: true,
   },
   correspondenceCity: {
     type: String,
-    required: false
+    required: true,
   },
   correspondenceState: {
     type: String,
-    required: false
+    required: true,
   },
   correspondencePincode: {
     type: String,
-    required: false
+    required: true,
   },
-
-  // Education details
-  education: {
-    schoolName10th: {
-      type: String
-    },
-    boardName10th: {
-      type: String
-    },
-    yop10th: {
-      type: Number,
-      required: false
-    },
-    percentage10th: {
-      type: Number
-    },
-    schoolName12th: {
-      type: String
-    },
-    boardName12th: {
-      type: String
-    },
-    yop12th: {
-      type: Number,
-      required: false
-    },
-    percentage12th: {
-      type: Number
-    },
-    universityGrad: {
-      type: String
-    },
-    degreeGrad: {
-      type: String
-    },
-    majorGrad: {
-      type: String
-    },
-    yopGrad: {
-      type: Number,
-      required: false
-    },
-    percentageGrad: {
-      type: Number
-    },
-    universityPG: {
-      type: String
-    },
-    degreePG: {
-      type: String
-    },
-    majorPG: {
-      type: String
-    },
-    yopPG: {
-      type: Number,
-      required: false
-    },
-    percentagePG: {
-      type: Number
-    }
+  schoolName10th: {
+    type: String,
+    required: true,
   },
-
-  // Job Experience Details
+  boardName10th: {
+    type: String,
+    required: true,
+  },
+  yop10th: {
+    type: Number,
+    required: true,
+  },
+  percentage10th: {
+    type: Number,
+    required: true,
+  },
+  schoolName12th: {
+    type: String,
+    required: true,
+  },
+  boardName12th: {
+    type: String,
+    required: true,
+  },
+  yop12th: {
+    type: Number,
+    required: true,
+  },
+  percentage12th: {
+    type: Number,
+    required: true,
+  },
+  universityGrad: {
+    type: String,
+    required: true,
+  },
+  degreeGrad: {
+    type: String,
+    required: true,
+  },
+  majorGrad: {
+    type: String,
+    required: true,
+  },
+  yopGrad: {
+    type: Number,
+    required: true,
+  },
+  percentageGrad: {
+    type: Number,
+    required: true,
+  },
+  universityPG: {
+    type: String,
+  },
+  degreePG: {
+    type: String,
+  },
+  majorPG: {
+    type: String,
+  },
+  yopPG: {
+    type: Number,
+  },
+  percentagePG: {
+    type: Number
+  },
   jobExperience: [
     {
       companyName: {
-        type: String
+        type: String,
+        required: true,
       },
       location: {
-        type: String
+        type: String,
+        required: true,
       },
       startDate: {
-        type: Date
+        type: Date,
+        required: true,
       },
       endDate: {
-        type: Date
+        type: Date,
+        required: true,
       },
       employmentType: {
         type: String,
+        required: true,
         enum: ['Full-time', 'Part-time', 'Internship', 'Freelance', 'Contract']
       },
       skills: {
         type: [String],
-        default: []
+        default: [],
+        required: true,
       }
     }
   ],
-
-  // Additional fields for resume and profile picture
-  resume: {
-    type: String
+  personalSkills: {
+    type: [String],
+    default: [],
+    required: true,
   },
-  profile: {
-    type: String
+  resume: {
+    type: String,
+    required: true,
+  },
+  profilePicture: {
+    type: String,
+    required: true,
   }
 });
 

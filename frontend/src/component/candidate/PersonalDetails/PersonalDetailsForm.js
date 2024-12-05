@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   FormControl,
@@ -8,10 +8,15 @@ import {
   TextField,
   Typography,
   Grid,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useFormData } from "../Profile";
+import dayjs from "dayjs";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -20,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(8),
   },
   section: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(3),
   },
   labelContainer: {
     display: "flex",
@@ -32,15 +37,23 @@ const useStyles = makeStyles((theme) => ({
     gap: theme.spacing(2),
     width: "100%",
   },
-  wrappingLabel: {
-    display: "flex",
-    alignItems: "flex-start",
-    minHeight: "100%",
-    paddingTop: theme.spacing(1),
-  },
   requiredStar: {
     color: "red",
     marginLeft: "4px",
+  },
+  radioGroup: {
+    flexDirection: "row",
+  },
+  disabledField: {
+    backgroundColor: "#f0f0f0", // Light gray for disabled fields
+    "& .MuiInputBase-root": {
+      color: "gray", // Gray text for disabled fields
+    },
+  },
+  fieldInline: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(2),
   },
 }));
 
@@ -48,7 +61,9 @@ const PersonalDetailsForm = () => {
   const classes = useStyles();
   const { formData, setFormData } = useFormData();
 
-  console.log(formData)
+  // States to manage conditional rendering of category and disability inputs
+  const [categorySelected, setCategorySelected] = useState(formData.categorySelected || false);
+  const [pwdSelected, setPwdSelected] = useState(formData.pwdSelected || false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -63,6 +78,20 @@ const PersonalDetailsForm = () => {
       ...prevData,
       dob: newValue,
     }));
+  };
+
+  const handleCategoryChange = (event) => {
+    setCategorySelected(event.target.value === "Yes");
+    if (event.target.value !== "Yes") {
+      setFormData((prevData) => ({ ...prevData, category: "" })); // Reset category if not selected
+    }
+  };
+
+  const handlePwdChange = (event) => {
+    setPwdSelected(event.target.value === "Yes");
+    if (event.target.value !== "Yes") {
+      setFormData((prevData) => ({ ...prevData, disabilityType: "" })); // Reset disability type if not selected
+    }
   };
 
   return (
@@ -179,12 +208,14 @@ const PersonalDetailsForm = () => {
         </Grid>
         <Grid item xs={12} md={4}>
           <DatePicker
+            required
             disableFuture
-            label=""
+            label="Date of Birth"
             openTo="year"
             views={["year", "month", "day"]}
-            value={formData.dob}
+            value={formData.dob ? dayjs(formData.dob) : null}
             onChange={handleDateChange}
+            format="DD/MM/YYYY"
             renderInput={(params) => <TextField {...params} fullWidth />}
           />
         </Grid>
@@ -200,6 +231,7 @@ const PersonalDetailsForm = () => {
           <FormControl fullWidth>
             <InputLabel>Select</InputLabel>
             <Select
+              required
               label="Select"
               name="gender"
               value={formData.gender}
@@ -208,6 +240,131 @@ const PersonalDetailsForm = () => {
               <MenuItem value="Male">Male</MenuItem>
               <MenuItem value="Female">Female</MenuItem>
               <MenuItem value="Other">Other</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+
+      {/* Category Section */}
+      <Grid container spacing={2} className={classes.section}>
+        <Grid item xs={12} md={3}>
+          <div className={classes.labelContainer}>
+            <Typography>
+              Belongs to a Category:
+              <span className={classes.requiredStar}>*</span>
+            </Typography>
+          </div>
+        </Grid>
+        <Grid item xs={12} md={9} className={classes.fieldInline}>
+          <FormControl fullWidth>
+            <InputLabel>Yes/No</InputLabel>
+            <Select
+              required
+
+              label="Yes/No"
+              name="categorySelected"
+              value={categorySelected ? "Yes" : "No"}
+              onChange={handleCategoryChange}
+            >
+              <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="category">Select Category</InputLabel>
+            <Select
+              labelId="category"
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              disabled={!categorySelected}
+              className={categorySelected ? "" : classes.disabledField}
+            >
+              <MenuItem value="OBC">Other Backward Class (OBC)</MenuItem>
+              <MenuItem value="SC">Scheduled Caste (SC)</MenuItem>
+              <MenuItem value="ST">Scheduled Tribe (ST)</MenuItem>
+              <MenuItem value="EWS">Economic Weaker Section (EWS)</MenuItem>
+              <MenuItem value="UR">Unreserved (UR)</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+
+      {/* Person with Disability Section */}
+      <Grid container spacing={2} className={classes.section}>
+        <Grid item xs={12} md={3}>
+          <div className={classes.labelContainer}>
+            <Typography>
+              Person with Disability (PWD):
+              <span className={classes.requiredStar}>*</span>
+            </Typography>
+          </div>
+        </Grid>
+        <Grid item xs={12} md={9} className={classes.fieldInline}>
+          <FormControl fullWidth>
+            <InputLabel>Yes/No</InputLabel>
+            <Select
+              label="Yes/No"
+              name="pwdSelected"
+              value={pwdSelected ? "Yes" : "No"}
+              onChange={handlePwdChange}
+              required
+            >
+              <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="disabilityType">Select Disability Type</InputLabel>
+            <Select
+              labelId="disabilityType"
+              id="disabilityType"
+              name="disabilityType"
+              value={formData.disabilityType}
+              onChange={handleInputChange}
+              disabled={!pwdSelected}
+              className={pwdSelected ? "" : classes.disabledField}
+            >
+              <MenuItem value="Visual">(a) Blindness or low vision</MenuItem>
+              <MenuItem value="Hearing">(b) Deaf and hard of hearing</MenuItem>
+              <MenuItem value="Locomotor">(c) Locomotor disability including cerebral palsy, leprosy cured, dwarfism, acid attack victims and muscular dystrophy</MenuItem>
+              <MenuItem value="Mental">(d) Autism, intellectual disability, specific learning disability and mental illness</MenuItem>
+              <MenuItem value="All">(e) Multiple disabilities from amongst persons under clauses (a) to (d) including deaf-blindness</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+
+      {/* Religion Section */}
+      <Grid container spacing={2} className={classes.section}>
+        <Grid item xs={12} md={3}>
+          <div className={classes.labelContainer}>
+            <Typography>
+              Religion:
+              <span className={classes.requiredStar}>*</span>
+            </Typography>
+          </div>
+        </Grid>
+        <Grid item xs={12} md={9}>
+          <FormControl fullWidth>
+            <InputLabel id="religion">Select Religion</InputLabel>
+            <Select
+              labelId="religion"
+              id="religion"
+              name="religion"
+              required
+              value={formData.religion}
+              onChange={handleInputChange}
+            >
+              <MenuItem value="Hindu">Hindu</MenuItem>
+              <MenuItem value="Muslim">Muslim</MenuItem>
+              <MenuItem value="Christian">Christian</MenuItem>
+              <MenuItem value="Sikh">Sikh</MenuItem>
+              <MenuItem value="Jain">Jain</MenuItem>
+              <MenuItem value="Budhist">Budhist</MenuItem>
+              <MenuItem value="Parsi">Parsi</MenuItem>
+              <MenuItem value="Jews">Jews</MenuItem>
             </Select>
           </FormControl>
         </Grid>

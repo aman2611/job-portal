@@ -42,7 +42,7 @@ const Profile = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [resumeUploaded, setResumeUploaded] = useState(false);
-  const [profileUploaded, setProfileUploaded] = useState(false);
+  const [profilePictureUploaded, setprofilePictureUploaded] = useState(false);
 
   const steps = [
     "Personal Details",
@@ -99,7 +99,7 @@ const Profile = () => {
     majorPG: "",
     percentagePG: "",
     yopPG: "",
-    experience: {
+    jobExperience: {
       companyName: "",
       location: "",
       startDate: null,
@@ -107,8 +107,9 @@ const Profile = () => {
       employmentType: "",
       skills: [],
     },
+    personalSkills:[],
     resume: null,
-    profile: null,
+    profilePicture: null,
   });
 
   const navigate = useNavigate();
@@ -116,7 +117,6 @@ const Profile = () => {
   const setPopup = useContext(SetPopupContext);
 
   useEffect(() => {
-    // Fetch user data from backend
     axios
       .get(apiList.user, {
         headers: {
@@ -124,14 +124,15 @@ const Profile = () => {
         },
       })
       .then((response) => {
-        const userData = response.data;
+        const userData = response.data.userDetails;
         setFormData((prevData) => ({
           ...prevData,
-          email: userData.userDetails.email, // Pre-fill email
-          ...userData, // Set other data as well
+          email: userData.email, 
+          ...userData, 
         }));
         console.log("User data fetched:", userData);
-        console.log("User data fetched:", formData);
+        console.log(" data fetched:", response.data);
+       
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -143,7 +144,7 @@ const Profile = () => {
       console.log("Final Submitted Data:", formData);
       handleSubmit();
       setTimeout(() => {
-        navigate("./home");
+        navigate("./");
       }, 1500);
     } else {
       setActiveStep((prev) => prev + 1);
@@ -159,7 +160,7 @@ const Profile = () => {
       [key]: value,
     });
     if (key === "resume") setResumeUploaded(true);
-    if (key === "profile") setProfileUploaded(true);
+    if (key === "profilePicture") setprofilePictureUploaded(true);
   };
 
   const getStepContent = (stepIndex) => {
@@ -169,7 +170,7 @@ const Profile = () => {
           <PersonalDetail
             formData={formData}
             handleInput={handleInput}
-            readOnlyFields={{ email: true }} // Email is read-only
+            readOnlyFields={{ email: true }} 
           />
         );
       case 1:
@@ -198,8 +199,8 @@ const Profile = () => {
               {/* Profile Picture Upload */}
               <Grid item xs={12} md={6}>
                 <FileUploadInput
-                  uploadTo={apiList.uploadProfileImage}
-                  identifier="profile"
+                  uploadTo={apiList.uploadprofilePictureImage}
+                  identifier="profilePicture"
                   handleInput={handleInput}
                   className={classes.uploadBox}
                   label="Profile Picture"
@@ -209,16 +210,16 @@ const Profile = () => {
             </Grid>
 
             {/* Submit Button */}
-            <Button
+            {/* <Button
               fullWidth
               variant="contained"
               color="primary"
               style={{ marginTop: "20px" }}
               onClick={handleNext}
-              disabled={!resumeUploaded || !profileUploaded}
+              disabled={!resumeUploaded || !profilePictureUploaded}
             >
-              Submit Resume and Profile Picture
-            </Button>
+              Submit Resume and profilePicture profilePicture
+            </Button> */}
           </Card>
         );
       default:
@@ -247,7 +248,7 @@ const Profile = () => {
       .catch((error) => {
         const errorMessage = error.response
           ? error.response.data.message
-          : "Error submitting profile data";
+          : "Error submitting Profile Picture data";
         setSnackbarMessage(errorMessage);
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
@@ -268,7 +269,7 @@ const Profile = () => {
           {activeStep === steps.length ? null : (
             <div>
               {getStepContent(activeStep)}
-              <Box sx={{ marginTop: "20px" }}>
+              <Box sx={{ marginTop: "20px", marginLeft:"48px" }}>
                 <Button
                   disabled={activeStep === 0}
                   onClick={handleBack}

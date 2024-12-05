@@ -114,8 +114,8 @@ const ScreeningQuestions = () => {
   return (
     <Box
       sx={{
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
+        backgroundColor: "#f3f2ee",
+        // minHeight: "100vh",
         display: "flex",
         alignItems: "flex-start",  
         justifyContent: "center",
@@ -127,7 +127,7 @@ const ScreeningQuestions = () => {
         sx={{
           width: "100%",
           maxWidth: "900px", 
-          margin: "auto",
+          // margin: "auto",
           backgroundColor: "#fff",
           boxShadow: 3,
           borderRadius: 2,

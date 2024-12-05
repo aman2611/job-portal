@@ -17,9 +17,8 @@ import {
   Card,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import Rating from "@mui/lab/Rating";
-import Pagination from "@mui/lab/Pagination";
 import axios from "axios";
+import Rating from "@mui/lab/Rating";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -29,6 +28,7 @@ import { SetPopupContext } from "../App";
 
 import apiList from "../lib/apiList";
 import { userType } from "../lib/isAuth";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -50,15 +50,197 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  jobCard: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: theme.spacing(8)
+  },
+  statusBadge: {
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+  }
 }));
+
+// const JobTile = (props) => {
+//   const classes = useStyles();
+//   const { job } = props;
+//   const setPopup = useContext(SetPopupContext);
+//   const navigate = useNavigate();
+
+//   const [open, setOpen] = useState(false);
+//   const [sop, setSop] = useState("");
+
+//   const handleClose = () => {
+//     setOpen(false);
+//     setSop("");
+//   };
+
+//   const handleApply = () => {
+//     console.log(job._id);
+//     console.log(sop);
+//     axios
+//       .post(
+//         `${apiList.jobs}/${job._id}/applications`,
+//         {
+//           sop: sop,
+//         },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem("token")}`,
+//           },
+//         }
+//       )
+//       .then((response) => {
+//         setPopup({
+//           open: true,
+//           severity: "success",
+//           message: response.data.message,
+//         });
+//         console.log(response);
+//         handleClose();
+//       })
+//       .catch((err) => {
+//         console.log(err.response);
+//         setPopup({
+//           open: true,
+//           severity: "error",
+//           message: err.response.data.message,
+//         });
+//         handleClose();
+//       });
+//   };
+
+//   const deadline = new Date(job.deadline).toLocaleDateString();
+
+//   return (
+//     <Paper className={classes.jobTileOuter} elevation={3}>
+//       <Grid container direction="column">
+//         <Grid item>
+//           <Typography variant="h5" textTransform="capitalize">{job.title}</Typography>
+//         </Grid>
+//         <Grid item>
+//           <Rating value={job.rating !== -1 ? job.rating : null} readOnly />
+//         </Grid>
+//         <Grid item>Role: {job.jobType}</Grid>
+//         <Grid item>Salary: &#8377; {job.salary} per month</Grid>
+//         <Grid item>
+//           Duration: {job.duration !== 0 ? `${job.duration} month` : `Flexible`}
+//         </Grid>
+//         <Grid item textTransform="capitalize">Posted By: {job.recruiter.name}</Grid>
+//         <Grid item>Application Deadline: {deadline}</Grid>
+
+//         <Grid item style={{ marginBlock: "10px" }}>
+//           {job.skillsets.map((skill) => (
+//             <Chip key={skill} label={skill} style={{ marginRight: "8px",textTransform:"uppercase" }} />
+//           ))}
+//         </Grid>
+
+//         {/* {userType() !== "recruiter" && ( */}
+//           <Grid item style={{ marginTop: "16px" }}>
+//             <Button
+//               variant="contained"
+//               color="primary"
+//               className={classes.button}
+//               onClick={() => {
+//                 // setOpen(true);
+//                 navigate(`/job-details/${job._id}`);
+//               }}
+//             >
+//               View Job
+//             </Button>
+//           </Grid>
+//         {/* )} */}
+//       </Grid>
+
+//       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
+//         <Paper
+//           style={{
+//             padding: "20px",
+//             outline: "none",
+//             display: "flex",
+//             flexDirection: "column",
+//             justifyContent: "center",
+//             minWidth: "50%",
+//             alignItems: "center",
+//           }}
+//         >
+//           <TextField
+//             label="Write SOP (upto 250 words)"
+//             multiline
+//             rows={8}
+//             style={{ width: "100%", marginBottom: "30px" }}
+//             variant="outlined"
+//             value={sop}
+//             onChange={(event) => {
+//               if (
+//                 event.target.value.split(" ").filter(function (n) {
+//                   return n != "";
+//                 }).length <= 250
+//               ) {
+//                 setSop(event.target.value);
+//               }
+//             }}
+//           />
+//           <Button
+//             variant="contained"
+//             color="primary"
+//             style={{ padding: "10px 50px" }}
+//             onClick={() => handleApply()}
+//           >
+//             Submit
+//           </Button>
+//         </Paper>
+//       </Modal>
+//     </Paper>
+//   );
+// };
+
 
 const JobTile = (props) => {
   const classes = useStyles();
   const { job } = props;
   const setPopup = useContext(SetPopupContext);
+  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const [sop, setSop] = useState("");
+  const [applicationStatus, setApplicationStatus] = useState(null);
+
+  // Fetch application status when component mounts
+  useEffect(() => {
+    const fetchApplicationStatus = async () => {
+      try {
+        const response = await axios.get(
+          `${apiList.jobs}/${job._id}/application-status`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setApplicationStatus(response.data.status);
+      } catch (error) {
+        console.log("Error fetching application status:", error);
+      }
+    };
+
+    fetchApplicationStatus();
+  }, [job._id]);
+
+  // Function to get status badge color and label
+  const getStatusBadgeProps = () => {
+    switch (applicationStatus) {
+      case 'applied':
+        return { color: "primary", label: "Applied" };
+      case 'shortlisted':
+        return { color: "success", label: "Shortlisted" };
+      case 'rejected':
+        return { color: "error", label: "Rejected" };
+      default:
+        return { color: "default", label: "Not Applied" };
+    }
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -66,8 +248,6 @@ const JobTile = (props) => {
   };
 
   const handleApply = () => {
-    console.log(job._id);
-    console.log(sop);
     axios
       .post(
         `${apiList.jobs}/${job._id}/applications`,
@@ -86,12 +266,12 @@ const JobTile = (props) => {
           severity: "success",
           message: response.data.message,
         });
-        console.log(response)
+        // Update application status immediately after successful application
+        setApplicationStatus('applied');
         handleClose();
       })
       .catch((err) => {
         console.log(err.response);
-        
         setPopup({
           open: true,
           severity: "error",
@@ -102,47 +282,64 @@ const JobTile = (props) => {
   };
 
   const deadline = new Date(job.deadline).toLocaleDateString();
+  const statusBadge = getStatusBadgeProps();
 
   return (
     <Paper className={classes.jobTileOuter} elevation={3}>
-      <Grid container>
-        <Grid container item xs={userType() === "recruiter" ? 12 : 9} spacing={1} direction="column">
-          <Grid item>
-            <Typography variant="h5">{job.title}</Typography>
-          </Grid>
-          <Grid item>
-            <Rating value={job.rating !== -1 ? job.rating : null} readOnly />
-          </Grid>
-          <Grid item>Role : {job.jobType}</Grid>
-          <Grid item>Salary : &#8377; {job.salary} per month</Grid>
-          <Grid item>
-            Duration :{" "}
-            {job.duration !== 0 ? `${job.duration} month` : `Flexible`}
-          </Grid>
-          <Grid item>Posted By : {job.recruiter.name}</Grid>
-          <Grid item>Application Deadline : {deadline}</Grid>
+      {/* Status Badge */}
+      {applicationStatus && (
+        <Chip
+          label={statusBadge.label}
+          color={statusBadge.color}
+          className={classes.statusBadge}
+        />
+      )}
 
-          <Grid item>
-            {job.skillsets.map((skill) => (
-              <Chip key={skill} label={skill} style={{ marginRight: "2px" }} />
-            ))}
-          </Grid>
+      <Grid container direction="column">
+        <Grid item>
+          <Typography variant="h5" textTransform="capitalize">
+            {job.title}
+          </Typography>
         </Grid>
-        {userType() !== "recruiter" && (
-          <Grid item xs={3}>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              onClick={() => {
-                setOpen(true);
+        <Grid item>
+          <Rating value={job.rating !== -1 ? job.rating : null} readOnly />
+        </Grid>
+        <Grid item>Role: {job.jobType}</Grid>
+        <Grid item>Salary: &#8377; {job.salary} per month</Grid>
+        <Grid item>
+          Duration: {job.duration !== 0 ? `${job.duration} month` : `Flexible`}
+        </Grid>
+        <Grid item textTransform="capitalize">Posted By: {job.recruiter.name}</Grid>
+        <Grid item>Application Deadline: {deadline}</Grid>
+
+        <Grid item style={{ marginBlock: "10px" }}>
+          {job.skillsets.map((skill) => (
+            <Chip
+              key={skill}
+              label={skill}
+              style={{
+                marginRight: "8px",
+                textTransform: "uppercase"
               }}
-            >
-              Apply
-            </Button>
-          </Grid>
-        )}
+            />
+          ))}
+        </Grid>
+
+        <Grid item style={{ marginTop: "16px" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            onClick={() => {
+              navigate(`/job-details/${job._id}`);
+            }}
+          >
+            View Job Details
+          </Button>
+        </Grid>
       </Grid>
+
+      {/* Modal for applying remains the same */}
       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
         <Paper
           style={{
@@ -512,6 +709,7 @@ const FilterPopup = (props) => {
 };
 
 const Home = (props) => {
+  const classes = useStyles();
   const [jobs, setJobs] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -539,11 +737,16 @@ const Home = (props) => {
       },
     },
   });
+  const [userType, setUserType] = useState(null);
 
   const setPopup = useContext(SetPopupContext);
-  
+
   useEffect(() => {
     getData();
+    const storedUserType = localStorage.getItem('type');
+    if (storedUserType) {
+        setUserType(storedUserType);
+    }
   }, []);
 
   const getData = () => {
@@ -624,7 +827,7 @@ const Home = (props) => {
   };
 
   return (
-    <Card sx={{ width: "100%" }}>
+    <Card sx={{ width: "100%", marginTop: '30px' }}>
       <Card
         style={{ padding: "30px", minHeight: "93vh" }}
       >
@@ -635,7 +838,9 @@ const Home = (props) => {
           alignItems="center"
         >
           <Grid item xs padding="0 0 20px" width="100%">
-            <Typography variant="h4">Jobs Created</Typography>
+            <Typography variant="h4">
+              {userType === "recruiter" ? "Jobs Created" : "Jobs for You"}
+            </Typography>
           </Grid>
           <Grid item xs display="flex" justifyContent="space-between" width="100%">
             <Grid item xs>
@@ -675,12 +880,7 @@ const Home = (props) => {
           </Grid>
         </Grid>
 
-        <Grid
-          container
-          direction="column"
-          alignItems="stretch"
-          justify="center"
-        >
+        <Grid className={classes.jobCard} >
           {jobs.length > 0 ? (
             jobs.map((job) => {
               return <JobTile key={job._id} job={job} />;

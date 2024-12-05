@@ -14,6 +14,8 @@ import {
   FormGroup,
   MenuItem,
   Checkbox,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
@@ -57,6 +59,12 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     textTransform: "uppercase",
   },
+  skillChip: {
+    '& .MuiChip-label': {
+      fontWeight: 'bold',
+      textTransform: 'uppercase'
+    }
+  }
 }));
 
 const JobTile = (props) => {
@@ -153,7 +161,7 @@ const JobTile = (props) => {
       <Grid container>
         <Grid container item xs={9} spacing={1} direction="column">
           <Grid item>
-            <Typography variant="h5">{job.title}</Typography>
+            <Typography variant="h5" textTransform="capitalize">{job.title}</Typography>
           </Grid>
           <Grid item>
             <Rating value={job.rating !== -1 ? job.rating : null} readOnly />
@@ -172,7 +180,7 @@ const JobTile = (props) => {
           </Grid>
           <Grid item>
             {job.skillsets.map((skill) => (
-              <Chip label={skill} style={{ marginRight: "2px" }} />
+              <Chip label={skill} style={{ marginRight: "2px" }} className={classes.skillChip} />
             ))}
           </Grid>
         </Grid>
@@ -185,22 +193,23 @@ const JobTile = (props) => {
           justifyContent="center"
         >
           {[
-            { text: "View Applications", onClick: () => handleClick(`/job/applications/${job._id}`) },
-            { text: "Update Details", onClick: () => setOpenUpdate(true) },
-            { text: "Delete Job", onClick: () => setOpen(true) },
+            { text: "View Applications", onClick: () => handleClick(`/job/applications/${job._id}`), color: "error" },
+            { text: "Update Details", onClick: () => setOpenUpdate(true), color: "secondary" },
+            { text: "Delete Job", onClick: () => setOpen(true), color: "error" },
           ].map((button, index) => (
             <Grid item key={index}>
               <Button
                 variant="contained"
+                color={button.color}
                 className={classes.statusBlock}
                 onClick={button.onClick}
                 style={{
-                  background: "#007BFF",
                   color: "#fff",
                   fontWeight: "bold",
                   padding: "10px 20px",
                   textTransform: "none",
                   width: "100%",
+                  backgroundColor: index === 0 ? "#f97316" : "",
                 }}
               >
                 {button.text}
@@ -794,8 +803,8 @@ const MyJobs = (props) => {
   };
 
   return (
-    <>
-      <Grid
+    <Card sx={{ width: "100%", marginTop: '30px' }}>
+      <CardContent
         container
         item
         direction="column"
@@ -805,7 +814,7 @@ const MyJobs = (props) => {
         <Grid item container direction="column"
         >
           <Grid item xs display="flex" justifyContent="center" alignItems="center">
-            <Typography variant="h2">My Jobs</Typography>
+            <Typography variant="h4">My Jobs</Typography>
           </Grid>
           <Grid item xs display="flex" justifyContent="space-between">
             <Grid item xs>
@@ -864,7 +873,7 @@ const MyJobs = (props) => {
             </Typography>
           )}
         </Grid>
-      </Grid>
+      </CardContent>
       <FilterPopup
         open={filterOpen}
         searchOptions={searchOptions}
@@ -875,7 +884,7 @@ const MyJobs = (props) => {
           setFilterOpen(false);
         }}
       />
-    </>
+    </Card>
   );
 };
 

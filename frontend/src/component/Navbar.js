@@ -3,9 +3,12 @@ import {
   Toolbar,
   Typography,
   Button,
+  Box
 } from "@mui/material";
-import {makeStyles} from "@mui/styles";
+import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
+
+import logo from "../asset/pmgsy-logo.png"
 
 import isAuth, { userType } from "../lib/isAuth";
 
@@ -18,6 +21,12 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: 40,
+    marginRight: theme.spacing(2),
   },
 }));
 
@@ -31,11 +40,18 @@ const Navbar = (props) => {
   };
 
   return (
-    <AppBar position="fixed">
+    <AppBar position="fixed" sx={{ paddingInline: "140px" }}>
       <Toolbar>
-        <Typography variant="h6" className={classes.title}>
-          Job Portal
-        </Typography>
+        <Box className={classes.title}>
+          <img
+            src={logo}
+            alt=" Logo"
+            className={classes.logo}
+          />
+          <Typography variant="h6">
+            NRIDA Job Portal
+          </Typography>
+        </Box>
         {isAuth() ? (
           userType() === "recruiter" ? (
             <>
@@ -48,9 +64,6 @@ const Navbar = (props) => {
               <Button color="inherit" onClick={() => handleClick("/myjobs")}>
                 My Jobs
               </Button>
-              {/* <Button color="inherit" onClick={() => handleClick("/employees")}>
-                Employees
-              </Button> */}
               <Button color="inherit" onClick={() => handleClick("/profile")}>
                 Profile
               </Button>

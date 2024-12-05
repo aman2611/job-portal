@@ -23,6 +23,7 @@ import isAuth, { userType } from "./lib/isAuth";
 import CandidateProfile from "./component/candidate/Profile";
 import CreateJobs2 from "./component/recruiter/CreateJobs/CreateJobs2";
 import ScreeningQuestions from "./component/recruiter/CreateJobs/ScreeningQuestions";
+import JobDetails from "./component/JobDetails";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -31,9 +32,12 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     minHeight: "98vh",
-    paddingTop: "64px",
     boxSizing: "border-box",
     width: "100%",
+    padding: '64px 140px 0',
+    backgroundColor: '#f3f2ee',
+    marginTop:"10px"
+
   },
 }));
 
@@ -68,7 +72,7 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/applications" element={<Applications />} />
               <Route
-                path="/profile"
+                path="/Profile"
                 element={
                   userType() === "recruiter" ? (
                     <RecruiterProfile />
@@ -83,6 +87,7 @@ function App() {
               <Route path="/screening" element={<ScreeningQuestions />} />
               <Route path="/myjobs" element={<MyJobs />} />
               <Route path="/job/applications/:jobId" element={<JobApplications />} />
+              <Route path="/job-details/:id" element={<JobDetails />} />
               {/* <Route path="/employees" element={<AcceptedApplicants />} /> */}
               {/* <Route path="*" element={<ErrorPage />} /> */}
             </Routes>

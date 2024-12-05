@@ -17,8 +17,8 @@ router.get("/resume/:file", (req, res) => {
   });
 });
 
-router.get("/profile/:file", (req, res) => {
-  const address = path.join(__dirname, `../public/profile/${req.params.file}`);
+router.get("/profilePicture/:file", (req, res) => {
+  const address = path.join(__dirname, `../public/profilePicture/${req.params.file}`);
   fs.access(address, fs.F_OK, (err) => {
     if (err) {
       res.status(404).json({

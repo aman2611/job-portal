@@ -13,20 +13,20 @@ const upload = multer({
     destination: function (req, file, cb) {
       // Ensure the directories exist
       const resumeDir = path.join(__dirname, "../public/resume");
-      const profileDir = path.join(__dirname, "../public/profile");
+      const profilePictureDir = path.join(__dirname, "../public/profilePicture");
 
       if (!fs.existsSync(resumeDir)) {
         fs.mkdirSync(resumeDir, { recursive: true });
       }
-      if (!fs.existsSync(profileDir)) {
-        fs.mkdirSync(profileDir, { recursive: true });
+      if (!fs.existsSync(profilePictureDir)) {
+        fs.mkdirSync(profilePictureDir, { recursive: true });
       }
 
       // Determine the destination folder based on file type
       if (file.fieldname === "file") {
         cb(null, resumeDir); // Upload resume files to the resume folder
       } else {
-        cb(null, profileDir); // Upload profile images to the profile folder
+        cb(null, profilePictureDir); // Upload profilePicture images to the profilePicture folder
       }
     },
     filename: function (req, file, cb) {
@@ -67,15 +67,15 @@ router.post("/resume", upload.single("file"), (req, res) => {
   });
 });
 
-// Route to upload profile image (JPG or PNG)
-router.post("/profile", upload.single("file"), (req, res) => {
+// Route to upload profilePicture image (JPG or PNG)
+router.post("/profilePicture", upload.single("file"), (req, res) => {
   const { file } = req;
 
   if (!file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  console.log("Received file for profile:", file);
+  console.log("Received file for profilePicture:", file);
   console.log("File extension:", getFileExtension(file.originalname));
 
   // Check for image extensions (JPG or PNG)
@@ -87,8 +87,8 @@ router.post("/profile", upload.single("file"), (req, res) => {
   }
 
   res.send({
-    message: "Profile image uploaded successfully",
-    url: `/host/profile/${file.filename}`,
+    message: "profilePicture image uploaded successfully",
+    url: `/host/profilePicture/${file.filename}`,
   });
 });
 

@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
   },
   sectionHeader: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f3f2ee",
     padding: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
@@ -55,6 +55,8 @@ const useStyles = makeStyles((theme) => ({
 const EducationDetail = () => {
   const classes = useStyles();
   const { formData, setFormData } = useFormData();
+
+  console.log(formData)
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({
@@ -205,7 +207,7 @@ const EducationDetail = () => {
       {/* Class X */}
       <Box className={classes.card}>
         <Grid container spacing={2} className={classes.section}>
-          <Grid item xs={12} style={{ paddingLeft: "5px" }} sx={{ backgroundColor: "#f5f5f5", padding: 1 }}>
+          <Grid item xs={12} style={{ paddingLeft: "5px" }} sx={{ backgroundColor: "#f3f2ee", padding: 1 }}>
             <Typography variant="h6">Class X</Typography>
           </Grid>
           <Grid container spacing={2}>
@@ -269,7 +271,7 @@ const EducationDetail = () => {
       {/* Class XII */}
       <Box className={classes.card}>
         <Grid container spacing={2} className={classes.section}>
-          <Grid item xs={12} style={{ paddingLeft: "5px" }} sx={{ backgroundColor: "#f5f5f5", padding: 1 }}>
+          <Grid item xs={12} style={{ paddingLeft: "5px" }} sx={{ backgroundColor: "#f3f2ee", padding: 1 }}>
             <Typography variant="h6">Class XII</Typography>
           </Grid>
           <Grid container spacing={2}>
@@ -456,11 +458,10 @@ const EducationDetail = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 <Typography variant="body1">
-                  University <span className={classes.required}>*</span>
+                  University
                 </Typography>
                 <TextField
                   fullWidth
-                  required
                   value={degree.university}
                   onChange={(e) => handlePostGradChange(degree.id, "university", e.target.value)}
                 />
@@ -468,11 +469,11 @@ const EducationDetail = () => {
 
               <Grid item xs={12} md={6}>
                 <Typography variant="body1">
-                  Degree <span className={classes.required}>*</span>
+                  Degree
                 </Typography>
                 <TextField
                   fullWidth
-                  required
+
                   value={degree.degree}
                   onChange={(e) => handlePostGradChange(degree.id, "degree", e.target.value)}
                 />
@@ -480,22 +481,20 @@ const EducationDetail = () => {
 
               <Grid item xs={12} md={6}>
                 <Typography variant="body1">
-                  Major <span className={classes.required}>*</span>
+                  Major
                 </Typography>
                 <TextField
                   fullWidth
-                  required
                   value={degree.major}
                   onChange={(e) => handlePostGradChange(degree.id, "major", e.target.value)}
                 />
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <Typography variant="body1">Year of Passing <span className={classes.required}>*</span></Typography>
+                <Typography variant="body1">Year of Passing </Typography>
                 <TextField
                   fullWidth
                   select
-                  required
                   value={degree.yearOfPassing}
                   onChange={(e) => handlePostGradChange(degree.id, "yearOfPassing", e.target.value)}
                 >
@@ -510,11 +509,10 @@ const EducationDetail = () => {
 
               <Grid item xs={12} md={6}>
                 <Typography variant="body1">
-                  Percentage/CGPA <span className={classes.required}>*</span>
+                  Percentage/CGPA
                 </Typography>
                 <TextField
                   fullWidth
-                  required
                   value={degree.percentage}
                   onChange={(e) => handlePostGradChange(degree.id, "percentage", e.target.value)}
                 />

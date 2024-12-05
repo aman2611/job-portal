@@ -4,7 +4,7 @@ const apiList = {
   login: `${server}/auth/login`,
   signup: `${server}/auth/signup`,
   uploadResume: `${server}/upload/resume`,
-  uploadProfileImage: `${server}/upload/profile`,
+  uploadprofilePictureImage: `${server}/upload/profilePicture`,
   jobs: `${server}/api/jobs`,
   applications: `${server}/api/applications`,
   rating: `${server}/api/rating`,

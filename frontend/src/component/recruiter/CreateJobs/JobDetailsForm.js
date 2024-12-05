@@ -79,7 +79,7 @@ const JobDetailsForm = () => {
   return (
     <Box
       sx={{
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#f3f2ee",
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
@@ -90,7 +90,7 @@ const JobDetailsForm = () => {
     >
       <Card
         sx={{
-          margin: "auto",
+          // margin: "auto",
           backgroundColor: "#fff",
           boxShadow: 3,
           borderRadius: 2,

@@ -115,7 +115,7 @@ const Profile = (props) => {
     education: [],
     skills: [],
     resume: "",
-    profile: "",
+    profilePicture: "",
   });
 
   const [education, setEducation] = useState([
@@ -292,9 +292,9 @@ const Profile = (props) => {
                   className={classes.inputBox}
                   label="Profile Photo (.jpg/.png)"
                   icon={<FaceIcon />}
-                  uploadTo={apiList.uploadProfileImage}
+                  uploadTo={apiList.uploadprofilePictureImage}
                   handleInput={handleInput}
-                  identifier={"profile"}
+                  identifier={"profilePicture"}
                 />
               </Grid>
             </Grid>

@@ -5,14 +5,14 @@ import {
   Typography,
   Paper,
   TextField,
+  Card,
 } from "@mui/material";
-import {makeStyles} from "@mui/styles";
+import { makeStyles } from "@mui/styles";
 import axios from "axios";
 import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/material.css";
+import "react-phone-input-2/lib/bootstrap.css";
 
 import { SetPopupContext } from "../../App";
-
 import apiList from "../../lib/apiList";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,25 +24,31 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    // padding: "30px",
   },
+  inputLabel: {
+    marginBottom: "8px", 
+  },
+  inputBox: {
+    marginBottom: "16px", 
+  }
 }));
 
-const Profile = (props) => {
+const profilePicture = (props) => {
   const classes = useStyles();
   const setPopup = useContext(SetPopupContext);
 
-  const [profileDetails, setProfileDetails] = useState({
+  const [profilePictureDetails, setprofilePictureDetails] = useState({
     name: "",
     bio: "",
     contactNumber: "",
+    email: "",
   });
 
   const [phone, setPhone] = useState("");
 
   const handleInput = (key, value) => {
-    setProfileDetails({
-      ...profileDetails,
+    setprofilePictureDetails({
+      ...profilePictureDetails,
       [key]: value,
     });
   };
@@ -59,12 +65,10 @@ const Profile = (props) => {
         },
       })
       .then((response) => {
-        console.log(response.data);
-        setProfileDetails(response.data);
+        setprofilePictureDetails(response.data);
         setPhone(response.data.contactNumber);
       })
       .catch((err) => {
-        console.log(err.response.data);
         setPopup({
           open: true,
           severity: "error",
@@ -75,16 +79,16 @@ const Profile = (props) => {
 
   const handleUpdate = () => {
     let updatedDetails = {
-      ...profileDetails,
+      ...profilePictureDetails,
     };
     if (phone !== "") {
       updatedDetails = {
-        ...profileDetails,
+        ...profilePictureDetails,
         contactNumber: `+${phone}`,
       };
     } else {
       updatedDetails = {
-        ...profileDetails,
+        ...profilePictureDetails,
         contactNumber: "",
       };
     }
@@ -109,12 +113,11 @@ const Profile = (props) => {
           severity: "error",
           message: err.response.data.message,
         });
-        console.log(err.response);
       });
   };
 
   return (
-    <>
+    <Card sx={{ width: "100%", marginTop:'30px' }}>
       <Grid
         container
         item
@@ -123,7 +126,7 @@ const Profile = (props) => {
         style={{ padding: "30px", minHeight: "93vh" }}
       >
         <Grid item>
-          <Typography variant="h2">Profile</Typography>
+          <Typography variant="h4">profilePicture</Typography>
         </Grid>
         <Grid item xs style={{ width: "100%" }}>
           <Paper
@@ -134,29 +137,29 @@ const Profile = (props) => {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              //   width: "60%",
             }}
           >
             <Grid container direction="column" alignItems="stretch" spacing={3}>
               <Grid item>
+                <Typography className={classes.inputLabel}>Enter Your Name</Typography>
                 <TextField
-                  label="Name"
-                  value={profileDetails.name}
+                  value={profilePictureDetails.name}
                   onChange={(event) => handleInput("name", event.target.value)}
                   className={classes.inputBox}
                   variant="outlined"
                   fullWidth
-                  style={{ width: "100%" }}
+                  required
                 />
               </Grid>
+
               <Grid item>
+                <Typography className={classes.inputLabel}>Bio (up to 250 words)</Typography>
                 <TextField
-                  label="Bio (upto 250 words)"
+                  label=""
                   multiline
                   rows={8}
-                  style={{ width: "100%" }}
                   variant="outlined"
-                  value={profileDetails.bio}
+                  value={profilePictureDetails.bio}
                   onChange={(event) => {
                     if (
                       event.target.value.split(" ").filter(function (n) {
@@ -166,23 +169,41 @@ const Profile = (props) => {
                       handleInput("bio", event.target.value);
                     }
                   }}
+                  required
+                  fullWidth
                 />
               </Grid>
-              <Grid
-                item
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <PhoneInput
-                  country={"in"}
-                  value={phone}
-                  onChange={(phone) => setPhone(phone)}
-                  style={{ width: "auto" }}
-                />
+
+              <Grid item container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <Typography className={classes.inputLabel}>Phone Number</Typography>
+                  <PhoneInput
+                    country={"in"}
+                    value={phone}
+                    onChange={(phone) => setPhone(phone)}
+                    inputProps={{
+                      required: true, 
+                    }}
+                    style={{ width: "100%" }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography className={classes.inputLabel}>Email</Typography>
+                  <TextField
+                    label="Enter Your Email"
+                    value={profilePictureDetails.email}
+                    onChange={(event) => handleInput("email", event.target.value)}
+                    className={classes.inputBox}
+                    variant="outlined"
+                    fullWidth
+                    required
+                    type="email"
+                  />
+                </Grid>
               </Grid>
             </Grid>
+
             <Button
               variant="contained"
               color="primary"
@@ -194,8 +215,8 @@ const Profile = (props) => {
           </Paper>
         </Grid>
       </Grid>
-    </>
+    </Card>
   );
 };
 
-export default Profile;
+export default profilePicture;

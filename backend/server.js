@@ -23,8 +23,8 @@ if (!fs.existsSync("./public")) {
 if (!fs.existsSync("./public/resume")) {
   fs.mkdirSync("./public/resume");
 }
-if (!fs.existsSync("./public/profile")) {
-  fs.mkdirSync("./public/profile");
+if (!fs.existsSync("./public/profilePicture")) {
+  fs.mkdirSync("./public/profilePicture");
 }
 
 const app = express();

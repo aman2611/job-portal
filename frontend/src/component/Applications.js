@@ -38,6 +38,12 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  skillChip: {
+    '& .MuiChip-label': {
+      fontWeight: 'bold',
+      textTransform: 'uppercase'
+    }
+  }
 }));
 
 const ApplicationTile = (props) => {
@@ -126,13 +132,13 @@ const ApplicationTile = (props) => {
       <Grid container>
         <Grid container item xs={9} spacing={1} direction="column">
           <Grid item>
-            <Typography variant="h5">
+            <Typography variant="h5" textTransform="capitalize">
               {application?.job?.title || "Unknown Job"}
             </Typography>
           </Grid>
-          <Grid item>Posted By: {application?.recruiter?.name || "Unknown"}</Grid>
+          <Grid item textTransform="capitalize">Posted By: {application?.recruiterName || "Unknown"}</Grid>
           <Grid item>Role: {application?.job?.jobType || "Not Specified"}</Grid>
-          <Grid item>
+          <Grid item textTransform="capitalize">
             Salary: &#8377; {application?.job?.salary || 0} per month
           </Grid>
           <Grid item>
@@ -145,7 +151,7 @@ const ApplicationTile = (props) => {
             Skills:{" "}
             {application?.job?.skillsets?.length
               ? application.job.skillsets.map((skill, index) => (
-                  <Chip key={index} label={skill} style={{ marginRight: "5px" }} />
+                  <Chip key={index} label={skill} style={{ marginRight: "5px" }} className={classes.skillChip}/>
                 ))
               : "Not Specified"}
           </Grid>
@@ -231,6 +237,7 @@ const Applications = () => {
         },
       })
       .then((response) => {
+        console.log(response.data)
         setApplications(response.data || []);
       })
       .catch((err) => {

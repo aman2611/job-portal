@@ -536,7 +536,7 @@ const ApplicationTile = (props) => {
           }}
         >
           <Avatar
-            src={`${server}${application.jobApplicant.profile}`}
+            src={`${server}${application.jobApplicant.profilePicture}`}
             className={classes.avatar}
           />
         </Grid>

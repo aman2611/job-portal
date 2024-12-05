@@ -19,6 +19,10 @@ let schema = new mongoose.Schema(
         msg: "Phone number is invalid!",
       },
     },
+    email:{
+      type: String,
+      required: true,
+    },
     bio: {
       type: String,
     },

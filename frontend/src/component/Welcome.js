@@ -1,8 +1,9 @@
-import { Grid, Typography } from "@mui/material";
+import { Card, Grid, Typography } from "@mui/material";
+import RecruiterDashboard from "./RecruiterDashboard";
 
 const Welcome = (props) => {
   return (
-    <Grid
+    <Card
       container
       item
       direction="column"
@@ -11,15 +12,17 @@ const Welcome = (props) => {
       style={{ padding: "30px", minHeight: "93vh" }}
     >
       <Grid item>
-        <Typography variant="h2">Welcome to Job Portal</Typography>
+        <Typography variant="h4">Welcome to NRIDA Job Portal </Typography>
       </Grid>
-    </Grid>
+
+      <RecruiterDashboard/>
+    </Card>
   );
 };
 
 export const ErrorPage = (props) => {
   return (
-    <Grid
+    <Card
       container
       item
       direction="column"
@@ -30,7 +33,7 @@ export const ErrorPage = (props) => {
       <Grid item>
         <Typography variant="h2">Error 404</Typography>
       </Grid>
-    </Grid>
+    </Card>
   );
 };
 

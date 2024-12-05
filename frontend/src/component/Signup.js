@@ -128,7 +128,7 @@ const Login = (props) => {
     education: [],
     skills: [],
     resume: "",
-    profile: "",
+    profilePicture: "",
     bio: "",
     contactNumber: "",
   });
@@ -428,18 +428,18 @@ const Login = (props) => {
             <Grid item>
               <FileUploadInput
                 className={classes.inputBox}
-                label="Profile Photo (.jpg/.png)"
+                label="profilePicture Photo (.jpg/.png)"
                 icon={<FaceIcon />}
-                // value={files.profileImage}
+                // value={files.profilePictureImage}
                 // onChange={(event) =>
                 //   setFiles({
                 //     ...files,
-                //     profileImage: event.target.files[0],
+                //     profilePictureImage: event.target.files[0],
                 //   })
                 // }
-                uploadTo={apiList.uploadProfileImage}
+                uploadTo={apiList.uploadprofilePictureImage}
                 handleInput={handleInput}
-                identifier={"profile"}
+                identifier={"profilePicture"}
               />
             </Grid>
           </>

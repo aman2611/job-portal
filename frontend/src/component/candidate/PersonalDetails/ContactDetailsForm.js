@@ -91,7 +91,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
 
                 {/* Permanent Address */}
                 <Grid item xs={12} className="col-span-full">
-                    <Typography variant="h6" sx={{ backgroundColor: '#f5f5f5', padding: 1 }}>
+                    <Typography variant="h6" sx={{ backgroundColor: '#f3f2ee', padding: 1 }}>
                         Permanent Address
                     </Typography>
                 </Grid>
@@ -151,7 +151,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
 
                 {/* Correspondence Address */}
                 <Grid item xs={12} className="col-span-full">
-                    <Grid container justifyContent="space-between" alignItems="center" sx={{ backgroundColor: '#f5f5f5', padding: 1 }}>
+                    <Grid container justifyContent="space-between" alignItems="center" sx={{ backgroundColor: '#f3f2ee', padding: 1 }}>
                         <Typography variant="h6">Correspondence Address</Typography>
                         <FormControlLabel
                             control={
