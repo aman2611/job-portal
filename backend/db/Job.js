@@ -117,6 +117,10 @@ let schema = new mongoose.Schema(
         },
       ],
     },
+    jobStatus: { 
+      type: String, 
+      default: "Open" 
+    },
     rating: {
       type: Number,
       max: 5.0,

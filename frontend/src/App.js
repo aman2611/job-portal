@@ -1,5 +1,5 @@
 import React, { createContext, useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -35,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: "border-box",
     width: "100%",
     padding: '64px 140px 0',
-    backgroundColor: '#f3f2ee',
-    marginTop:"10px"
+    backgroundColor: '#f9fafb',
+    marginTop: "10px"
 
   },
 }));
@@ -54,60 +54,60 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-    <BrowserRouter>
-      <SetPopupContext.Provider value={setPopup}>
-        <Grid container direction="column">
-          {/* Navbar */}
-          <Grid item xs>
-            <Navbar />
+      <BrowserRouter>
+        <SetPopupContext.Provider value={setPopup}>
+          <Grid container direction="column">
+            {/* Navbar */}
+            <Grid item xs>
+              <Navbar />
+            </Grid>
+
+            {/* Main Body */}
+            <Grid item className={classes.body}>
+              <Routes>
+                <Route path="/" element={<Navigate to="/home" replace />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/logout" element={<Logout />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/applications" element={<Applications />} />
+                <Route
+                  path="/Profile"
+                  element={
+                    userType() === "recruiter" ? (
+                      <RecruiterProfile />
+                    ) : (
+                      // <Profile/>
+                      <CandidateProfile />
+                    )
+                  }
+                />
+                {/* <Route path="/addjob" element={<CreateJobs />} /> */}
+                <Route path="/addjob" element={<CreateJobs2 />} />
+                <Route path="/screening" element={<ScreeningQuestions />} />
+                <Route path="/myjobs" element={<MyJobs />} />
+                <Route path="/job/applications/:jobId" element={<JobApplications />} />
+                <Route path="/job-details/:id" element={<JobDetails />} />
+                {/* <Route path="/employees" element={<AcceptedApplicants />} /> */}
+                {/* <Route path="*" element={<ErrorPage />} /> */}
+              </Routes>
+            </Grid>
           </Grid>
 
-          {/* Main Body */}
-          <Grid item className={classes.body}>
-            <Routes>
-              <Route path="/" element={<Welcome />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/logout" element={<Logout />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/applications" element={<Applications />} />
-              <Route
-                path="/Profile"
-                element={
-                  userType() === "recruiter" ? (
-                    <RecruiterProfile />
-                  ) : (
-                    // <Profile/>
-                    <CandidateProfile />
-                  )
-                }
-              />
-              {/* <Route path="/addjob" element={<CreateJobs />} /> */}
-              <Route path="/addjob" element={<CreateJobs2 />} />
-              <Route path="/screening" element={<ScreeningQuestions />} />
-              <Route path="/myjobs" element={<MyJobs />} />
-              <Route path="/job/applications/:jobId" element={<JobApplications />} />
-              <Route path="/job-details/:id" element={<JobDetails />} />
-              {/* <Route path="/employees" element={<AcceptedApplicants />} /> */}
-              {/* <Route path="*" element={<ErrorPage />} /> */}
-            </Routes>
-          </Grid>
-        </Grid>
-
-        {/* Message Popup */}
-        <MessagePopup
-          open={popup.open}
-          setOpen={(status) =>
-            setPopup({
-              ...popup,
-              open: status,
-            })
-          }
-          severity={popup.severity}
-          message={popup.message}
-        />
-      </SetPopupContext.Provider>
-    </BrowserRouter>
+          {/* Message Popup */}
+          <MessagePopup
+            open={popup.open}
+            setOpen={(status) =>
+              setPopup({
+                ...popup,
+                open: status,
+              })
+            }
+            severity={popup.severity}
+            message={popup.message}
+          />
+        </SetPopupContext.Provider>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

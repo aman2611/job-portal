@@ -3,34 +3,47 @@ import {
   Toolbar,
   Typography,
   Button,
-  Box
+  Box,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 
-import logo from "../asset/pmgsy-logo.png"
-
+import logo from "../assets/pmgsy-logo.png";
 import isAuth, { userType } from "../lib/isAuth";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
+const useStyles = makeStyles({
+  appBar: {
+    backgroundColor: "#fff !important", 
+    borderBottom: "1px solid #e0e0e0", 
+    paddingInline: "140px",
+    zIndex: 1100, 
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
+  button: {
+    color: "#000 !important",
+    textTransform: "none",
+    fontWeight: 500,
+    "&:hover": {
+      backgroundColor: "#fff7ed",
+    },
   },
   title: {
     flexGrow: 1,
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
   },
   logo: {
     height: 40,
-    marginRight: theme.spacing(2),
+    marginRight: "16px",
+    cursor: "pointer",
   },
-}));
+  typography: {
+    color: "#000",
+    fontWeight: 700,
+  },
+});
 
-const Navbar = (props) => {
+const Navbar = () => {
   const classes = useStyles();
   let navigate = useNavigate();
 
@@ -40,62 +53,49 @@ const Navbar = (props) => {
   };
 
   return (
-    <AppBar position="fixed" sx={{ paddingInline: "140px" }}>
+    <AppBar position="fixed" className={classes.appBar} elevation={0}>
       <Toolbar>
-        <Box className={classes.title}>
-          <img
-            src={logo}
-            alt=" Logo"
-            className={classes.logo}
-          />
-          <Typography variant="h6">
+        <Box className={classes.title} onClick={() => handleClick("/home")}>
+          <img src={logo} alt="Logo" className={classes.logo} />
+          <Typography variant="h6" className={classes.typography}>
             NRIDA Job Portal
           </Typography>
         </Box>
         {isAuth() ? (
           userType() === "recruiter" ? (
             <>
-              <Button color="inherit" onClick={() => handleClick("/home")}>
-                Home
-              </Button>
-              <Button color="inherit" onClick={() => handleClick("/addjob")}>
+              <Button className={classes.button} onClick={() => handleClick("/addjob")}>
                 Add Jobs
               </Button>
-              <Button color="inherit" onClick={() => handleClick("/myjobs")}>
+              <Button className={classes.button} onClick={() => handleClick("/myjobs")}>
                 My Jobs
               </Button>
-              <Button color="inherit" onClick={() => handleClick("/profile")}>
+              <Button className={classes.button} onClick={() => handleClick("/profile")}>
                 Profile
               </Button>
-              <Button color="inherit" onClick={() => handleClick("/logout")}>
+              <Button className={classes.button} onClick={() => handleClick("/logout")}>
                 Logout
               </Button>
             </>
           ) : (
             <>
-              <Button color="inherit" onClick={() => handleClick("/home")}>
-                Home
-              </Button>
-              <Button
-                color="inherit"
-                onClick={() => handleClick("/applications")}
-              >
+              <Button className={classes.button} onClick={() => handleClick("/applications")}>
                 Applications
               </Button>
-              <Button color="inherit" onClick={() => handleClick("/profile")}>
+              <Button className={classes.button} onClick={() => handleClick("/profile")}>
                 Profile
               </Button>
-              <Button color="inherit" onClick={() => handleClick("/logout")}>
+              <Button className={classes.button} onClick={() => handleClick("/logout")}>
                 Logout
               </Button>
             </>
           )
         ) : (
           <>
-            <Button color="inherit" onClick={() => handleClick("/login")}>
+            <Button className={classes.button} onClick={() => handleClick("/login")}>
               Login
             </Button>
-            <Button color="inherit" onClick={() => handleClick("/signup")}>
+            <Button className={classes.button} onClick={() => handleClick("/signup")}>
               Signup
             </Button>
           </>

@@ -299,8 +299,7 @@ const Profile = (props) => {
             </Grid>
             <Button
               variant="contained"
-              color="primary"
-              style={{ padding: "10px 50px", marginTop: "30px" }}
+             color="#f97316"              style={{ padding: "10px 50px", marginTop: "30px" }}
               onClick={() => handleUpdate()}
             >
               Update Details

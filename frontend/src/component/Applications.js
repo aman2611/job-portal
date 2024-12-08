@@ -18,19 +18,12 @@ const useStyles = makeStyles(() => ({
   body: {
     height: "inherit",
   },
-  statusBlock: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textTransform: "uppercase",
-  },
   jobTileOuter: {
     padding: "30px",
     margin: "20px 0",
     boxSizing: "border-box",
     width: "100%",
+    position: "relative",
   },
   popupDialog: {
     height: "100%",
@@ -39,11 +32,11 @@ const useStyles = makeStyles(() => ({
     justifyContent: "center",
   },
   skillChip: {
-    '& .MuiChip-label': {
-      fontWeight: 'bold',
-      textTransform: 'uppercase'
-    }
-  }
+    "& .MuiChip-label": {
+      fontWeight: "bold",
+      textTransform: "uppercase",
+    },
+  },
 }));
 
 const ApplicationTile = (props) => {
@@ -118,25 +111,38 @@ const ApplicationTile = (props) => {
   const handleClose = () => setOpen(false);
 
   const colorSet = {
-    applied: "#3454D1",
-    shortlisted: "#DC851F",
-    accepted: "#09BC8A",
-    rejected: "#D1345B",
-    deleted: "#B49A67",
-    cancelled: "#FF8484",
-    finished: "#4EA5D9",
+    applied: "#f97316",
+    accepted: "#28A745",
+    shortlisted: "#FFB84D",
+    rejected: "#FF6666",
+    cancelled: "#9B59B6",
+    finished: "#8B4513",
+    selected: "#F1C40F",
   };
 
   return (
     <Paper className={classes.jobTileOuter} elevation={3}>
+      <Chip
+        label={application.status}
+        style={{
+          backgroundColor: colorSet[application.status] || "#cccccc",
+          color: "#ffffff",
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          textTransform: "uppercase",
+        }}
+      />
       <Grid container>
-        <Grid container item xs={9} spacing={1} direction="column">
+        <Grid container item xs={12} spacing={1} direction="column">
           <Grid item>
             <Typography variant="h5" textTransform="capitalize">
               {application?.job?.title || "Unknown Job"}
             </Typography>
           </Grid>
-          <Grid item textTransform="capitalize">Posted By: {application?.recruiterName || "Unknown"}</Grid>
+          <Grid item textTransform="capitalize">
+            Posted By: {application?.recruiterName || "Unknown"}
+          </Grid>
           <Grid item>Role: {application?.job?.jobType || "Not Specified"}</Grid>
           <Grid item textTransform="capitalize">
             Salary: &#8377; {application?.job?.salary || 0} per month
@@ -151,8 +157,13 @@ const ApplicationTile = (props) => {
             Skills:{" "}
             {application?.job?.skillsets?.length
               ? application.job.skillsets.map((skill, index) => (
-                  <Chip key={index} label={skill} style={{ marginRight: "5px" }} className={classes.skillChip}/>
-                ))
+                <Chip
+                  key={index}
+                  label={skill}
+                  style={{ marginRight: "5px" }}
+                  className={classes.skillChip}
+                />
+              ))
               : "Not Specified"}
           </Grid>
           <Grid item>Applied On: {appliedOn.toLocaleDateString()}</Grid>
@@ -160,34 +171,19 @@ const ApplicationTile = (props) => {
             <Grid item>Joined On: {joinedOn.toLocaleDateString()}</Grid>
           )}
         </Grid>
-        <Grid item container direction="column" xs={3}>
-          <Grid item xs>
-            <Paper
-              className={classes.statusBlock}
-              style={{
-                background: colorSet[application.status] || "#cccccc",
-                color: "#ffffff",
+        {["accepted", "finished"].includes(application.status) && (
+          <Grid item style={{ marginTop: "10px" }}>
+            <Button
+              variant="contained"
+             color="#f97316"              onClick={() => {
+                fetchRating();
+                setOpen(true);
               }}
             >
-              {application.status}
-            </Paper>
+              Rate Job
+            </Button>
           </Grid>
-          {["accepted", "finished"].includes(application.status) && (
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.statusBlock}
-                onClick={() => {
-                  fetchRating();
-                  setOpen(true);
-                }}
-              >
-                Rate Job
-              </Button>
-            </Grid>
-          )}
-        </Grid>
+        )}
       </Grid>
       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
         <Paper
@@ -209,8 +205,7 @@ const ApplicationTile = (props) => {
           />
           <Button
             variant="contained"
-            color="primary"
-            style={{ padding: "10px 50px" }}
+           color="#f97316"            style={{ padding: "10px 50px" }}
             onClick={changeRating}
           >
             Submit
@@ -237,7 +232,7 @@ const Applications = () => {
         },
       })
       .then((response) => {
-        console.log(response.data)
+        console.log(response.data);
         setApplications(response.data || []);
       })
       .catch((err) => {
@@ -260,10 +255,10 @@ const Applications = () => {
       <Grid item>
         <Typography variant="h2">Applications</Typography>
       </Grid>
-      <Grid container direction="column" style={{ width: "100%" }}>
+      <Grid container spacing={3} style={{ width: "100%" }}>
         {applications.length ? (
           applications.map((application) => (
-            <Grid item key={application._id}>
+            <Grid item xs={12} sm={6} key={application._id}>
               <ApplicationTile application={application} />
             </Grid>
           ))

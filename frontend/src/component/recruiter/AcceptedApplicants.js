@@ -379,8 +379,7 @@ const FilterPopup = (props) => {
           <Grid item>
             <Button
               variant="contained"
-              color="primary"
-              style={{ padding: "10px 50px" }}
+             color="#f97316"              style={{ padding: "10px 50px" }}
               onClick={() => getData()}
             >
               Apply
@@ -571,8 +570,7 @@ const ApplicationTile = (props) => {
             <Button
               variant="contained"
               className={classes.statusBlock}
-              color="primary"
-              onClick={() => getResume()}
+             color="#f97316"              onClick={() => getResume()}
             >
               Download Resume
             </Button>
@@ -581,8 +579,7 @@ const ApplicationTile = (props) => {
             {/* {buttonSet[application.status]} */}
             <Button
               variant="contained"
-              color="primary"
-              className={classes.statusBlock}
+             color="#f97316"              className={classes.statusBlock}
               style={{
                 background: "#09BC8A",
               }}
@@ -596,8 +593,7 @@ const ApplicationTile = (props) => {
           <Grid item>
             <Button
               variant="contained"
-              color="primary"
-              className={classes.statusBlock}
+             color="#f97316"              className={classes.statusBlock}
               onClick={() => {
                 setOpen(true);
               }}
@@ -629,8 +625,7 @@ const ApplicationTile = (props) => {
           />
           <Button
             variant="contained"
-            color="primary"
-            style={{ padding: "10px 50px" }}
+           color="#f97316"            style={{ padding: "10px 50px" }}
             onClick={() => changeRating()}
           >
             Submit
@@ -672,8 +667,7 @@ const ApplicationTile = (props) => {
             <Grid item>
               <Button
                 variant="contained"
-                color="primary"
-                style={{ padding: "10px 50px" }}
+               color="#f97316"                style={{ padding: "10px 50px" }}
                 onClick={() => handleCloseEndJob()}
               >
                 Cancel

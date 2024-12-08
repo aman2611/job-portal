@@ -12,7 +12,7 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { SetPopupContext } from "../../../App";
 import apiList from "../../../lib/apiList";
@@ -22,7 +22,7 @@ const ScreeningQuestions = () => {
   const { state } = useLocation();
   const formData = state?.formData;
   const setPopup = useContext(SetPopupContext);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const [questions, setQuestions] = useState([
     { question: "", answer: "", isRequired: false },
@@ -88,9 +88,9 @@ const ScreeningQuestions = () => {
         });
 
         setQuestions([{ question: "", answer: "", isRequired: false }]);
-        
-         // Redirect to '/home' after 2 seconds
-         setTimeout(() => {
+
+        // Redirect to '/home' after 2 seconds
+        setTimeout(() => {
           navigate("/home");
         }, 2000);
 
@@ -108,25 +108,25 @@ const ScreeningQuestions = () => {
 
   // Navigate back to the JobDetails page
   const handleBack = () => {
-    navigate("/addjob"); 
+    navigate("/addjob");
   };
 
   return (
     <Box
       sx={{
-        backgroundColor: "#f3f2ee",
+        backgroundColor: "#f9fafb",
         // minHeight: "100vh",
         display: "flex",
-        alignItems: "flex-start",  
+        alignItems: "flex-start",
         justifyContent: "center",
         padding: 4,
-        width: "100%",  
+        width: "100%",
       }}
     >
       <Card
         sx={{
           width: "100%",
-          maxWidth: "900px", 
+          maxWidth: "900px",
           // margin: "auto",
           backgroundColor: "#fff",
           boxShadow: 3,
@@ -188,10 +188,18 @@ const ScreeningQuestions = () => {
             <Grid item xs={12}>
               <Button
                 variant="contained"
-                color="primary"
                 onClick={handleAddQuestion}
-                sx={{ width: "auto", marginLeft: "auto", display: "block" }} // Smaller and centered
-              >
+                sx={{
+                  width: "auto",
+                  marginLeft: "auto",
+                  display: "block",
+                  border: "2px solid #f97316",
+                  backgroundColor: "white",
+                  color: "#f97316",
+                  "&:hover": {
+                    backgroundColor: "#fff7ed",
+                  }
+                }}              >
                 Add More Questions
               </Button>
             </Grid>
@@ -203,15 +211,22 @@ const ScreeningQuestions = () => {
             variant="outlined"
             color="secondary"
             onClick={handleBack}
-            sx={{ width: "auto" }}
+            sx={{ backgroundColor: "#4b5563", color: "#fff", "&:hover": { backgroundColor: "#374151" } }}
           >
             Back
           </Button>
           <Button
             variant="contained"
-            color="success"
             onClick={handleSubmit}
-            sx={{ width: "auto" }}
+            sx={{
+              backgroundColor: "#f97316",
+              "&:hover": { backgroundColor: "#ea580c" },
+              "&.Mui-disabled": {
+                opacity: 0.5, // Set opacity to 50% when disabled
+                backgroundColor: "#f97316", // Keep the same background color
+                color: "#fff", // Keep the text color as white
+              },
+            }}
             disabled={questions.every((q) => !q.question.trim())}
           >
             Submit

@@ -344,8 +344,7 @@ const ExperienceDetail = () => {
 
         <Button
           variant="contained"
-          color="primary"
-          startIcon={<AddCircleOutlineIcon />}
+         color="#f97316"          startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddExperience}
           style={{ marginTop: "20px" }}
         >

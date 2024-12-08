@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
   },
   sectionHeader: {
-    backgroundColor: "#f3f2ee",
+    backgroundColor: "#f9fafb",
     padding: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
@@ -207,7 +207,7 @@ const EducationDetail = () => {
       {/* Class X */}
       <Box className={classes.card}>
         <Grid container spacing={2} className={classes.section}>
-          <Grid item xs={12} style={{ paddingLeft: "5px" }} sx={{ backgroundColor: "#f3f2ee", padding: 1 }}>
+          <Grid item xs={12} style={{ paddingLeft: "5px" }} sx={{ backgroundColor: "#f9fafb", padding: 1 }}>
             <Typography variant="h6">Class X</Typography>
           </Grid>
           <Grid container spacing={2}>
@@ -271,7 +271,7 @@ const EducationDetail = () => {
       {/* Class XII */}
       <Box className={classes.card}>
         <Grid container spacing={2} className={classes.section}>
-          <Grid item xs={12} style={{ paddingLeft: "5px" }} sx={{ backgroundColor: "#f3f2ee", padding: 1 }}>
+          <Grid item xs={12} style={{ paddingLeft: "5px" }} sx={{ backgroundColor: "#f9fafb", padding: 1 }}>
             <Typography variant="h6">Class XII</Typography>
           </Grid>
           <Grid container spacing={2}>

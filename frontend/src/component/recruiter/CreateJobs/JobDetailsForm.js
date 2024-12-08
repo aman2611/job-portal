@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { JobDataContext } from "./CreateJobs2";
 
 const JobDetailsForm = () => {
-  const { jobData, setJobData } = useContext(JobDataContext); 
+  const { jobData, setJobData } = useContext(JobDataContext);
   console.log(jobData)
   const navigate = useNavigate();
   const [skillInput, setSkillInput] = useState("");
@@ -41,7 +41,7 @@ const JobDetailsForm = () => {
     if (jobData) {
       setFormData((prevData) => ({
         ...prevData,
-        ...jobData, 
+        ...jobData,
       }));
     }
   }, [jobData]);
@@ -71,21 +71,21 @@ const JobDetailsForm = () => {
   };
 
   const handleProceedToScreening = () => {
-    setJobData(formData); 
-    console.log("Updated Context:", formData); 
-    navigate("/screening", { state: { formData } }); 
+    setJobData(formData);
+    console.log("Updated Context:", formData);
+    navigate("/screening", { state: { formData } });
   };
 
   return (
     <Box
       sx={{
-        backgroundColor: "#f3f2ee",
+        backgroundColor: "#f9fafb",
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: 4,
-        width:'95%'
+        width: '95%'
       }}
     >
       <Card
@@ -253,12 +253,13 @@ const JobDetailsForm = () => {
             <Grid item xs={12} sx={{ textAlign: "end", marginTop: 2 }}>
               <Button
                 variant="contained"
-                color="primary"
+                sx={{ backgroundColor: "#f97316", "&:hover": { backgroundColor: "#ea580c" } }}
                 onClick={handleProceedToScreening}
               >
                 Next
               </Button>
             </Grid>
+
           </Grid>
         </CardContent>
       </Card>

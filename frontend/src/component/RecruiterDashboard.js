@@ -25,12 +25,12 @@ const RecruiterDashboard = () => {
     const [statusDistribution, setStatusDistribution] = useState([]);
 
     const pastelColors = [
-        '#E63946', 
-        '#FFEBCD', 
-        '#219EBC', 
-        '#99D98C', 
-        '#87CEFA', 
-        '#DDA0DD'  
+        '#E63946',
+        '#FFEBCD',
+        '#219EBC',
+        '#99D98C',
+        '#87CEFA',
+        '#DDA0DD'
     ];
 
     const fetchDashboardData = () => {
@@ -51,30 +51,29 @@ const RecruiterDashboard = () => {
             })
             .then((response) => {
                 const applicationsData = response.data;
-                
+
                 const statusCounts = applicationsData.reduce((acc, app) => {
                     acc[app.status] = (acc[app.status] || 0) + 1;
                     return acc;
                 }, {});
 
                 const statusColors = {
-                    applied: "#A3D8F4",      
-                    accepted: "#28A745",    
-                    shortlisted: "#FFB84D",   
-                    rejected: "#FF6666",      
-                    cancelled: "#9B59B6",     
-                    finished: "#8B4513",      
-                    selected: "#F1C40F",    
+                    applied: "#f97316",
+                    accepted: "#28A745",
+                    shortlisted: "#FFB84D",
+                    rejected: "#FF6666",
+                    cancelled: "#9B59B6",
+                    finished: "#8B4513",
+                    selected: "#F1C40F",
                 };
-                
-    
+
                 const statusDistributionData = Object.entries(statusCounts).map(([status, value], index) => ({
                     id: status,
                     value,
                     label: status.charAt(0).toUpperCase() + status.slice(1),
-                    color: statusColors[status.toLowerCase()] || '#808080'  
+                    color: statusColors[status.toLowerCase()] || '#808080'
                 }));
-    
+
                 setStatusDistribution(statusDistributionData);
 
                 setRecentApplications(
@@ -84,8 +83,10 @@ const RecruiterDashboard = () => {
                     }))
                 );
                 setTotalApplications(applicationsData.length);
+
+                // Update the logic to count applications with status "shortlisted" for interviews scheduled
                 setInterviewsScheduled(
-                    applicationsData.filter((app) => app.status === "Interview Scheduled").length
+                    applicationsData.filter((app) => app.status === "shortlisted").length
                 );
 
                 const completedApplications = applicationsData.filter((app) => app.hiringDate);
@@ -120,12 +121,13 @@ const RecruiterDashboard = () => {
             const theme = useTheme();
 
             const statusColors = {
-                applied: theme.palette.info.main,
-                shortlisted: theme.palette.warning.main,
-                accepted: theme.palette.success.main,
-                rejected: theme.palette.error.main,
-                finished: theme.palette.text.secondary,
-                cancelled: theme.palette.text.disabled,
+                applied: "#f97316",
+                accepted: "#28A745",
+                shortlisted: "#FFB84D",
+                rejected: "#FF6666",
+                cancelled: "#9B59B6",
+                finished: "#8B4513",
+                selected: "#F1C40F",
             };
 
             return (
@@ -151,13 +153,10 @@ const RecruiterDashboard = () => {
                         paddingBottom={1}
                         width="100%"
                     >
-                        <Avatar sx={{ width: 36, height: 36, marginRight: 2 }} src={application.applicantProfile || ""}>
-                            {!application.applicantProfile &&
-                                application.applicantName
-                                    .split(" ")
-                                    .map((n) => n[0])
-                                    .join("")}
-                        </Avatar>
+                        <Avatar
+                            sx={{ width: 36, height: 36, marginRight: 2 }}
+                            src={application.applicantProfile || "path/to/default-image.jpg"}
+                        />
                         <Box flexGrow={1}>
                             <Typography variant="body1" fontWeight="medium" textTransform="capitalize">
                                 {application.applicantName}
@@ -175,7 +174,7 @@ const RecruiterDashboard = () => {
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
-            <Box
+            {/* <Box
                 borderBottom="1px solid #e0e0e0"
                 display="flex"
                 alignItems="center"
@@ -184,12 +183,12 @@ const RecruiterDashboard = () => {
             >
                 <Typography variant="h6">Recruiter Dashboard</Typography>
                 <Search />
-            </Box>
+            </Box> */}
 
             <Box padding={3} flex={1}>
                 <Grid container spacing={3} justifyContent="space-between">
                     <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ height: "100%" }}>
+                        <Card sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                             <CardHeader title="Total Applications" />
                             <CardContent>
                                 <Typography variant="h4">{totalApplications}</Typography>
@@ -198,7 +197,7 @@ const RecruiterDashboard = () => {
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ height: "100%" }}>
+                        <Card sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                             <CardHeader title="Open Positions" />
                             <CardContent>
                                 <Typography variant="h4">{openPositions}</Typography>
@@ -207,7 +206,7 @@ const RecruiterDashboard = () => {
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ height: "100%" }}>
+                        <Card sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                             <CardHeader title="Interviews Scheduled" />
                             <CardContent>
                                 <Typography variant="h4">{interviewsScheduled}</Typography>
@@ -216,7 +215,7 @@ const RecruiterDashboard = () => {
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ height: "100%" }}>
+                        <Card sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                             <CardHeader title="Time to Hire (Days)" />
                             <CardContent>
                                 <Typography variant="h4">{timeToHire}</Typography>
@@ -229,35 +228,15 @@ const RecruiterDashboard = () => {
                 <Grid container spacing={3} marginTop={3}>
                     <Grid item xs={12} md={6}>
                         <Card>
-                            <CardHeader title="Applications Trend" />
-                            <CardContent>
-                                {/* Uncomment the below section for Bar Chart */}
-                                {/* <BarChart
-                                    data={overviewData}
-                                    xKey="month"
-                                    yKey="applications"
-                                    title="Applications Over Time"
-                                /> */}
-                                <Typography color="text.secondary">
-                                    Bar chart placeholder: Displays trends in applications over time.
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid item xs={12} md={6}>
-                        <Card>
                             <CardHeader title="Application Status Distribution" />
                             <CardContent>
                                 {statusDistribution.length > 0 ? (
                                     <PieChart
-                                        series={[
-                                            {
-                                                data: statusDistribution,
-                                                highlightScope: { faded: 'global', highlighted: 'item' },
-                                                faded: { innerRadius: 30, additionalRadius: -30 },
-                                            },
-                                        ]}
+                                        series={[{
+                                            data: statusDistribution,
+                                            highlightScope: { faded: 'global', highlighted: 'item' },
+                                            faded: { innerRadius: 30, additionalRadius: -30 },
+                                        }]}
                                         slotProps={{
                                             legend: {
                                                 hidden: false,

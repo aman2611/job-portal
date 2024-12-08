@@ -7,6 +7,7 @@ import {
   Paper,
   MenuItem,
   Card,
+  InputAdornment,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from "axios";
@@ -20,30 +21,71 @@ import { SetPopupContext } from "../App";
 
 import apiList from "../lib/apiList";
 import isAuth from "../lib/isAuth";
-import goilogo from "../asset/goi-logo.png";
+import goilogo from "../assets/goi-logo.png";
 import { Box } from "@mui/system";
 
-const useStyles = makeStyles((theme) => ({
-  mainCard: {
-    width: "1200px",
-    padding: theme.spacing(2),
-    borderRadius: "8px",
+const useStyles = makeStyles(() => ({
+  mainContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    backgroundColor: "#f9f9f9",
+    padding: "20px",
+    flexDirection: "column",
   },
-  logoBox: {
+  card: {
+    width: "400px",
+    padding: "40px 30px",
+    textAlign: "center",
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
-    marginBottom: theme.spacing(2),
+    justifyContent: "center",
+    marginTop: "20px",
   },
-  body: {
-    padding: "20px 60px 40px",
-    margin: "auto",
+  logo: {
+    width: "80px",
+    marginBottom: "20px",
+  },
+  subTitle: {
+    fontSize: "14px",
+    color: "#666",
+    marginBottom: "30px",
+  },
+  signInButton: {
+    marginTop: "10px",
+    backgroundColor: "#000",
+    color: "#fff",
+    "&:hover": {
+      backgroundColor: "#333",
+    },
+  },
+  footerLinks: {
+    marginTop: "20px",
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: "14px",
+    color: "#666",
+  },
+  link: {
+    fontWeight: "500",
+    cursor: "pointer",
+    color: "#000",
   },
   inputBox: {
-    width: "300px",
+    marginBottom: "20px",
+    width: "100%",
   },
   submitButton: {
-    width: "300px",
+    width: "100%",
+    backgroundColor: "#f97316",
+    "&:hover": {
+      backgroundColor: "#ea580c",
+    },
+    marginTop: "20px",
   },
 }));
 
@@ -169,119 +211,145 @@ const Signup = (props) => {
   return loggedin ? (
     <Navigate to="/" />
   ) : (
-    <Card className={classes.mainCard}>
-      <Box className={classes.logoBox}>
-        <img src={goilogo} alt="Govt of India Logo" style={{ width: "50px" }} />
-        <Typography variant="h4">NRIDA Job Portal</Typography>
+    <Paper elevation={3} className={classes.card}>
+      <Box>
+        <img
+          src={goilogo}
+          alt="Govt of India Logo"
+          className={classes.logo}
+        />
       </Box>
-      <Card elevation={3} className={classes.body}>
-        <Grid container direction="column" spacing={4} alignItems="center">
-          <Grid item>
-            <Typography variant="h3" component="h2">
-              Signup
-            </Typography>
-          </Grid>
-          <Grid item>
-            <TextField
-              select
-              label="Category"
-              variant="outlined"
-              className={classes.inputBox}
-              value={signupDetails.type}
-              onChange={(event) => {
-                handleInput("type", event.target.value);
-              }}
-            >
-              <MenuItem value="applicant">Applicant</MenuItem>
-              <MenuItem value="recruiter">Recruiter</MenuItem>
-            </TextField>
-          </Grid>
-          <Grid item>
-            <TextField
-              label="Name"
-              value={signupDetails.name}
-              onChange={(event) => handleInput("name", event.target.value)}
-              className={classes.inputBox}
-              error={inputErrorHandler.name.error}
-              helperText={inputErrorHandler.name.message}
-              onBlur={(event) => {
-                if (event.target.value === "") {
-                  handleInputError("name", true, "Name is required");
-                } else {
-                  handleInputError("name", false, "");
-                }
-              }}
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item>
-            <EmailInput
-              label="Email"
-              value={signupDetails.email}
-              onChange={(event) => handleInput("email", event.target.value)}
-              inputErrorHandler={inputErrorHandler}
-              handleInputError={handleInputError}
-              className={classes.inputBox}
-              required={true}
-            />
-          </Grid>
-          <Grid item>
-            <PasswordInput
-              label="Password"
-              value={signupDetails.password}
-              onChange={(event) => handleInput("password", event.target.value)}
-              className={classes.inputBox}
-              error={inputErrorHandler.password.error}
-              helperText={inputErrorHandler.password.message}
-              onBlur={(event) => {
-                if (event.target.value === "") {
-                  handleInputError("password", true, "Password is required");
-                } else {
-                  handleInputError("password", false, "");
-                }
-              }}
-            />
-          </Grid>
-          <Grid item >
-            <TextField
-              label="Bio (upto 250 words)"
-              multiline
-              rows={8}
-              className={classes.inputBox}
 
-              variant="outlined"
-              value={signupDetails.bio}
-              onChange={(event) => {
-                if (
-                  event.target.value.split(" ").filter(function (n) {
-                    return n !== "";
-                  }).length <= 250
-                ) {
-                  handleInput("bio", event.target.value);
-                }
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <PhoneInput
-              country={"in"}
-              value={phone}
-              onChange={(phone) => setPhone(phone)}
-            />
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSignup}
-              className={classes.submitButton}
-            >
-              Signup
-            </Button>
-          </Grid>
-        </Grid>
-      </Card>
-    </Card>
+      <Box sx={{ marginBottom: "30px" }}>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: "bold", marginBottom: "10px" }}
+        >
+          Create an account
+        </Typography>
+        <Typography className={classes.subTitle}>
+          Enter your details to create your account
+        </Typography>
+      </Box>
+
+      <Box item sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        {/* Grouped input fields with typography */}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
+          <Typography sx={{ fontWeight: 700 }}>Name</Typography>
+          <TextField
+            value={signupDetails.name}
+            onChange={(event) => handleInput("name", event.target.value)}
+            className={classes.inputBox}
+            error={inputErrorHandler.name.error}
+            helperText={inputErrorHandler.name.message}
+            onBlur={(event) => {
+              if (event.target.value === "") {
+                handleInputError("name", true, "Name is required");
+              } else {
+                handleInputError("name", false, "");
+              }
+            }}
+            variant="outlined"
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
+          <Typography sx={{ fontWeight: 700 }}>Email</Typography>
+          <EmailInput
+            value={signupDetails.email}
+            onChange={(event) => handleInput("email", event.target.value)}
+            inputErrorHandler={inputErrorHandler}
+            handleInputError={handleInputError}
+            className={classes.inputBox}
+            required={true}
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
+          <Typography sx={{ fontWeight: 700 }}>Password</Typography>
+          <PasswordInput
+            value={signupDetails.password}
+            onChange={(event) => handleInput("password", event.target.value)}
+            // className={classes.inputBox}
+            sx={{
+              '.css-1iw3t7y-MuiFormControl-root': {
+                width: '100%, !important'
+              },
+            }}
+            error={inputErrorHandler.password.error}
+            helperText={inputErrorHandler.password.message}
+            onBlur={(event) => {
+              if (event.target.value === "") {
+                handleInputError("password", true, "Password is required");
+              } else {
+                handleInputError("password", false, "");
+              }
+            }}
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
+          <Typography sx={{ fontWeight: 700 }}>I am a</Typography>
+          <TextField
+            placeholder="Select User Type"
+            select
+            value={signupDetails.type}
+            onChange={(event) => {
+              handleInput("type", event.target.value);
+            }}
+            className={classes.inputBox}
+            variant="outlined"
+          >
+            <MenuItem value="applicant">Applicant</MenuItem>
+            <MenuItem value="recruiter">Recruiter</MenuItem>
+          </TextField>
+        </Box>
+
+        {signupDetails.type === "recruiter" && (
+          <>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
+              <Typography sx={{ fontWeight: 700 }}>Bio</Typography>
+              <TextField
+                multiline
+                rows={8}
+                className={classes.inputBox}
+                variant="outlined"
+                value={signupDetails.bio}
+                onChange={(event) => {
+                  if (
+                    event.target.value.split(" ").filter((n) => n !== "")
+                      .length <= 250
+                  ) {
+                    handleInput("bio", event.target.value);
+                  }
+                }}
+              />
+            </Box>
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
+              <Typography sx={{ fontWeight: 700 }}>Phone Number</Typography>
+              <PhoneInput
+                country={"in"}
+                value={phone}
+                onChange={setPhone}
+              />
+            </Box>
+
+          </>
+        )}
+
+        <Box>
+          <Button
+            variant="contained"
+            className={classes.submitButton}
+            sx={{ padding: "10px 50px", backgroundColor: "#f97316", "&:hover": { backgroundColor: "#ea580c" } }}
+            onClick={handleSignup}
+          >
+            Sign up
+          </Button>
+        </Box>
+      </Box>
+    </Paper>
   );
 };
 

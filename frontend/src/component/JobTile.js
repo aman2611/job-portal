@@ -118,7 +118,7 @@ const JobTile = ({ job, appliedJobs }) => {
             Duration: {job.duration !== 0 ? `${job.duration} month` : `Flexible`}
           </Grid>
           <Grid item>Posted By: {job.recruiter.name}</Grid>
-          <Grid item>Application Deadline: {deadline}</Grid>
+          <Grid item>Application Deadline: {deadline} 12:00 PM</Grid>
           <Grid item>{renderSkills()}</Grid>
         </Grid>
         {userType() !== "recruiter" && (
@@ -164,8 +164,7 @@ const JobTile = ({ job, appliedJobs }) => {
           />
           <Button
             variant="contained"
-            color="primary"
-            style={{ padding: "10px 50px" }}
+            color="#f97316" style={{ padding: "10px 50px" }}
             onClick={handleApply}
           >
             Submit

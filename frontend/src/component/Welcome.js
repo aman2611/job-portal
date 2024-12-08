@@ -7,7 +7,7 @@ const Welcome = (props) => {
       container
       item
       direction="column"
-      alignItems="center"
+      alignitems="center"
       justify="center"
       style={{ padding: "30px", minHeight: "93vh" }}
     >
@@ -26,7 +26,7 @@ export const ErrorPage = (props) => {
       container
       item
       direction="column"
-      alignItems="center"
+      alignitems="center"
       justify="center"
       style={{ padding: "30px", minHeight: "93vh" }}
     >

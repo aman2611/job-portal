@@ -58,9 +58,10 @@ const FileUploadInput = (props) => {
         <Grid item xs={3}>
           <Button
             variant="contained"
-            color="primary"
             component="label"
-            style={{ width: "100%", height: "100%" }}
+            sx={{
+              width: "100%", height: "100%", backgroundColor: "#f97316",
+            }}
           >
             {props.icon}
             <input
@@ -71,11 +72,11 @@ const FileUploadInput = (props) => {
                 setUploadPercentage(0);
                 setFile(event.target.files[0]);
               }}
-              // onChange={onChange}
-              // onChange={
-              //   (e) => {}
-              //   //   setSource({ ...source, place_img: e.target.files[0] })
-              // }
+            // onChange={onChange}
+            // onChange={
+            //   (e) => {}
+            //   //   setSource({ ...source, place_img: e.target.files[0] })
+            // }
             />
           </Button>
         </Grid>
@@ -93,8 +94,16 @@ const FileUploadInput = (props) => {
         <Grid item xs={3}>
           <Button
             variant="contained"
-            color="secondary"
-            style={{ width: "100%", height: "100%" }}
+            sx={{
+              width: "100%", height: "100%",
+              backgroundColor: "#4b5563",
+              "&:hover": { backgroundColor: "#ea580c" },
+              "&.Mui-disabled": {
+                opacity: 0.5, 
+                backgroundColor: "#4b5563", 
+                color: "#fff", 
+              },
+            }}
             onClick={() => handleUpload()}
             disabled={file ? false : true}
           >

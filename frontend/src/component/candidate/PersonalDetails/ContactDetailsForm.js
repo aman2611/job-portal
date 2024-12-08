@@ -89,7 +89,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                 </Grid>
 
                 <Grid item xs={12} className="col-span-full">
-                    <Typography variant="h6" sx={{ backgroundColor: '#f3f2ee', padding: 1 }}>
+                    <Typography variant="h6" sx={{ backgroundColor: '#fff7ed', padding: 1 }}>
                         Permanent Address
                     </Typography>
                 </Grid>
@@ -148,7 +148,7 @@ const ContactDetailsForm = ({ formData, setFormData }) => {
                 </Grid>
 
                 <Grid item xs={12} className="col-span-full">
-                    <Grid container justifyContent="space-between" alignItems="center" sx={{ backgroundColor: '#f3f2ee', padding: 1 }}>
+                    <Grid container justifyContent="space-between" alignItems="center" sx={{ backgroundColor: '#fff7ed', padding: 1 }}>
                         <Typography variant="h6">Correspondence Address</Typography>
                         <FormControlLabel
                             control={

@@ -50,7 +50,7 @@ const CreateJobs2 = () => {
   return (
     <JobDataProvider>
       <CardContent sx={{
-        width: '100%', p: 0, backgroundColor: "#f3f2ee",
+        width: '100%', p: 0, backgroundColor: "#f9fafb",
       }}>
         {currentStep === 1 ? (
           <JobDetails />

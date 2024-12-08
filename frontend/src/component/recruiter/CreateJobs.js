@@ -248,8 +248,7 @@ const CreateJobs = (props) => {
               </Grid>
               <Button
                 variant="contained"
-                color="primary"
-                style={{ padding: "10px 50px", marginTop: "30px", display:"flex", justifyContent:"end" }}
+               color="#f97316"                style={{ padding: "10px 50px", marginTop: "30px", display:"flex", justifyContent:"end" }}
                 onClick={() => handleUpdate()}
               >
                 Create Job

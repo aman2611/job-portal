@@ -26,18 +26,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   inputLabel: {
-    marginBottom: "8px", 
+    marginBottom: "8px",
   },
   inputBox: {
-    marginBottom: "16px", 
+    marginBottom: "16px",
   }
 }));
 
-const profilePicture = (props) => {
+const Profile = (props) => {
   const classes = useStyles();
   const setPopup = useContext(SetPopupContext);
 
-  const [profilePictureDetails, setprofilePictureDetails] = useState({
+  const [ProfileDetails, setProfileDetails] = useState({
     name: "",
     bio: "",
     contactNumber: "",
@@ -47,8 +47,8 @@ const profilePicture = (props) => {
   const [phone, setPhone] = useState("");
 
   const handleInput = (key, value) => {
-    setprofilePictureDetails({
-      ...profilePictureDetails,
+    setProfileDetails({
+      ...ProfileDetails,
       [key]: value,
     });
   };
@@ -65,7 +65,9 @@ const profilePicture = (props) => {
         },
       })
       .then((response) => {
-        setprofilePictureDetails(response.data);
+        console.log(response.data)
+
+        setProfileDetails(response.data);
         setPhone(response.data.contactNumber);
       })
       .catch((err) => {
@@ -79,16 +81,16 @@ const profilePicture = (props) => {
 
   const handleUpdate = () => {
     let updatedDetails = {
-      ...profilePictureDetails,
+      ...ProfileDetails,
     };
     if (phone !== "") {
       updatedDetails = {
-        ...profilePictureDetails,
+        ...ProfileDetails,
         contactNumber: `+${phone}`,
       };
     } else {
       updatedDetails = {
-        ...profilePictureDetails,
+        ...ProfileDetails,
         contactNumber: "",
       };
     }
@@ -100,6 +102,7 @@ const profilePicture = (props) => {
         },
       })
       .then((response) => {
+        console.log(response)
         setPopup({
           open: true,
           severity: "success",
@@ -117,7 +120,7 @@ const profilePicture = (props) => {
   };
 
   return (
-    <Card sx={{ width: "100%", marginTop:'30px' }}>
+    <Card sx={{ width: "100%", marginTop: '30px' }}>
       <Grid
         container
         item
@@ -126,7 +129,7 @@ const profilePicture = (props) => {
         style={{ padding: "30px", minHeight: "93vh" }}
       >
         <Grid item>
-          <Typography variant="h4">profilePicture</Typography>
+          <Typography variant="h4">Profile</Typography>
         </Grid>
         <Grid item xs style={{ width: "100%" }}>
           <Paper
@@ -143,7 +146,7 @@ const profilePicture = (props) => {
               <Grid item>
                 <Typography className={classes.inputLabel}>Enter Your Name</Typography>
                 <TextField
-                  value={profilePictureDetails.name}
+                  value={ProfileDetails.name}
                   onChange={(event) => handleInput("name", event.target.value)}
                   className={classes.inputBox}
                   variant="outlined"
@@ -159,7 +162,7 @@ const profilePicture = (props) => {
                   multiline
                   rows={8}
                   variant="outlined"
-                  value={profilePictureDetails.bio}
+                  value={ProfileDetails.bio}
                   onChange={(event) => {
                     if (
                       event.target.value.split(" ").filter(function (n) {
@@ -182,7 +185,7 @@ const profilePicture = (props) => {
                     value={phone}
                     onChange={(phone) => setPhone(phone)}
                     inputProps={{
-                      required: true, 
+                      required: true,
                     }}
                     style={{ width: "100%" }}
                   />
@@ -191,8 +194,7 @@ const profilePicture = (props) => {
                 <Grid item xs={12} sm={6}>
                   <Typography className={classes.inputLabel}>Email</Typography>
                   <TextField
-                    label="Enter Your Email"
-                    value={profilePictureDetails.email}
+                    value={ProfileDetails.email}
                     onChange={(event) => handleInput("email", event.target.value)}
                     className={classes.inputBox}
                     variant="outlined"
@@ -206,8 +208,7 @@ const profilePicture = (props) => {
 
             <Button
               variant="contained"
-              color="primary"
-              style={{ padding: "10px 50px", marginTop: "30px" }}
+              sx={{ padding: "10px 50px", marginTop: "30px", backgroundColor: "#f97316", "&:hover": { backgroundColor: "#ea580c" } }}
               onClick={() => handleUpdate()}
             >
               Update Details
@@ -219,4 +220,4 @@ const profilePicture = (props) => {
   );
 };
 
-export default profilePicture;
+export default Profile;

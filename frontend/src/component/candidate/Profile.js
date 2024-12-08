@@ -68,7 +68,7 @@ const Profile = () => {
     pwBD: "",
     belongsToExServiceman: "No",
     religion: "Hinduism",
-    email: "", 
+    email: "",
     alternateEmail: "",
     mobile: "",
     officeTelephone: "",
@@ -107,7 +107,7 @@ const Profile = () => {
       employmentType: "",
       skills: [],
     },
-    personalSkills:[],
+    personalSkills: [],
     resume: null,
     profilePicture: null,
   });
@@ -125,14 +125,13 @@ const Profile = () => {
       })
       .then((response) => {
         const userData = response.data.userDetails;
+        // const userData = response.data;
         setFormData((prevData) => ({
           ...prevData,
-          email: userData.email, 
-          ...userData, 
+          email: response.data.email,
+          ...userData,
         }));
         console.log("User data fetched:", userData);
-        console.log(" data fetched:", response.data);
-       
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -170,7 +169,7 @@ const Profile = () => {
           <PersonalDetail
             formData={formData}
             handleInput={handleInput}
-            readOnlyFields={{ email: true }} 
+            readOnlyFields={{ email: true }}
           />
         );
       case 1:
@@ -255,20 +254,31 @@ const Profile = () => {
           {activeStep === steps.length ? null : (
             <div>
               {getStepContent(activeStep)}
-              <Box sx={{ marginTop: "20px", marginLeft:"48px" }}>
+              <Box sx={{ marginTop: "20px", marginLeft: "48px" }}>
                 <Button
                   disabled={activeStep === 0}
                   onClick={handleBack}
                   variant="outlined"
-                  sx={{ marginRight: "10px" }}
+                  sx={{
+                    marginRight: "10px", backgroundColor: "#4b5563", color: "#fff", "&:hover": { backgroundColor: "#374151" }, "&.Mui-disabled": {
+                      opacity: 0.5,
+                      backgroundColor: "#4b5563",
+                      color: "#fff",
+                    },
+                  }}
+
                 >
                   Back
                 </Button>
                 <Button
                   variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                  sx={{ marginRight: "10px" }}
+                  color="#f97316" onClick={handleNext}
+                  sx={{
+                    marginRight: "10px",
+                    backgroundColor: "#f97316",
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "#ea580c" }
+                  }}
                 >
                   {activeStep === steps.length - 1 ? "Finish" : "Next"}
                 </Button>
@@ -278,7 +288,7 @@ const Profile = () => {
         </div>
       </Box>
 
-        <Snackbar
+      <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}

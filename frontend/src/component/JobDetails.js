@@ -11,7 +11,8 @@ import {
     Container,
     Box,
     Grid,
-    Divider
+    Divider,
+    Card
 } from "@mui/material";
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
@@ -27,12 +28,12 @@ import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => ({
     skillChip: {
-      '& .MuiChip-label': {
-        fontWeight: 'bold',
-        textTransform: 'uppercase'
-      }
+        '& .MuiChip-label': {
+            fontWeight: 'bold',
+            textTransform: 'uppercase'
+        }
     }
-  }));
+}));
 
 const JobDetails = () => {
     const { id } = useParams();
@@ -40,25 +41,29 @@ const JobDetails = () => {
     const [sop, setSop] = useState("");
     const [open, setOpen] = useState(false);
     const [hasApplied, setHasApplied] = useState(false);
+    const [applicationStatus, setApplicationStatus] = useState(null); // Track the application status
+    const [questions, setQuestions] = useState([]);
+    const [answers, setAnswers] = useState({});
+    const [step, setStep] = useState(1);
     const setPopup = useContext(SetPopupContext);
     const classes = useStyles();
 
     const getDefaultDescription = (jobTitle) => {
         return `
-            We are seeking a motivated and skilled ${jobTitle} to join our dynamic team. 
+        We are seeking a motivated and skilled ${jobTitle} to join our dynamic team. 
 
-            Key Responsibilities:
-            - Contribute to the development and implementation of project goals
-            - Collaborate with cross-functional teams to deliver high-quality results
-            - Apply your expertise to solve complex challenges and drive innovation
+Key Responsibilities:
+- Contribute to the development and implementation of project goals
+- Collaborate with cross-functional teams to deliver high-quality results
+- Apply your expertise to solve complex challenges and drive innovation
 
-            Ideal Candidate:
-            - Strong problem-solving skills
-            - Excellent communication and teamwork abilities
-            - Passion for continuous learning and professional growth
+Ideal Candidate:
+- Strong problem-solving skills
+- Excellent communication and teamwork abilities
+- Passion for continuous learning and professional growth
 
-            This role offers an exciting opportunity to make a significant impact in a collaborative and innovative work environment. We value creativity, initiative, and a proactive approach to professional challenges.
-    `.trim();
+This role offers an exciting opportunity to make a significant impact in a collaborative and innovative work environment. We value creativity, initiative, and a proactive approach to professional challenges.
+        `.trim();
     };
 
     useEffect(() => {
@@ -77,6 +82,7 @@ const JobDetails = () => {
                 }
 
                 setJob(jobData);
+                setQuestions(jobData.questions || []);
 
                 const applicationsResponse = await axios.get(apiList.applications, {
                     headers: {
@@ -88,10 +94,17 @@ const JobDetails = () => {
                 });
 
                 const appliedApplication = applicationsResponse.data.find(
-                    app => app.job._id === id && app.status === 'applied'
+                    app => app.job._id === id
                 );
 
-                setHasApplied(!!appliedApplication);
+                if (appliedApplication) {
+                    setHasApplied(true);
+                    setApplicationStatus(appliedApplication.status);
+                } else {
+                    setHasApplied(false);
+                    setApplicationStatus(null); // Reset if not applied
+                }
+
             } catch (err) {
                 setPopup({
                     open: true,
@@ -107,36 +120,72 @@ const JobDetails = () => {
     const handleClose = () => {
         setOpen(false);
         setSop("");
+        setAnswers({});
+        setStep(1);
     };
 
-    const handleApply = () => {
-        axios
-            .post(
-                `${apiList.jobs}/${id}/applications`,
-                { sop },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            )
-            .then((response) => {
+    const handleApply = async () => {
+        try {
+            const payload = {
+                sop,
+                answers: questions.map((question, index) => ({
+                    question: question.question,
+                    answer: answers[index] || "",
+                })),
+            };
+
+            // Apply for the job if the user has not applied yet
+            if (!hasApplied) {
+                const response = await axios.post(
+                    `${apiList.jobs}/${id}/applications`,
+                    payload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    }
+                );
+
                 setPopup({
                     open: true,
                     severity: "success",
                     message: response.data.message,
                 });
-                setHasApplied(true);
-                handleClose();
-            })
-            .catch((err) => {
-                setPopup({
-                    open: true,
-                    severity: "error",
-                    message: err.response.data.message,
-                });
-                handleClose();
+            } else {
+                // If the user has applied before and the status is rejected/canceled, allow reapplication
+                if (applicationStatus === "rejected" || applicationStatus === "canceled") {
+                    const response = await axios.put(
+                        `${apiList.jobs}/${id}/applications`,
+                        payload,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        }
+                    );
+                    setPopup({
+                        open: true,
+                        severity: "success",
+                        message: response.data.message,
+                    });
+                }
+            }
+
+            setHasApplied(true);
+            handleClose();
+        } catch (err) {
+            console.log(err)
+            setPopup({
+                open: true,
+                severity: "error",
+                message: err.response?.data?.message || "Error submitting application.",
             });
+            handleClose();
+        }
+    };
+
+    const handleNext = () => {
+        setStep(2);
     };
 
     if (!job) return <Typography>Loading...</Typography>;
@@ -154,7 +203,11 @@ const JobDetails = () => {
             >
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <Typography variant="h4" fontWeight="bold" color="primary" textTransform="capitalize">
+                        <Typography variant="h4" fontWeight="bold" sx={{
+                            textTransform: "capitalize",
+                            color: "#f97316",
+
+                        }}>
                             {job.title}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
@@ -165,7 +218,6 @@ const JobDetails = () => {
                         </Box>
                     </Grid>
 
-                    {/* Job Details */}
                     <Grid item xs={12}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={4}>
@@ -221,63 +273,84 @@ const JobDetails = () => {
                                 <Chip
                                     key={skill}
                                     label={skill}
-                                    color="primary"
-                                    variant="outlined"
+                                    color="#f97316" variant="outlined"
                                     className={classes.skillChip}
                                 />
                             ))}
                         </Box>
                     </Grid>
 
-                    {userType() !== "recruiter" && (
-
-                        <Grid item xs={12}>
-                            <Button
-                                variant={hasApplied ? "outlined" : "contained"}
-                                color="primary"
-                                size="large"
-                                fullWidth
-                                sx={{ mt: 2 }}
-                                disabled={hasApplied}
-                                onClick={() => setOpen(true)}
-                            >
-                                {hasApplied ? "Already Applied" : "Apply for this Job"}
-                            </Button>
-                        </Grid>
-                    )}
+                    <Grid item xs={12}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            {hasApplied ? (
+                                applicationStatus === 'rejected' || applicationStatus === 'canceled' ? (
+                                    <Button variant="contained" fullWidth onClick={() => setOpen(true)}
+                                        sx={{ backgroundColor: "#4b5563", color: "#fff", "&:hover": { backgroundColor: "#374151" } }}
+                                    >
+                                        Reapply
+                                    </Button>
+                                ) : (
+                                    <Button variant="contained" fullWidth disabled
+                                    sx={{
+                                        backgroundColor: "#f97316",
+                                        color: "#fff",
+                                        "&.Mui-disabled": {
+                                          opacity: 0.5, // Ensure opacity is still applied when disabled
+                                          backgroundColor: "#f97316", // Keep the background color same
+                                          color: "#fff", // Keep text color same
+                                        },
+                                      }}>
+                                        Already Applied
+                                    </Button>
+                                )
+                            ) : (
+                                <Button variant="contained" fullWidth onClick={() => setOpen(true)}
+                                    sx={{
+                                        width: "300px",
+                                        backgroundColor: "#f97316",
+                                        "&:hover": { backgroundColor: "#ea580c" }
+                                    }}
+                                >
+                                    Apply for this Job
+                                </Button>
+                            )}
+                        </Box>
+                    </Grid>
                 </Grid>
-
             </Box>
 
-            <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>Submit Statement of Purpose</DialogTitle>
+            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+                <DialogTitle>Application Form</DialogTitle>
                 <DialogContent>
+                    <Typography variant="h6" sx={{ mb: 2 }}>Statement of Purpose</Typography>
                     <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Write your Statement of Purpose (up to 250 words)"
-                        multiline
-                        rows={8}
                         fullWidth
-                        variant="outlined"
+                        multiline
+                        rows={4}
                         value={sop}
-                        onChange={(event) => {
-                            if (
-                                event.target.value.split(" ").filter((n) => n !== "").length <= 250
-                            ) {
-                                setSop(event.target.value);
-                            }
-                        }}
-                        helperText={`${sop.split(" ").filter((n) => n !== "").length}/250 words`}
+                        onChange={(e) => setSop(e.target.value)}
+                        label="Why do you want to apply?"
+                        variant="outlined"
+                        sx={{ mb: 2 }}
                     />
+
+                    {questions.map((question, index) => (
+                        <TextField
+                            key={index}
+                            fullWidth
+                            label={question.question}
+                            value={answers[index] || ''}
+                            onChange={(e) => {
+                                const newAnswers = { ...answers, [index]: e.target.value };
+                                setAnswers(newAnswers);
+                            }}
+                            sx={{ mb: 2 }}
+                        />
+                    ))}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="secondary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleApply} color="primary" variant="contained">
-                        Submit Application
-                    </Button>
+                    <Button onClick={handleClose} color="secondary" variant="outlined">Cancel</Button>
+                    <Button onClick={handleApply} color="primary" variant="contained">Submit Application</Button>
                 </DialogActions>
             </Dialog>
         </Container>

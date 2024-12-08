@@ -16,6 +16,7 @@ import {
   Checkbox,
   Card,
   CardContent,
+  Dialog, DialogActions, DialogContent, DialogTitle, Switch,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
@@ -67,18 +68,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const JobTile = (props) => {
-  const classes = useStyles();
-  let navigate = useNavigate();
-  const { job, getData } = props;
-  const setPopup = useContext(SetPopupContext);
 
-  const [open, setOpen] = useState(false);
+const JobTile = (props) => {
+  const { job, getData } = props;
+  const classes = useStyles();
+  const setPopup = useContext(SetPopupContext);
+  const navigate = useNavigate();
+
+  const [jobStatus, setJobStatus] = useState(job.jobStatus || "open");
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [jobDetails, setJobDetails] = useState(job);
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-
-  console.log(jobDetails);
 
   const handleInput = (key, value) => {
     setJobDetails({
@@ -91,16 +92,19 @@ const JobTile = (props) => {
     navigate(location);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
   };
 
   const handleCloseUpdate = () => {
     setOpenUpdate(false);
   };
 
+  const handleCloseConfirmation = () => {
+    setOpenConfirmation(false);
+  };
+
   const handleDelete = () => {
-    console.log(job._id);
     axios
       .delete(`${apiList.jobs}/${job._id}`, {
         headers: {
@@ -114,16 +118,15 @@ const JobTile = (props) => {
           message: response.data.message,
         });
         getData();
-        handleClose();
+        handleCloseDelete();
       })
       .catch((err) => {
-        console.log(err.response);
         setPopup({
           open: true,
           severity: "error",
           message: err.response.data.message,
         });
-        handleClose();
+        handleCloseDelete();
       });
   };
 
@@ -144,7 +147,6 @@ const JobTile = (props) => {
         handleCloseUpdate();
       })
       .catch((err) => {
-        console.log(err.response);
         setPopup({
           open: true,
           severity: "error",
@@ -154,160 +156,183 @@ const JobTile = (props) => {
       });
   };
 
+  const handleSwitchChange = (e) => {
+    const newStatus = e.target.checked ? "open" : "closed";
+
+    if (newStatus === "closed" && jobStatus !== "closed") {
+      // Show confirmation modal if changing to closed
+      setOpenConfirmation(true);
+    } else if (newStatus === "open" && jobStatus !== "open") {
+      // Show confirmation modal if changing to open
+      setOpenConfirmation(true);
+    } else {
+      // Update job status directly if it's already the same
+      setJobStatus(newStatus);
+    }
+  };
+
+  const confirmStatusChange = () => {
+    // If status is closed, confirm to close; if open, confirm to open
+    const newStatus = jobStatus === "open" ? "closed" : "open";
+
+    axios
+      .put(
+        `${apiList.jobs}/${job._id}`,
+        { jobStatus: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        setJobStatus(newStatus); // Update UI after successful response
+        setPopup({
+          open: true,
+          severity: "success",
+          message: response.data.message,
+        });
+        getData();
+        handleCloseConfirmation(); // Close the confirmation modal
+      })
+      .catch((err) => {
+        setPopup({
+          open: true,
+          severity: "error",
+          message: err.response?.data?.message || "Update failed",
+        });
+      });
+  };
+
   const postedOn = new Date(job.dateOfPosting);
 
   return (
-    <Paper className={classes.jobTileOuter} elevation={3}>
-      <Grid container>
-        <Grid container item xs={9} spacing={1} direction="column">
-          <Grid item>
-            <Typography variant="h5" textTransform="capitalize">{job.title}</Typography>
-          </Grid>
-          <Grid item>
-            <Rating value={job.rating !== -1 ? job.rating : null} readOnly />
-          </Grid>
-          <Grid item>Role : {job.jobType}</Grid>
-          <Grid item>Salary : &#8377; {job.salary} per month</Grid>
-          <Grid item>
-            Duration :{" "}
-            {job.duration !== 0 ? `${job.duration} month` : `Flexible`}
-          </Grid>
-          <Grid item>Date Of Posting: {postedOn.toLocaleDateString()}</Grid>
-          <Grid item>Number of Applicants: {job.maxApplicants}</Grid>
-          <Grid item>
-            Remaining Number of Positions:{" "}
-            {job.maxPositions - job.acceptedCandidates}
-          </Grid>
-          <Grid item>
-            {job.skillsets.map((skill) => (
-              <Chip label={skill} style={{ marginRight: "2px" }} className={classes.skillChip} />
+    <Paper elevation={3} style={{ padding: "16px" }}>
+      <Grid container spacing={2}>
+        <Grid item xs={9}>
+          <Typography variant="h5" textTransform="capitalize">{job.title}</Typography>
+          <Typography variant="body1">Role: {job.jobType}</Typography>
+          <Typography variant="body1">Salary: ₹ {job.salary} per month</Typography>
+          <Typography variant="body1">
+            Duration: {job.duration !== 0 ? `${job.duration} months` : "Flexible"}
+          </Typography>
+          <Typography variant="body1">
+            Date Of Posting: {postedOn.toLocaleDateString()}
+          </Typography>
+          <Typography variant="body1">
+            Number of Applicants: {job.maxApplicants}
+          </Typography>
+          <Typography variant="body1">
+            Remaining Positions: {job.maxPositions - job.acceptedCandidates}
+          </Typography>
+          <Grid container spacing={1}>
+            {job.skillsets.map((skill, index) => (
+              <Grid item key={index}>
+                <Chip label={skill} className={classes.skillChip} />
+              </Grid>
             ))}
           </Grid>
         </Grid>
-        <Grid
-          item
-          container
-          direction="column"
-          xs={3}
-          spacing={2}
-          justifyContent="center"
-        >
-          {[
-            { text: "View Applications", onClick: () => handleClick(`/job/applications/${job._id}`), color: "error" },
-            { text: "Update Details", onClick: () => setOpenUpdate(true), color: "secondary" },
-            { text: "Delete Job", onClick: () => setOpen(true), color: "error" },
-          ].map((button, index) => (
-            <Grid item key={index}>
-              <Button
-                variant="contained"
-                color={button.color}
-                className={classes.statusBlock}
-                onClick={button.onClick}
-                style={{
-                  color: "#fff",
-                  fontWeight: "bold",
-                  padding: "10px 20px",
-                  textTransform: "none",
-                  width: "100%",
-                  backgroundColor: index === 0 ? "#f97316" : "",
-                }}
-              >
-                {button.text}
-              </Button>
-            </Grid>
-          ))}
-        </Grid>
 
-      </Grid>
-      <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
-        <Paper
-          style={{
-            padding: "20px",
-            outline: "none",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            minWidth: "30%",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h4" style={{ marginBottom: "10px" }}>
-            Are you sure?
-          </Typography>
-          <Grid container justify="center" spacing={5}>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ padding: "10px 50px" }}
-                onClick={() => handleDelete()}
-              >
-                Delete
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ padding: "10px 50px" }}
-                onClick={() => handleClose()}
-              >
-                Cancel
-              </Button>
-            </Grid>
+        <Grid item xs={3} container direction="column" spacing={2}>
+          <Grid item>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={jobStatus === "open"}
+                  onChange={handleSwitchChange}
+                  name="jobStatus"
+                  color={jobStatus === "open" ? "primary" : "secondary"}
+                />
+              }
+              label={jobStatus === "open" ? "Open Applications" : "Close Applications"}
+            />
           </Grid>
-        </Paper>
-      </Modal>
-      <Modal
-        open={openUpdate}
-        onClose={handleCloseUpdate}
-        className={classes.popupDialog}
-      >
-        <Paper
-          style={{
-            padding: "20px",
-            outline: "none",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            minWidth: "30%",
-            alignItems: "center",
-          }}
-        >
+
+          <Grid item>
+            <Button
+              variant="contained"
+             color="#f97316"              className={classes.button}
+              onClick={() => handleClick(`/job/applications/${job._id}`)}
+            >
+              View Applications
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="secondary"
+              className={classes.button}
+              onClick={() => setOpenUpdate(true)}
+            >
+              Update Details
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="error"
+              className={classes.button}
+              onClick={() => setOpenDelete(true)}
+            >
+              Delete Job
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Dialog open={openConfirmation} onClose={handleCloseConfirmation}>
+        <DialogTitle>Are you sure?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            {jobStatus !== "closed"
+              ? "You are about to close applications for this job posting. This will prevent new applications from being submitted."
+              : "You are about to reopen applications for this job posting. This will allow new applications to be submitted."}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmation} color="primary" variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button onClick={confirmStatusChange} color="error" variant="contained"
+          >
+            {jobStatus !== "closed" ? "Confirm Close" : "Confirm Open"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openDelete} onClose={handleCloseDelete}>
+        <DialogTitle>Are you sure?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            You are about to delete this job. This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="error">
+            Confirm Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Modal open={openUpdate} onClose={handleCloseUpdate}>
+        <Paper style={{ padding: "20px", outline: "none" }}>
           <Typography variant="h4" style={{ marginBottom: "10px" }}>
             Update Details
           </Typography>
-          <Grid
-            container
-            direction="column"
-            spacing={3}
-            style={{ margin: "10px" }}
-          >
+          <Grid container direction="column" spacing={3} style={{ margin: "10px" }}>
             <Grid item>
               <TextField
                 label="Application Deadline"
                 type="datetime-local"
                 value={jobDetails.deadline.substr(0, 16)}
-                onChange={(event) => {
-                  handleInput("deadline", event.target.value);
-                }}
-                open={isPickerOpen}
-                onOpen={() => setIsPickerOpen(true)}
-                onClose={() => setIsPickerOpen(false)}
-                slotProps={{
-                  actionBar: {
-                    actions: ['cancel', 'accept'],
-                  },
-                  textField: {
-                    variant: "outlined",
-                    fullWidth: true,
-                  },
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
+                onChange={(event) => handleInput("deadline", event.target.value)}
                 fullWidth
+                variant="outlined"
               />
             </Grid>
             <Grid item>
@@ -316,10 +341,7 @@ const JobTile = (props) => {
                 type="number"
                 variant="outlined"
                 value={jobDetails.maxApplicants}
-                onChange={(event) => {
-                  handleInput("maxApplicants", event.target.value);
-                }}
-                InputProps={{ inputProps: { min: 1 } }}
+                onChange={(event) => handleInput("maxApplicants", event.target.value)}
                 fullWidth
               />
             </Grid>
@@ -329,41 +351,25 @@ const JobTile = (props) => {
                 type="number"
                 variant="outlined"
                 value={jobDetails.maxPositions}
-                onChange={(event) => {
-                  handleInput("maxPositions", event.target.value);
-                }}
-                InputProps={{ inputProps: { min: 1 } }}
+                onChange={(event) => handleInput("maxPositions", event.target.value)}
                 fullWidth
               />
             </Grid>
           </Grid>
-          <Grid container justify="center" spacing={5}>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ padding: "10px 50px" }}
-                onClick={() => handleJobUpdate()}
-              >
-                Update
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ padding: "10px 50px" }}
-                onClick={() => handleCloseUpdate()}
-              >
-                Cancel
-              </Button>
-            </Grid>
-          </Grid>
+          <DialogActions>
+            <Button onClick={handleJobUpdate} color="primary">
+              Update
+            </Button>
+            <Button onClick={handleCloseUpdate} color="secondary">
+              Cancel
+            </Button>
+          </DialogActions>
         </Paper>
       </Modal>
     </Paper>
   );
 };
+
 
 const FilterPopup = (props) => {
   const classes = useStyles();
@@ -684,8 +690,7 @@ const FilterPopup = (props) => {
           <Grid item>
             <Button
               variant="contained"
-              color="primary"
-              style={{ padding: "10px 50px" }}
+             color="#f97316"              style={{ padding: "10px 50px" }}
               onClick={() => getData()}
             >
               Apply
@@ -698,6 +703,7 @@ const FilterPopup = (props) => {
 };
 
 const MyJobs = (props) => {
+  const classes = useStyles();
   const [jobs, setJobs] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchOptions, setSearchOptions] = useState({
@@ -724,6 +730,9 @@ const MyJobs = (props) => {
       },
     },
   });
+
+  const [page, setPage] = useState(1);
+  const jobsPerPage = 5; // Number of jobs per page
 
   const setPopup = useContext(SetPopupContext);
   useEffect(() => {
@@ -790,7 +799,7 @@ const MyJobs = (props) => {
       })
       .then((response) => {
         console.log(response.data);
-        setJobs(response.data);
+        setJobs(response.data.sort((a, b) => new Date(b.dateOfPosting) - new Date(a.dateOfPosting)));
       })
       .catch((err) => {
         console.log(err.response.data);
@@ -802,8 +811,17 @@ const MyJobs = (props) => {
       });
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const paginatedJobs = jobs.slice(
+    (page - 1) * jobsPerPage,
+    page * jobsPerPage
+  );
+
   return (
-    <Card sx={{ width: "100%", marginTop: '30px' }}>
+    <Card sx={{ width: "100%", margin: "2rem" }}>
       <CardContent
         container
         item
@@ -811,12 +829,11 @@ const MyJobs = (props) => {
         alignItems="center"
         style={{ padding: "30px", minHeight: "93vh" }}
       >
-        <Grid item container direction="column"
-        >
-          <Grid item xs display="flex" justifyContent="center" alignItems="center">
-            <Typography variant="h4">My Jobs</Typography>
+        <Grid item container direction="column">
+          <Grid item xs display="flex" >
+            <Typography variant="h3" fontWeight={700} marginBottom="20px">My Jobs</Typography>
           </Grid>
-          <Grid item xs display="flex" justifyContent="space-between">
+          <Grid item xs display="flex" justifyContent="space-between" style={{ marginBottom: "20px" , alignItems:"center"}}>
             <Grid item xs>
               <TextField
                 label="Search Jobs"
@@ -851,29 +868,48 @@ const MyJobs = (props) => {
                 <FilterListIcon />
               </IconButton>
             </Grid>
-
           </Grid>
         </Grid>
 
         <Grid
           container
           item
-          xs
           direction="column"
           alignItems="stretch"
           justify="center"
         >
-          {jobs.length > 0 ? (
-            jobs.map((job) => {
-              return <JobTile job={job} getData={getData} />;
-            })
-          ) : (
-            <Typography variant="h5" style={{ textAlign: "center" }}>
-              No jobs found
-            </Typography>
-          )}
+
+
+          <Grid container spacing={3} justifyContent="center">
+            {paginatedJobs.length > 0 ? (
+              paginatedJobs.map((job) => (
+                <Grid item xs={12} key={job._id}>
+                  <JobTile job={job} getData={getData} />
+                </Grid>
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <Typography variant="h5" style={{ textAlign: "center" }}>
+                  No jobs found
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
+
+
+
+          <Grid container justifyContent="center" style={{ marginTop: "20px" }}>
+            <Pagination
+              count={Math.ceil(jobs.length / jobsPerPage)}
+              page={page}
+              onChange={handlePageChange}
+             color="#f97316"            />
+          </Grid>
+
         </Grid>
       </CardContent>
+
+
       <FilterPopup
         open={filterOpen}
         searchOptions={searchOptions}
@@ -885,6 +921,7 @@ const MyJobs = (props) => {
         }}
       />
     </Card>
+
   );
 };
 

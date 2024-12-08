@@ -14,7 +14,8 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  Tooltip
+  Tooltip,
+  DialogActions
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -58,7 +59,6 @@ const PageContainer = styled(Box)(({ theme }) => ({
 const ContentWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
   maxWidth: 1200,
-  // margin: '0 auto',
   padding: theme.spacing(4, 3),
   [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(2, 1),
@@ -105,26 +105,29 @@ const JobApplications = () => {
       shortlisted: false,
       rejected: false,
       accepted: false,
-      finished: false
+      finished: false,
     },
     sort: {
       "jobApplicant.name": { status: false, desc: false },
       dateOfApplication: { status: true, desc: true },
       "jobApplicant.rating": { status: false, desc: false },
-    }
+    },
   });
   const { jobId } = useParams();
   const setPopup = useContext(SetPopupContext);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [nextStatus, setNextStatus] = useState(null);
 
   useEffect(() => {
     fetchJobDetails();
     fetchApplications();
-  }, []);
+  }, [jobId, searchOptions]);
 
   const fetchJobDetails = () => {
     axios
       .get(`${apiList.jobs}/${jobId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((response) => {
         setJobDetails(response.data);
@@ -133,7 +136,7 @@ const JobApplications = () => {
         setPopup({
           open: true,
           severity: "error",
-          message: err.response?.data?.message || "Error fetching job details"
+          message: err.response?.data?.message || "Error fetching job details",
         });
       });
   };
@@ -161,10 +164,9 @@ const JobApplications = () => {
 
     axios
       .get(address, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((response) => {
-        console.log(response.data)
         const rankedApplications = response.data.map(app => {
           const jobSkills = jobDetails?.skillsets || [];
           const applicantSkills = app.jobApplicant?.personalSkills || [];
@@ -172,7 +174,10 @@ const JobApplications = () => {
           return { ...app, skillMatchCount };
         });
 
-        rankedApplications.sort((a, b) => b.skillMatchCount - a.skillMatchCount);
+        // Ensure that sorting by date is applied at the end, with the latest job on top.
+        rankedApplications.sort((a, b) => b.dateOfApplication - a.dateOfApplication);
+        rankedApplications.sort((a, b) => b.skillMatchCount - a.skillMatchCount); // Keep the skill match ranking.
+
         setApplications(rankedApplications);
       })
       .catch((err) => {
@@ -180,31 +185,29 @@ const JobApplications = () => {
         setPopup({
           open: true,
           severity: "error",
-          message: err.response?.data?.message || "Error fetching data"
+          message: err.response?.data?.message || "Error fetching data",
         });
       });
   };
 
   const updateStatus = (application, newStatus) => {
- 
     const payload = {
       status: newStatus,
     };
 
     axios
       .put(
-        `${apiList.applications}/${application._id}`, 
+        `${apiList.applications}/${application._id}`,
         payload,
         {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
         }
       )
       .then((response) => {
         fetchApplications();
-        
         setPopup({
           open: true,
           severity: "success",
@@ -286,6 +289,12 @@ const JobApplications = () => {
       finished: []
     };
 
+    const handleStatusChange = (application, newStatus) => {
+      setSelectedApplication(application);
+      setNextStatus(newStatus);
+      setConfirmDialogOpen(true);
+    };
+
     return (
       <ApplicationCard>
         <StatusChip
@@ -349,7 +358,7 @@ const JobApplications = () => {
                       variant="contained"
                       color={action.color}
                       startIcon={action.icon}
-                      onClick={() => updateStatus(application, action.status)}
+                      onClick={() => handleStatusChange(application, action.status)}
                     >
                       {action.label}
                     </Button>
@@ -361,6 +370,15 @@ const JobApplications = () => {
         </CardContent>
       </ApplicationCard>
     );
+  };
+
+  const handleConfirmStatusChange = () => {
+    if (selectedApplication && nextStatus) {
+      updateStatus(selectedApplication, nextStatus);
+      setConfirmDialogOpen(false);
+      setSelectedApplication(null);
+      setNextStatus(null);
+    }
   };
 
   return (
@@ -386,8 +404,7 @@ const JobApplications = () => {
           <Tooltip title="Filter Applications">
             <IconButton
               onClick={() => setFilterOpen(true)}
-              color="primary"
-            >
+             color="#f97316"            >
               <FilterListIcon />
             </IconButton>
           </Tooltip>
@@ -428,7 +445,8 @@ const JobApplications = () => {
                                 ...prev.status,
                                 [status]: e.target.checked,
                               }
-                            }))}
+                            }))
+                          }
                         />
                       }
                       label={status.charAt(0).toUpperCase() + status.slice(1)}
@@ -438,6 +456,28 @@ const JobApplications = () => {
               </Box>
             </Box>
           </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={confirmDialogOpen}
+          onClose={() => setConfirmDialogOpen(false)}
+          maxWidth="xs"
+          fullWidth
+        >
+          <DialogTitle>Confirm Status Change</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1">
+              Are you sure you want to change the status to "{nextStatus}"?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setConfirmDialogOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmStatusChange} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
         </Dialog>
       </ContentWrapper>
     </PageContainer>
