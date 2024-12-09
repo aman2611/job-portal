@@ -34,7 +34,7 @@ if (!fs.existsSync("./public/profilePicture")) {
 }
 
 const app = express();
-const port = process.env.PORT || 4444;
+const PORT = process.env.PORT || 4444;
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -50,13 +50,16 @@ app.use("/api", require("./routes/apiRoutes"));
 app.use("/upload", require("./routes/uploadRoutes"));
 app.use("/host", require("./routes/downloadRoutes"));
 
-app.use(express.static(path.join(__dirname, 'frontend', 'build')));
+
+const frontendBuildPath = path.resolve(__dirname, '..', 'frontend', 'build');
+
+app.use(express.static(path.join(frontendBuildPath)));
 
 // Catch-all route for client-side routing
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'));
+  res.sendFile(path.join( frontendBuildPath, 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Server started on port ${port}!`);
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}!`);
 });
