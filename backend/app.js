@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -10,8 +12,7 @@ const path = require('path');
 
 // MongoDB
 mongoose
-.connect("mongodb+srv://admin_recruitment:kF4CfBzRfWKOtMmP@cluster0.nul0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-  // .connect("mongodb://localhost:27017/jobPortal", 
+.connect(process.env.MONGO_URL, 
     {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -33,7 +34,7 @@ if (!fs.existsSync("./public/profilePicture")) {
 }
 
 const app = express();
-const port = 4444;
+const port = process.env.PORT || 4444;
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -49,10 +50,11 @@ app.use("/api", require("./routes/apiRoutes"));
 app.use("/upload", require("./routes/uploadRoutes"));
 app.use("/host", require("./routes/downloadRoutes"));
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'frontend', 'build')));
 
+// Catch-all route for client-side routing
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'));
 });
 
 app.listen(port, () => {
