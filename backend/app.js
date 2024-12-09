@@ -50,14 +50,10 @@ app.use("/api", require("./routes/apiRoutes"));
 app.use("/upload", require("./routes/uploadRoutes"));
 app.use("/host", require("./routes/downloadRoutes"));
 
+app.use(express.static(path.join(__dirname, "build")));
 
-const frontendBuildPath = path.resolve(__dirname, '..', 'frontend', 'build');
-
-app.use(express.static(path.join(frontendBuildPath)));
-
-// Catch-all route for client-side routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join( frontendBuildPath, 'index.html'));
+app.get("*", function (req, res) {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.listen(PORT, () => {
