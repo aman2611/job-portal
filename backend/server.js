@@ -5,10 +5,13 @@ const passportConfig = require("./lib/passportConfig");
 const cors = require("cors");
 const fs = require("fs");
 
+const path = require('path');
+
+
 // MongoDB
 mongoose
-// .connect("mongodb+srv://admin_recruitment:kF4CfBzRfWKOtMmP@cluster0.nul0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-  .connect("mongodb://localhost:27017/jobPortal", 
+.connect("mongodb+srv://admin_recruitment:kF4CfBzRfWKOtMmP@cluster0.nul0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  // .connect("mongodb://localhost:27017/jobPortal", 
     {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -45,6 +48,12 @@ app.use("/auth", require("./routes/authRoutes"));
 app.use("/api", require("./routes/apiRoutes"));
 app.use("/upload", require("./routes/uploadRoutes"));
 app.use("/host", require("./routes/downloadRoutes"));
+
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 app.listen(port, () => {
   console.log(`Server started on port ${port}!`);
