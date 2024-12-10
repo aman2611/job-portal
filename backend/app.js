@@ -12,13 +12,13 @@ const path = require('path');
 
 // MongoDB
 mongoose
-.connect(process.env.MONGO_URL, 
+  .connect(process.env.MONGO_URL,
     {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  })
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    })
   .then((res) => console.log("Connected to DB"))
   .catch((err) => console.log(err));
 
@@ -50,11 +50,17 @@ app.use("/api", require("./routes/apiRoutes"));
 app.use("/upload", require("./routes/uploadRoutes"));
 app.use("/host", require("./routes/downloadRoutes"));
 
-app.use(express.static(path.join(__dirname, "build")));
+const buildPath = path.resolve(__dirname, '..', 'frontend', 'build');
+app.use('/login', express.static(buildPath, { cacheControl: true, maxAge: '1d' })); // Cache files for 1 day
 
-app.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, "build", "index.html"));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html'), {
+    headers: {
+      'Cache-Control': 'no-store', // Prevent caching for the HTML file
+    },
+  });
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}!`);
