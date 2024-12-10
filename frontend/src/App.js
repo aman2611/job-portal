@@ -25,7 +25,7 @@ import CreateJobs2 from "./component/recruiter/CreateJobs/CreateJobs2";
 import ScreeningQuestions from "./component/recruiter/CreateJobs/ScreeningQuestions";
 import JobDetails from "./component/JobDetails";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   body: {
     display: "flex",
     flexDirection: "column",
@@ -34,10 +34,9 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "98vh",
     boxSizing: "border-box",
     width: "100%",
-    padding: '64px 140px 0',
-    backgroundColor: '#f9fafb',
-    marginTop: "10px"
-
+    padding: "64px 140px 0",
+    backgroundColor: "#f9fafb",
+    marginTop: "10px",
   },
 }));
 
@@ -52,6 +51,8 @@ function App() {
     message: "",
   });
 
+  const isLoggedIn = isAuth();
+
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
@@ -65,31 +66,44 @@ function App() {
             {/* Main Body */}
             <Grid item className={classes.body}>
               <Routes>
-                <Route path="/" element={<Navigate to="/home" replace />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/logout" element={<Logout />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/applications" element={<Applications />} />
+                {/* Redirect based on login state */}
                 <Route
-                  path="/Profile"
+                  path="/"
+                  element={<Navigate to={isLoggedIn ? "/home" : "/login"} replace />}
+                />
+
+                {/* Public Routes */}
+                <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/home" />} />
+                <Route path="/signup" element={!isLoggedIn ? <Signup /> : <Navigate to="/home" />} />
+
+                {/* Protected Routes */}
+                <Route path="/logout" element={isLoggedIn ? <Logout /> : <Navigate to="/login" />} />
+                <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
+                <Route
+                  path="/applications"
+                  element={isLoggedIn ? <Applications /> : <Navigate to="/login" />}
+                />
+                <Route
+                  path="/profile"
                   element={
-                    userType() === "recruiter" ? (
-                      <RecruiterProfile />
-                    ) : (
-                      // <Profile/>
-                      <CandidateProfile />
-                    )
+                    isLoggedIn
+                      ? userType() === "recruiter"
+                        ? <RecruiterProfile />
+                        : <CandidateProfile />
+                      : <Navigate to="/login" />
                   }
                 />
-                {/* <Route path="/addjob" element={<CreateJobs />} /> */}
-                <Route path="/addjob" element={<CreateJobs2 />} />
-                <Route path="/screening" element={<ScreeningQuestions />} />
-                <Route path="/myjobs" element={<MyJobs />} />
-                <Route path="/job/applications/:jobId" element={<JobApplications />} />
-                <Route path="/job-details/:id" element={<JobDetails />} />
-                {/* <Route path="/employees" element={<AcceptedApplicants />} /> */}
-                {/* <Route path="*" element={<ErrorPage />} /> */}
+                <Route path="/addjob" element={isLoggedIn ? <CreateJobs2 /> : <Navigate to="/login" />} />
+                <Route path="/screening" element={isLoggedIn ? <ScreeningQuestions /> : <Navigate to="/login" />} />
+                <Route path="/myjobs" element={isLoggedIn ? <MyJobs /> : <Navigate to="/login" />} />
+                <Route
+                  path="/job/applications/:jobId"
+                  element={isLoggedIn ? <JobApplications /> : <Navigate to="/login" />}
+                />
+                <Route
+                  path="/job-details/:id"
+                  element={isLoggedIn ? <JobDetails /> : <Navigate to="/login" />}
+                />
               </Routes>
             </Grid>
           </Grid>
