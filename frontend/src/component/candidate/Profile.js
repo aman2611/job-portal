@@ -196,7 +196,7 @@ const Profile = () => {
 
               <Grid item xs={12} md={6}>
                 <FileUploadInput
-                  uploadTo={apiList.uploadprofilePictureImage}
+                  uploadTo={apiList.uploadprofilePicture}
                   identifier="profilePicture"
                   handleInput={handleInput}
                   className={classes.uploadBox}

@@ -6,12 +6,10 @@ const path = require("path");
 
 const router = express.Router();
 
-// Setup multer with disk storage
 const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
-      // Ensure the directories exist
       const resumeDir = path.join(__dirname, "../public/resume");
       const profilePictureDir = path.join(__dirname, "../public/profilePicture");
 
@@ -22,27 +20,26 @@ const upload = multer({
         fs.mkdirSync(profilePictureDir, { recursive: true });
       }
 
-      // Determine the destination folder based on file type
-      if (file.fieldname === "file") {
-        cb(null, resumeDir); // Upload resume files to the resume folder
+      if (file.mimetype === "application/pdf") {
+        cb(null, resumeDir); 
+      } else if (file.mimetype === "image/jpeg") {
+        cb(null, profilePictureDir); 
       } else {
-        cb(null, profilePictureDir); // Upload profilePicture images to the profilePicture folder
+        return cb(new Error("Invalid file format"), false); 
       }
     },
     filename: function (req, file, cb) {
       const fileExtension = path.extname(file.originalname).toLowerCase();
       const filename = `${uuidv4()}${fileExtension}`;
-      cb(null, filename); // Generate a unique filename
+      cb(null, filename); 
     }
   })
 });
 
-// Function to get file extension
 function getFileExtension(filename) {
   return path.extname(filename).toLowerCase();
 }
 
-// Route to upload resume (PDF)
 router.post("/resume", upload.single("file"), (req, res) => {
   const { file } = req;
 
@@ -53,7 +50,6 @@ router.post("/resume", upload.single("file"), (req, res) => {
   console.log("Received file for resume:", file);
   console.log("File extension:", getFileExtension(file.originalname));
 
-  // Check for PDF extension
   const fileExtension = getFileExtension(file.originalname);
   if (fileExtension !== ".pdf") {
     return res.status(400).json({
@@ -67,7 +63,6 @@ router.post("/resume", upload.single("file"), (req, res) => {
   });
 });
 
-// Route to upload profilePicture image (JPG or PNG)
 router.post("/profilePicture", upload.single("file"), (req, res) => {
   const { file } = req;
 
@@ -78,7 +73,6 @@ router.post("/profilePicture", upload.single("file"), (req, res) => {
   console.log("Received file for profilePicture:", file);
   console.log("File extension:", getFileExtension(file.originalname));
 
-  // Check for image extensions (JPG or PNG)
   const fileExtension = getFileExtension(file.originalname);
   if (fileExtension !== ".jpg" && fileExtension !== ".png") {
     return res.status(400).json({

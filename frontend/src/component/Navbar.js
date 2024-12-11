@@ -13,10 +13,10 @@ import isAuth, { userType } from "../lib/isAuth";
 
 const useStyles = makeStyles({
   appBar: {
-    backgroundColor: "#fff !important", 
-    borderBottom: "1px solid #e0e0e0", 
+    backgroundColor: "#fff !important",
+    borderBottom: "1px solid #e0e0e0",
     paddingInline: "140px",
-    zIndex: 1100, 
+    zIndex: 1100,
   },
   button: {
     color: "#000 !important",
@@ -58,12 +58,15 @@ const Navbar = () => {
         <Box className={classes.title} onClick={() => handleClick("/home")}>
           <img src={logo} alt="Logo" className={classes.logo} />
           <Typography variant="h6" className={classes.typography}>
-            NRIDA Job Portal
+            NRIDA 
           </Typography>
         </Box>
         {isAuth() ? (
           userType() === "recruiter" ? (
             <>
+              <Button className={classes.button} onClick={() => handleClick("/home")}>
+                Home
+              </Button>
               <Button className={classes.button} onClick={() => handleClick("/addjob")}>
                 Add Jobs
               </Button>
@@ -79,6 +82,9 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              <Button className={classes.button} onClick={() => handleClick("/home")}>
+                Home
+              </Button>
               <Button className={classes.button} onClick={() => handleClick("/applications")}>
                 Applications
               </Button>

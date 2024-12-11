@@ -45,7 +45,7 @@ const FileUploadInput = (props) => {
           open: true,
           severity: "error",
           message: err.response.statusText,
-          //   message: err.response.data
+            // message: err.response
           //     ? err.response.data.message
           //     : err.response.statusText,
         });

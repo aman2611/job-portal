@@ -69,6 +69,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+
+
 const JobTile = (props) => {
   const { job, getData } = props;
   const classes = useStyles();
@@ -234,25 +236,59 @@ const JobTile = (props) => {
           </Grid>
         </Grid>
 
-        <Grid item xs={3} container direction="column" spacing={2}>
-          <Grid item>
+        <Grid item xs={3} container direction="column" spacing={2} >
+          <Grid item >
             <FormControlLabel
+              sx={{ marginLeft: 8 }}
+              labelPlacement="start"
+              label={
+                <span style={{ opacity: 0.7, paddingRight: '10px' }}>
+                  {jobStatus === "open" ? "Open Applications" : "Close Applications"}
+                </span>
+              }
               control={
                 <Switch
                   checked={jobStatus === "open"}
                   onChange={handleSwitchChange}
                   name="jobStatus"
-                  color={jobStatus === "open" ? "primary" : "secondary"}
+                  sx={{
+                    width: 48,
+                    height: 28,
+                    padding: 0,
+                    "& .MuiSwitch-switchBase": {
+                      padding: 0.4,
+                      "&.Mui-checked": {
+                        transform: "translateX(20px)",
+                        "& + .MuiSwitch-track": {
+                          backgroundColor: "green",
+                          opacity: 1,
+                        },
+                      },
+                    },
+                    "& .MuiSwitch-thumb": {
+                      width: 22,
+                      height: 22,
+                      boxShadow: "none",
+                      backgroundColor: "#fff",
+                    },
+                    "& .MuiSwitch-track": {
+                      borderRadius: 14, // Rounded track
+                      backgroundColor: "red", // Red track when unchecked
+                      opacity: 1,
+                    },
+                  }}
                 />
               }
-              label={jobStatus === "open" ? "Open Applications" : "Close Applications"}
             />
+
+
           </Grid>
 
           <Grid item>
             <Button
               variant="contained"
-             color="#f97316"              className={classes.button}
+              className={classes.button}
+              sx={{ backgroundColor: "#f97316", "&:hover": { backgroundColor: "#ea580c" } }}
               onClick={() => handleClick(`/job/applications/${job._id}`)}
             >
               View Applications
@@ -690,7 +726,7 @@ const FilterPopup = (props) => {
           <Grid item>
             <Button
               variant="contained"
-             color="#f97316"              style={{ padding: "10px 50px" }}
+              color="#f97316" style={{ padding: "10px 50px" }}
               onClick={() => getData()}
             >
               Apply
@@ -833,7 +869,7 @@ const MyJobs = (props) => {
           <Grid item xs display="flex" >
             <Typography variant="h3" fontWeight={700} marginBottom="20px">My Jobs</Typography>
           </Grid>
-          <Grid item xs display="flex" justifyContent="space-between" style={{ marginBottom: "20px" , alignItems:"center"}}>
+          <Grid item xs display="flex" justifyContent="space-between" style={{ marginBottom: "20px", alignItems: "center" }}>
             <Grid item xs>
               <TextField
                 label="Search Jobs"
@@ -903,7 +939,21 @@ const MyJobs = (props) => {
               count={Math.ceil(jobs.length / jobsPerPage)}
               page={page}
               onChange={handlePageChange}
-             color="#f97316"            />
+              sx={{
+                '& .MuiPaginationItem-root': {
+                  color: '#f97316',
+                },
+                '& .Mui-selected': {
+                  backgroundColor: '#f97316',
+                  color: '#fff',
+                  '&:hover': {
+                    backgroundColor: '#ea580c',
+                  },
+                },
+                '& .MuiPaginationItem-ellipsis': {
+                  color: '#f97316', 
+                },
+              }} />
           </Grid>
 
         </Grid>

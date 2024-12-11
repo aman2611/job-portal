@@ -776,7 +776,7 @@
           applicantName: { 
             $concat: ["$jobApplicant.firstName", " ", "$jobApplicant.lastName"] // Concatenate first and last name of applicant
           },
-          applicantProfile: "$jobApplicant.profile",  // Include profile photo of applicant
+          applicantProfile: "$jobApplicant.profilePicture",  // Include profile photo of applicant
           job: 1,                     // Include job details
           dateOfApplication: 1,        // Include date of application
           status: 1                   // Include the status of the application

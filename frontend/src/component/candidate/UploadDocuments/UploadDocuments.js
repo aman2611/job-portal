@@ -97,7 +97,7 @@ const UploadDocument = () => {
 
           <Box mb={4}>
             <Typography variant="subtitle1" gutterBottom>
-              profilePicture profilePicture
+              Profile Picture
             </Typography>
             <Box
               display="flex"
@@ -116,7 +116,7 @@ const UploadDocument = () => {
               <Box textAlign="center">
                 <AccountCircleIcon fontSize="large" color="action" />
                 <Typography variant="body2" color="textSecondary">
-                  Upload your profilePicture profilePicture
+                  Upload your Profile Picture
                 </Typography>
                 <input
                   type="file"

@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 
@@ -22,7 +22,7 @@ import { SetPopupContext } from "../App";
 import apiList from "../lib/apiList";
 import isAuth from "../lib/isAuth";
 import goilogo from "../assets/goi-logo.png";
-import { Box } from "@mui/system";
+import { Box, minWidth } from "@mui/system";
 
 const useStyles = makeStyles(() => ({
   mainContainer: {
@@ -74,6 +74,10 @@ const useStyles = makeStyles(() => ({
     fontWeight: "500",
     cursor: "pointer",
     color: "#000",
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "underline",
+    },
   },
   inputBox: {
     marginBottom: "20px",
@@ -92,6 +96,8 @@ const useStyles = makeStyles(() => ({
 const Signup = (props) => {
   const classes = useStyles();
   const setPopup = useContext(SetPopupContext);
+  const navigate = useNavigate();
+
 
   const [loggedin, setLoggedin] = useState(isAuth());
 
@@ -233,7 +239,6 @@ const Signup = (props) => {
       </Box>
 
       <Box item sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        {/* Grouped input fields with typography */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
           <Typography sx={{ fontWeight: 700 }}>Name</Typography>
           <TextField
@@ -262,18 +267,64 @@ const Signup = (props) => {
             handleInputError={handleInputError}
             className={classes.inputBox}
             required={true}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: "white",
+                "&:hover": {
+                  backgroundColor: "white",
+                },
+                "&.Mui-focused": {
+                  backgroundColor: "white",
+                },
+                "& fieldset": {
+                  borderColor: "#ddd",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#999",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#f97316",
+                },
+              },
+              "& .MuiOutlinedInput-input": {
+                color: "black",
+              },
+            }}
           />
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
-          <Typography sx={{ fontWeight: 700 }}>Password</Typography>
-          <PasswordInput
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start", width: '100%' }}>
+          <Typography sx={{ fontWeight: 700, display: "flex", alignItems: "flex-start" }}>
+            Password
+          </Typography>
+          <TextField
+            fullWidth
+            variant="outlined"
+            type="password"
+            placeholder="Enter your password"
             value={signupDetails.password}
             onChange={(event) => handleInput("password", event.target.value)}
-            // className={classes.inputBox}
             sx={{
-              '.css-1iw3t7y-MuiFormControl-root': {
-                width: '100%, !important'
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: "white",
+                "&:hover": {
+                  backgroundColor: "white",
+                },
+                "&.Mui-focused": {
+                  backgroundColor: "white",
+                },
+                "& fieldset": {
+                  borderColor: "#ddd",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#999",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#f97316",
+                },
+              },
+              "& .MuiOutlinedInput-input": {
+                color: "black",
               },
             }}
             error={inputErrorHandler.password.error}
@@ -286,6 +337,8 @@ const Signup = (props) => {
               }
             }}
           />
+
+
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
@@ -348,6 +401,24 @@ const Signup = (props) => {
             Sign up
           </Button>
         </Box>
+
+        <Box className={classes.footerLinks}>
+          <Typography>
+            Already have an account?{" "}
+            <span className={classes.link} onClick={() => navigate("/login")}>
+              Login
+            </span>
+          </Typography>
+          {/* <Typography>
+            <span
+              className={classes.link}
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot password?
+            </span>
+          </Typography> */}
+        </Box>
+
       </Box>
     </Paper>
   );

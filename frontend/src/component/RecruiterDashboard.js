@@ -12,7 +12,7 @@ import {
     Chip,
 } from "@mui/material";
 import { PieChart } from '@mui/x-charts/PieChart';
-import apiList from "../lib/apiList";
+import apiList, { server } from "../lib/apiList";
 import { useTheme } from "@emotion/react";
 
 const RecruiterDashboard = () => {
@@ -23,6 +23,7 @@ const RecruiterDashboard = () => {
     const [interviewsScheduled, setInterviewsScheduled] = useState(0);
     const [timeToHire, setTimeToHire] = useState(0);
     const [statusDistribution, setStatusDistribution] = useState([]);
+    const [openJobs, setOpenJobs] = useState(0); // Added state for Open Jobs count
 
     const pastelColors = [
         '#E63946',
@@ -41,7 +42,12 @@ const RecruiterDashboard = () => {
             .then((response) => {
                 const jobsData = response.data;
                 setOverviewData(jobsData.overview || []);
-                setOpenPositions(jobsData.openPositions || 0);
+
+                console.log(jobsData.jobStatus)
+
+                const openJobCount = jobsData.filter(job => job.jobStatus === "open").length;
+                setOpenJobs(openJobCount);
+                console.log(openJobs)
             })
             .catch((err) => console.error("Error fetching job details", err));
 
@@ -51,6 +57,8 @@ const RecruiterDashboard = () => {
             })
             .then((response) => {
                 const applicationsData = response.data;
+
+                console.log(applicationsData)
 
                 const statusCounts = applicationsData.reduce((acc, app) => {
                     acc[app.status] = (acc[app.status] || 0) + 1;
@@ -84,7 +92,6 @@ const RecruiterDashboard = () => {
                 );
                 setTotalApplications(applicationsData.length);
 
-                // Update the logic to count applications with status "shortlisted" for interviews scheduled
                 setInterviewsScheduled(
                     applicationsData.filter((app) => app.status === "shortlisted").length
                 );
@@ -155,8 +162,8 @@ const RecruiterDashboard = () => {
                     >
                         <Avatar
                             sx={{ width: 36, height: 36, marginRight: 2 }}
-                            src={application.applicantProfile || "path/to/default-image.jpg"}
-                        />
+                            src={`${server}${application.applicantProfile}` || "path/to/default-image.jpg"}
+                            />
                         <Box flexGrow={1}>
                             <Typography variant="body1" fontWeight="medium" textTransform="capitalize">
                                 {application.applicantName}
@@ -184,7 +191,6 @@ const RecruiterDashboard = () => {
                 <Typography variant="h6">Recruiter Dashboard</Typography>
                 <Search />
             </Box> */}
-
             <Box padding={3} flex={1}>
                 <Grid container spacing={3} justifyContent="space-between">
                     <Grid item xs={12} sm={6} md={3}>
@@ -200,7 +206,7 @@ const RecruiterDashboard = () => {
                         <Card sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                             <CardHeader title="Open Positions" />
                             <CardContent>
-                                <Typography variant="h4">{openPositions}</Typography>
+                                <Typography variant="h4">{openJobs}</Typography>
                                 <Typography color="text.secondary">+10 since last week</Typography>
                             </CardContent>
                         </Card>

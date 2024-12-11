@@ -131,6 +131,7 @@ const JobApplications = () => {
       })
       .then((response) => {
         setJobDetails(response.data);
+        console.log(response.data)
       })
       .catch((err) => {
         setPopup({
@@ -167,6 +168,8 @@ const JobApplications = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((response) => {
+        console.log(response.data)
+
         const rankedApplications = response.data.map(app => {
           const jobSkills = jobDetails?.skillsets || [];
           const applicantSkills = app.jobApplicant?.personalSkills || [];

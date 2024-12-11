@@ -24,6 +24,10 @@ const useStyles = makeStyles(() => ({
     boxSizing: "border-box",
     width: "100%",
     position: "relative",
+    minHeight: "280px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   popupDialog: {
     height: "100%",
@@ -136,7 +140,7 @@ const ApplicationTile = (props) => {
       <Grid container>
         <Grid container item xs={12} spacing={1} direction="column">
           <Grid item>
-            <Typography variant="h5" textTransform="capitalize">
+            <Typography variant="h5" textTransform="capitalize" fontWeight={700}>
               {application?.job?.title || "Unknown Job"}
             </Typography>
           </Grid>

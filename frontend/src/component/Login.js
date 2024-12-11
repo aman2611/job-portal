@@ -55,6 +55,10 @@ const useStyles = makeStyles(() => ({
     fontWeight: "500",
     cursor: "pointer",
     color: "#000",
+    textDecoration: "none", 
+    "&:hover": {
+      textDecoration: "underline", 
+    },
   },
 }));
 
@@ -120,7 +124,7 @@ const Login = () => {
             variant="h5"
             sx={{ fontWeight: "bold", marginBottom: "10px" }}
           >
-            Login to NRIDA Job Portal
+            Login to NRIDA Recruitment Portal
           </Typography>
           <Typography className={classes.subTitle}>
             Enter your email and password to access your account
@@ -139,7 +143,7 @@ const Login = () => {
             onChange={(e) => handleInput("email", e.target.value)}
             sx={{
                 "& .MuiOutlinedInput-root": {
-                  backgroundColor: "white", // Always white background
+                  backgroundColor: "white", 
                   "&:hover": {
                     backgroundColor: "white",
                   },
