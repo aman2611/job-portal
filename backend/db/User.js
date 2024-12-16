@@ -12,16 +12,25 @@ let schema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        // Only require password when it's not a reset operation
+        return !this.isResettingPassword; 
+      },
     },
     type: {
       type: String,
       enum: ["recruiter", "applicant"],
       required: true,
     },
-    userDetails:{
-      type: mongoose.Schema.Types.ObjectId, 
+    userDetails: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: "JobApplicantInfo",
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpire: {
+      type: Date,
     },
   },
   { collation: { locale: "en" } }
@@ -31,9 +40,14 @@ let schema = new mongoose.Schema(
 schema.pre("save", function (next) {
   let user = this;
 
-  // if the data is not modified
+  // Skip hashing if password hasn't changed
   if (!user.isModified("password")) {
     return next();
+  }
+
+  // Check if the password is not being reset
+  if (!user.password) {
+    return next(new Error("Password is required"));
   }
 
   bcrypt.hash(user.password, 10, (err, hash) => {
@@ -57,10 +71,15 @@ schema.methods.login = function (password) {
       if (result) {
         resolve();
       } else {
-        reject();
+        reject(new Error("Invalid password"));
       }
     });
   });
+};
+
+// Function to trigger password reset logic
+schema.methods.triggerPasswordReset = function () {
+  this.isResettingPassword = true;
 };
 
 module.exports = mongoose.model("UserAuth", schema);

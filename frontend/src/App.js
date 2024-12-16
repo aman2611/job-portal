@@ -5,7 +5,6 @@ import { makeStyles } from "@mui/styles";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import Welcome from "./component/Welcome";
-// import ErrorPage from "./component/ErrorPage";
 import Navbar from "./component/Navbar";
 import Profile from "./component/Profile";
 import Login from "./component/Login";
@@ -24,6 +23,9 @@ import CandidateProfile from "./component/candidate/Profile";
 import CreateJobs2 from "./component/recruiter/CreateJobs/CreateJobs2";
 import ScreeningQuestions from "./component/recruiter/CreateJobs/ScreeningQuestions";
 import JobDetails from "./component/JobDetails";
+import ForgotPassword from "./component/ForgetPassword";
+import ResetPassword from "./component/ResetPassword";
+import PageNotFound from "./component/PageNotFound";
 
 const useStyles = makeStyles(() => ({
   body: {
@@ -66,49 +68,31 @@ function App() {
             {/* Main Body */}
             <Grid item className={classes.body}>
               <Routes>
-                {/* Redirect based on login state */}
-                <Route
-                  path="/"
-                  element={<Navigate to={isLoggedIn ? "/home" : "/login"} replace />}
-                />
+                <Route path="/" element={<Navigate to={isLoggedIn ? "/home" : "/login"} replace />} />
 
                 {/* Public Routes */}
                 <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/home" />} />
                 <Route path="/signup" element={!isLoggedIn ? <Signup /> : <Navigate to="/home" />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                {/* <Route path ="/reset-password" element={<ResetPassword/>}/> */}
+                <Route path="*" element={<PageNotFound />} />
+
 
                 {/* Protected Routes */}
                 <Route path="/logout" element={isLoggedIn ? <Logout /> : <Navigate to="/login" />} />
                 <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
-                <Route
-                  path="/applications"
-                  element={isLoggedIn ? <Applications /> : <Navigate to="/login" />}
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    isLoggedIn
-                      ? userType() === "recruiter"
-                        ? <RecruiterProfile />
-                        : <CandidateProfile />
-                      : <Navigate to="/login" />
-                  }
-                />
+                <Route path="/applications" element={isLoggedIn ? <Applications /> : <Navigate to="/login" />} />
+                <Route path="/profile" element={isLoggedIn ? userType() === "recruiter" ? <RecruiterProfile /> : <CandidateProfile /> : <Navigate to="/login" />} />
                 <Route path="/addjob" element={isLoggedIn ? <CreateJobs2 /> : <Navigate to="/login" />} />
                 <Route path="/screening" element={isLoggedIn ? <ScreeningQuestions /> : <Navigate to="/login" />} />
                 <Route path="/myjobs" element={isLoggedIn ? <MyJobs /> : <Navigate to="/login" />} />
-                <Route
-                  path="/job/applications/:jobId"
-                  element={isLoggedIn ? <JobApplications /> : <Navigate to="/login" />}
-                />
-                <Route
-                  path="/job-details/:id"
-                  element={isLoggedIn ? <JobDetails /> : <Navigate to="/login" />}
-                />
+                <Route path="/job/applications/:jobId" element={isLoggedIn ? <JobApplications /> : <Navigate to="/login" />} />
+                <Route path="/job-details/:id" element={isLoggedIn ? <JobDetails /> : <Navigate to="/login" />} />
               </Routes>
             </Grid>
           </Grid>
 
-          {/* Message Popup */}
           <MessagePopup
             open={popup.open}
             setOpen={(status) =>

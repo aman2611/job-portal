@@ -218,14 +218,14 @@ const Login = () => {
               Sign up
             </span>
           </Typography>
-          {/* <Typography>
+          <Typography>
             <span
               className={classes.link}
               onClick={() => navigate("/forgot-password")}
             >
               Forgot password?
             </span>
-          </Typography> */}
+          </Typography>
         </Box>
       </Paper>
     </Box>

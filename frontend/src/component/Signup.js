@@ -47,8 +47,8 @@ const useStyles = makeStyles(() => ({
     marginTop: "20px",
   },
   logo: {
-    width: "80px",
-    marginBottom: "20px",
+    width: "40px",
+    marginBottom: "10px",
   },
   subTitle: {
     fontSize: "14px",
@@ -85,10 +85,6 @@ const useStyles = makeStyles(() => ({
   },
   submitButton: {
     width: "100%",
-    backgroundColor: "#f97316",
-    "&:hover": {
-      backgroundColor: "#ea580c",
-    },
     marginTop: "20px",
   },
 }));
@@ -97,7 +93,6 @@ const Signup = (props) => {
   const classes = useStyles();
   const setPopup = useContext(SetPopupContext);
   const navigate = useNavigate();
-
 
   const [loggedin, setLoggedin] = useState(isAuth());
 
@@ -291,6 +286,11 @@ const Signup = (props) => {
               },
             }}
           />
+          {signupDetails.type === "recruiter" && (
+            <Typography sx={{ fontSize: "12px", color: "red", marginTop: "5px" }}>
+              Please ensure your email has the domain <strong>.gov.in</strong>.
+            </Typography>
+          )}
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start", width: '100%' }}>
@@ -337,8 +337,6 @@ const Signup = (props) => {
               }
             }}
           />
-
-
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-start" }}>
@@ -351,7 +349,15 @@ const Signup = (props) => {
               handleInput("type", event.target.value);
             }}
             className={classes.inputBox}
-            variant="outlined"
+            sx={{
+              backgroundColor: "white",
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: "white",
+              },
+              "& .MuiOutlinedInput-input": {
+                color: "black",
+              },
+            }}
           >
             <MenuItem value="applicant">Applicant</MenuItem>
             <MenuItem value="recruiter">Recruiter</MenuItem>
@@ -393,10 +399,10 @@ const Signup = (props) => {
 
         <Box>
           <Button
-            variant="contained"
+            onClick={handleSignup}
             className={classes.submitButton}
             sx={{ padding: "10px 50px", backgroundColor: "#f97316", "&:hover": { backgroundColor: "#ea580c" } }}
-            onClick={handleSignup}
+            variant="contained"
           >
             Sign up
           </Button>
@@ -418,7 +424,7 @@ const Signup = (props) => {
             </span>
           </Typography> */}
         </Box>
-
+        
       </Box>
     </Paper>
   );
